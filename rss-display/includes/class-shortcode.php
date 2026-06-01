@@ -145,16 +145,8 @@ class RSS_D_Shortcode {
 		$date_format = get_option( 'date_format' );
 		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 
-		// RSS内画像がないアイテムのURLをまとめて並列OGP取得。
-		$ogp_needed = array();
-		foreach ( $items as $item ) {
-			if ( '' === $item['image'] && '' !== $item['url'] ) {
-				$ogp_needed[] = $item['url'];
-			}
-		}
-		$ogp_map = ! empty( $ogp_needed )
-			? $this->ogp_fetcher->get_images_parallel( $ogp_needed )
-			: array();
+		// 全アイテムURLをまとめて並列OGP取得（キャッシュ済み・空URLはフェッチャー側でスキップ）。
+		$ogp_map = $this->ogp_fetcher->get_images( array_column( $items, 'url' ) );
 
 		ob_start();
 		?>
