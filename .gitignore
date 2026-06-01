@@ -1,0 +1,6 @@
+# PHP preview server log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

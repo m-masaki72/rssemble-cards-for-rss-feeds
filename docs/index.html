@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSS Grid Card — Preview</title>
+<link rel="stylesheet" href="grid-card.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #f5f5f5; color: #222; }
+
+  .preview-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: #1e1e2e; color: #cdd6f4; padding: 12px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  .preview-bar h1 { margin: 0; font-size: 15px; color: #cba6f7; white-space: nowrap; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1; }
+  .field { display: flex; align-items: center; gap: 5px; }
+  .field label { font-size: 12px; color: #a6adc8; white-space: nowrap; }
+  .field select, .field input[type=number] {
+    padding: 6px 8px; background: #313244; color: #cdd6f4;
+    border: 1px solid #45475a; border-radius: 6px; font-size: 13px;
+  }
+
+  .preview-main { max-width: 1200px; margin: 24px auto; padding: 0 20px 40px; }
+  .preview-meta { font-size: 12px; color: #888; margin-bottom: 12px; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    background: #e8f4fd; color: #2196f3; font-size: 11px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-bar">
+  <h1>RSS Grid Card <span class="badge">Preview</span></h1>
+  <div class="controls">
+    <div class="field">
+      <label>列数</label>
+      <select id="ctrl-columns">
+        <option value="2">2列</option>
+        <option value="3" selected>3列</option>
+        <option value="4">4列</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>件数</label>
+      <input type="number" id="ctrl-count" value="12" min="1" max="12" style="width:60px">
+    </div>
+    <div class="field">
+      <label>タイトル行数</label>
+      <select id="ctrl-lines">
+        <option value="1">1行</option>
+        <option value="2" selected>2行</option>
+        <option value="3">3行</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>順序</label>
+      <select id="ctrl-order">
+        <option value="date">新着順</option>
+        <option value="random">ランダム</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="preview-main">
+  <p class="preview-meta">
+    ダミーデータ（Zennっぽい記事）でデザイン確認用。実フィード取得は
+    <a href="https://github.com" target="_blank" rel="noopener">ローカルPHPプレビュー</a>を使ってくださいませ。
+  </p>
+  <div class="rss-gc-grid" id="grid" style="--rss-gc-columns:3;--rss-gc-title-lines:2;"></div>
+</div>
+
+<script>
+const ITEMS = [
+  {
+    title: "TypeScriptの型システムを完全に理解する — ジェネリクスから条件型まで",
+    url:   "https://zenn.dev/example/articles/typescript-types",
+    date:  "2026/05/30",
+    image: "https://picsum.photos/seed/ts1/640/360",
+  },
+  {
+    title: "Next.js 15 App Router 実践ガイド — サーバーコンポーネントの使いどころ",
+    url:   "https://zenn.dev/example/articles/nextjs15-app-router",
+    date:  "2026/05/29",
+    image: "https://picsum.photos/seed/next2/640/360",
+  },
+  {
+    title: "Rustで作るWebAssemblyモジュール入門",
+    url:   "https://zenn.dev/example/articles/rust-wasm-intro",
+    date:  "2026/05/28",
+    image: "https://picsum.photos/seed/rust3/640/360",
+  },
+  {
+    title: "React Server Components でバンドルサイズを60%削減した話",
+    url:   "https://zenn.dev/example/articles/rsc-bundle-size",
+    date:  "2026/05/27",
+    image: "https://picsum.photos/seed/rsc4/640/360",
+  },
+  {
+    title: "PostgreSQL インデックス設計の勘どころ — クエリプランを読む",
+    url:   "https://zenn.dev/example/articles/postgres-index",
+    date:  "2026/05/26",
+    image: "https://picsum.photos/seed/pg5/640/360",
+  },
+  {
+    title: "GitHub Actions で完全自動化するCIパイプライン構築術",
+    url:   "https://zenn.dev/example/articles/github-actions-ci",
+    date:  "2026/05/25",
+    image: "https://picsum.photos/seed/ci6/640/360",
+  },
+  {
+    title: "Go言語で書くHTTPサーバー — net/httpパッケージ完全攻略",
+    url:   "https://zenn.dev/example/articles/go-http-server",
+    date:  "2026/05/24",
+    image: "https://picsum.photos/seed/go7/640/360",
+  },
+  {
+    title: "TailwindCSS v4 の新機能まとめ — ゼロ設定で使えるようになった",
+    url:   "https://zenn.dev/example/articles/tailwind-v4",
+    date:  "2026/05/23",
+    image: "https://picsum.photos/seed/tw8/640/360",
+  },
+  {
+    title: "Cloudflare Workers + D1 でサーバーレスAPIを作る",
+    url:   "https://zenn.dev/example/articles/cf-workers-d1",
+    date:  "2026/05/22",
+    image: "https://picsum.photos/seed/cf9/640/360",
+  },
+  {
+    title: "Docker Compose で開発環境を完全再現する — マルチサービス構成",
+    url:   "https://zenn.dev/example/articles/docker-compose-dev",
+    date:  "2026/05/21",
+    image: "https://picsum.photos/seed/dk10/640/360",
+  },
+  {
+    title: "Vite 6 プラグイン開発入門 — ビルドパイプラインを自由にカスタマイズ",
+    url:   "https://zenn.dev/example/articles/vite6-plugin",
+    date:  "2026/05/20",
+    image: "https://picsum.photos/seed/vt11/640/360",
+  },
+  {
+    title: "画像なしカードのフォールバックデザイン確認用アイテム（プレースホルダー）",
+    url:   "https://zenn.dev/example/articles/no-image",
+    date:  "2026/05/19",
+    image: "",
+  },
+];
+
+const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%231a1a2e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23555' font-size='18' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+function buildGrid(columns, count, lines, order) {
+  const grid = document.getElementById('grid');
+  grid.style.setProperty('--rss-gc-columns', columns);
+  grid.style.setProperty('--rss-gc-title-lines', lines);
+
+  let items = [...ITEMS];
+  if (order === 'random') items.sort(() => Math.random() - 0.5);
+  items = items.slice(0, count);
+
+  grid.innerHTML = items.map(item => {
+    const img = item.image || PLACEHOLDER;
+    return `
+      <a class="rss-gc-card" href="${item.url}" target="_blank" rel="noopener noreferrer">
+        <img class="rss-gc-img" src="${img}" alt="${item.title}" loading="lazy">
+        <span class="rss-gc-overlay" aria-hidden="true"></span>
+        <span class="rss-gc-date">${item.date}</span>
+        <h3 class="rss-gc-title">${item.title}</h3>
+      </a>`;
+  }).join('');
+}
+
+function refresh() {
+  buildGrid(
+    +document.getElementById('ctrl-columns').value,
+    +document.getElementById('ctrl-count').value,
+    +document.getElementById('ctrl-lines').value,
+    document.getElementById('ctrl-order').value,
+  );
+}
+
+['ctrl-columns','ctrl-count','ctrl-lines','ctrl-order']
+  .forEach(id => document.getElementById(id).addEventListener('change', refresh));
+
+refresh();
+</script>
+</body>
+</html>
