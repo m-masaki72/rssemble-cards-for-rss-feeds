@@ -46,15 +46,17 @@ class RSS_D_OGP_Fetcher {
 		$to_fetch = array();
 		$keys     = array(); // md5 の再計算を避けるキャッシュ。
 
+		$seen = array();
 		foreach ( $urls as $url ) {
 			$url = trim( $url );
-			if ( '' === $url ) {
+			if ( '' === $url || isset( $seen[ $url ] ) ) {
 				continue;
 			}
-			$keys[ $url ] = self::CACHE_PREFIX . md5( $url );
-			$cached       = get_transient( $keys[ $url ] );
+			$seen[ $url ]  = true;
+			$keys[ $url ]  = self::CACHE_PREFIX . md5( $url );
+			$cached        = get_transient( $keys[ $url ] );
 			if ( false !== $cached ) {
-				$results[ $url ] = is_string( $cached ) ? $cached : '';
+				$results[ $url ] = (string) $cached;
 			} else {
 				$to_fetch[] = $url;
 			}
@@ -75,11 +77,16 @@ class RSS_D_OGP_Fetcher {
 		}
 
 		// curl_multi で並列リクエスト。
+		// 注意: WordPress HTTP フィルタ（pre_http_request 等）はバイパスされる。
 		$mh      = curl_multi_init();
 		$handles = array();
 
 		foreach ( $to_fetch as $url ) {
 			$ch = curl_init( $url );
+			if ( false === $ch ) {
+				$results[ $url ] = '';
+				continue;
+			}
 			curl_setopt_array(
 				$ch,
 				array(
@@ -107,7 +114,7 @@ class RSS_D_OGP_Fetcher {
 		do {
 			curl_multi_exec( $mh, $running );
 			if ( -1 === curl_multi_select( $mh ) ) {
-				usleep( 100 );
+				usleep( 100000 );
 			}
 		} while ( $running > 0 );
 
