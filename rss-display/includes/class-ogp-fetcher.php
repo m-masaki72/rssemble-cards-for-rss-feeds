@@ -51,6 +51,93 @@ class RSS_D_OGP_Fetcher {
 	}
 
 	/**
+	 * 複数記事URLの OGP 画像を並列取得する。
+	 * キャッシュ済みはスキップし、未取得URLのみ curl_multi で並列リクエスト。
+	 *
+	 * @param string[] $urls 記事URLの配列。
+	 * @return array URL => 画像URL のマップ（未検出は ''）。
+	 */
+	public function get_images_parallel( $urls ) {
+		$results  = array();
+		$to_fetch = array();
+
+		// キャッシュ確認。
+		foreach ( $urls as $url ) {
+			$url = trim( $url );
+			if ( '' === $url ) {
+				continue;
+			}
+			$cached = get_transient( self::CACHE_PREFIX . md5( $url ) );
+			if ( false !== $cached ) {
+				$results[ $url ] = is_string( $cached ) ? $cached : '';
+			} else {
+				$to_fetch[] = $url;
+			}
+		}
+
+		if ( empty( $to_fetch ) || ! function_exists( 'curl_multi_init' ) ) {
+			// curl_multi が使えない環境は直列フォールバック。
+			foreach ( $to_fetch as $url ) {
+				$image           = $this->fetch_ogp_image( $url );
+				set_transient( self::CACHE_PREFIX . md5( $url ), $image, self::CACHE_TTL );
+				$results[ $url ] = $image;
+			}
+			return $results;
+		}
+
+		// curl_multi で並列リクエスト。
+		$mh      = curl_multi_init();
+		$handles = array();
+
+		foreach ( $to_fetch as $url ) {
+			$ch = curl_init( $url );
+			curl_setopt_array(
+				$ch,
+				array(
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_FOLLOWLOCATION => true,
+					CURLOPT_MAXREDIRS      => 3,
+					CURLOPT_TIMEOUT        => self::TIMEOUT,
+					CURLOPT_SSL_VERIFYPEER => false,
+					CURLOPT_USERAGENT      => 'WordPress/RSS-Display',
+					CURLOPT_HTTPHEADER     => array( 'Accept: text/html,application/xhtml+xml' ),
+					// <head> が取れれば十分なので最大128KBで打ち切る。
+					CURLOPT_BUFFERSIZE     => 131072,
+					CURLOPT_NOPROGRESS     => false,
+					CURLOPT_PROGRESSFUNCTION => static function ( $ch, $dl_total, $dl_now ) {
+						return $dl_now > 131072 ? 1 : 0;
+					},
+				)
+			);
+			curl_multi_add_handle( $mh, $ch );
+			$handles[ $url ] = $ch;
+		}
+
+		// 全リクエスト完了まで待つ。
+		$running = null;
+		do {
+			curl_multi_exec( $mh, $running );
+			curl_multi_select( $mh );
+		} while ( $running > 0 );
+
+		foreach ( $handles as $url => $ch ) {
+			$body  = curl_multi_getcontent( $ch );
+			$image = ( $body && '' !== $body ) ? $this->parse_og_image( $body ) : '';
+			if ( '' !== $image ) {
+				$image = esc_url_raw( $this->to_absolute_url( $image, $url ) );
+			}
+			set_transient( self::CACHE_PREFIX . md5( $url ), $image, self::CACHE_TTL );
+			$results[ $url ] = $image;
+			curl_multi_remove_handle( $mh, $ch );
+			curl_close( $ch );
+		}
+
+		curl_multi_close( $mh );
+
+		return $results;
+	}
+
+	/**
 	 * 記事HTMLを取得し、OGP 画像URLを抽出する。
 	 *
 	 * @param string $url 記事URL。

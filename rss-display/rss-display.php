@@ -119,7 +119,7 @@ final class RSS_Display {
 	public static function default_settings() {
 		return array(
 			'feeds'             => '',
-			'count'             => 12,
+			'count'             => 10,
 			'columns'           => 3,
 			'title_lines'       => 2,
 			'cache_ttl'         => 86400, // 1日。

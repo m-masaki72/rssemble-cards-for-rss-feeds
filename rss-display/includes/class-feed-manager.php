@@ -21,8 +21,8 @@ class RSS_D_Feed_Manager {
 	 */
 	const STORE_TTL = MONTH_IN_SECONDS;
 
-	/** 1フィードあたり正規化する最大件数 */
-	const MAX_ITEMS_PER_FEED = 50;
+	/** 1フィードあたり取得する最大件数 */
+	const MAX_ITEMS_PER_FEED = 24;
 
 	/**
 	 * OGP 画像取得クラス（現状は直接利用しないが将来拡張のため保持）。
@@ -62,7 +62,13 @@ class RSS_D_Feed_Manager {
 	 * @return array
 	 */
 	public function get_items( $feeds, $count, $orderby = 'date' ) {
-		$all = array();
+		$all        = array();
+		$feed_count = count( $feeds );
+
+		// フィード数で割った件数を各フィードの取得上限にする（重複排除後に足りなくなる場合を考慮して1.5倍）。
+		$per_feed = $feed_count > 0
+			? min( (int) ceil( $count * 1.5 / $feed_count ), self::MAX_ITEMS_PER_FEED )
+			: self::MAX_ITEMS_PER_FEED;
 
 		foreach ( $feeds as $feed_url ) {
 			$feed_url = trim( $feed_url );
@@ -70,7 +76,7 @@ class RSS_D_Feed_Manager {
 				continue;
 			}
 
-			$payload = $this->get_feed_payload( $feed_url );
+			$payload = $this->get_feed_payload( $feed_url, $per_feed );
 			if ( ! empty( $payload['items'] ) ) {
 				foreach ( $payload['items'] as $item ) {
 					$all[] = $item;
@@ -135,9 +141,10 @@ class RSS_D_Feed_Manager {
 	 *   3. 再取得に失敗した場合は、前回キャッシュ（stale）をフォールバックとして返す。
 	 *
 	 * @param string $feed_url フィードURL。
+	 * @param int    $limit    取得する最大件数。
 	 * @return array { fetched:int, items:array, count:int, error:bool }
 	 */
-	public function get_feed_payload( $feed_url ) {
+	public function get_feed_payload( $feed_url, $limit = self::MAX_ITEMS_PER_FEED ) {
 		$key = self::CACHE_PREFIX . md5( $feed_url );
 		$ttl = $this->get_ttl();
 		$now = time();
@@ -151,7 +158,7 @@ class RSS_D_Feed_Manager {
 		}
 
 		// 再取得。
-		$items = $this->fetch_and_normalize( $feed_url );
+		$items = $this->fetch_and_normalize( $feed_url, $limit );
 
 		if ( false !== $items ) {
 			$payload = array(
@@ -186,9 +193,10 @@ class RSS_D_Feed_Manager {
 	 * フィードを取得して表示用に正規化する。失敗時は false を返す。
 	 *
 	 * @param string $feed_url フィードURL。
+	 * @param int    $limit    取得する最大件数。
 	 * @return array|false
 	 */
-	private function fetch_and_normalize( $feed_url ) {
+	private function fetch_and_normalize( $feed_url, $limit = self::MAX_ITEMS_PER_FEED ) {
 		if ( ! function_exists( 'fetch_feed' ) ) {
 			include_once ABSPATH . WPINC . '/feed.php';
 		}
@@ -202,7 +210,7 @@ class RSS_D_Feed_Manager {
 			return false;
 		}
 
-		$max = $feed->get_item_quantity( self::MAX_ITEMS_PER_FEED );
+		$max = $feed->get_item_quantity( $limit );
 		$raw = $feed->get_items( 0, $max );
 
 		$items = array();

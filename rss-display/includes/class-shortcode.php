@@ -145,18 +145,26 @@ class RSS_D_Shortcode {
 		$date_format = get_option( 'date_format' );
 		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 
+		// RSS内画像がないアイテムのURLをまとめて並列OGP取得。
+		$ogp_needed = array();
+		foreach ( $items as $item ) {
+			if ( '' === $item['image'] && '' !== $item['url'] ) {
+				$ogp_needed[] = $item['url'];
+			}
+		}
+		$ogp_map = ! empty( $ogp_needed )
+			? $this->ogp_fetcher->get_images_parallel( $ogp_needed )
+			: array();
+
 		ob_start();
 		?>
 		<div class="rss-d-grid" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
-				// 画像解決：RSS内画像 → OGP取得 → デフォルト画像。
+				// 画像解決：RSS内画像 → OGP取得（並列済み）→ デフォルト画像。
 				$image = $item['image'];
 				if ( '' === $image && '' !== $item['url'] ) {
-					$ogp = $this->ogp_fetcher->get_image( $item['url'] );
-					if ( '' !== $ogp ) {
-						$image = $ogp;
-					}
+					$image = isset( $ogp_map[ $item['url'] ] ) ? $ogp_map[ $item['url'] ] : '';
 				}
 				if ( '' === $image ) {
 					$image = $default_image;
