@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RSS Grid Card — Preview</title>
+<title>RSS Display — Preview</title>
 <link rel="stylesheet" href="grid-card.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; }
@@ -36,7 +36,7 @@
 <body>
 
 <div class="preview-bar">
-  <h1>RSS Grid Card <span class="badge">Preview</span></h1>
+  <h1>RSS Display <span class="badge">Preview</span></h1>
   <div class="controls">
     <div class="field">
       <label>列数</label>
@@ -73,7 +73,7 @@
     ダミーデータ（Zennっぽい記事）でデザイン確認用。実フィード取得は
     <a href="https://github.com" target="_blank" rel="noopener">ローカルPHPプレビュー</a>を使ってくださいませ。
   </p>
-  <div class="rss-gc-grid" id="grid" style="--rss-gc-columns:3;--rss-gc-title-lines:2;"></div>
+  <div class="rss-d-grid" id="grid" style="--rss-d-columns:3;--rss-d-title-lines:2;"></div>
 </div>
 
 <script>
@@ -156,8 +156,8 @@ const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 
 function buildGrid(columns, count, lines, order) {
   const grid = document.getElementById('grid');
-  grid.style.setProperty('--rss-gc-columns', columns);
-  grid.style.setProperty('--rss-gc-title-lines', lines);
+  grid.style.setProperty('--rss-d-columns', columns);
+  grid.style.setProperty('--rss-d-title-lines', lines);
 
   let items = [...ITEMS];
   if (order === 'random') items.sort(() => Math.random() - 0.5);
@@ -166,11 +166,11 @@ function buildGrid(columns, count, lines, order) {
   grid.innerHTML = items.map(item => {
     const img = item.image || PLACEHOLDER;
     return `
-      <a class="rss-gc-card" href="${item.url}" target="_blank" rel="noopener noreferrer">
-        <img class="rss-gc-img" src="${img}" alt="${item.title}" loading="lazy">
-        <span class="rss-gc-overlay" aria-hidden="true"></span>
-        <span class="rss-gc-date">${item.date}</span>
-        <h3 class="rss-gc-title">${item.title}</h3>
+      <a class="rss-d-card" href="${item.url}" target="_blank" rel="noopener noreferrer">
+        <img class="rss-d-img" src="${img}" alt="${item.title}" loading="lazy">
+        <span class="rss-d-overlay" aria-hidden="true"></span>
+        <span class="rss-d-date">${item.date}</span>
+        <h3 class="rss-d-title">${item.title}</h3>
       </a>`;
   }).join('');
 }

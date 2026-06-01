@@ -1,4 +1,4 @@
-# RSS Grid Card
+# RSS Display
 
 複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。
 外部サービス依存なし（WordPress組み込みのSimplePie・トランジェント・DOMDocumentのみ使用）。
@@ -15,16 +15,16 @@
 
 ## インストール
 
-1. `rss-grid-card` フォルダを `/wp-content/plugins/` に配置
+1. `rss-display` フォルダを `/wp-content/plugins/` に配置
 2. WordPress管理画面でプラグインを有効化
-3. `設定 > RSS Grid Card` でフィードURLを設定
+3. `設定 > RSS Display` でフィードURLを設定
 
 ## ショートコード
 
 ```
-[rss_grid_card]
-[rss_grid_card columns="4" count="8"]
-[rss_grid_card feed="https://example.com/feed" orderby="random" target="_self"]
+[rss_display]
+[rss_display columns="4" count="8"]
+[rss_display feed="https://example.com/feed" orderby="random" target="_self"]
 ```
 
 | パラメータ | 値 | デフォルト |
@@ -54,16 +54,11 @@
 PHPをインストール後:
 
 ```bash
-cd /path/to/rss-grid-card
+cd /path/to/rss-display
 php -S localhost:8080 preview/router.php
 ```
 
 ブラウザで `http://localhost:8080` を開くと、任意のRSSフィードURLを入力してカードグリッドの見た目を確認できる。
-
-## GitHub Pages 静的プレビュー
-
-`docs/index.html` にダミーデータ版の静的プレビューが含まれている。
-GitHub Pages で `docs/` フォルダを公開するだけで確認可能（PHP不要）。
 
 ## 動作環境
 

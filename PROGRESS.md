@@ -1,16 +1,16 @@
 # PROGRESS.md
 
-## 現状 (2026-06-01)
+## 現状 (2026-06-02)
 
 ### 完成済み
 
-#### プラグイン本体 (`rss-grid-card/`)
-- [x] エントリポイント (`rss-grid-card.php`) — シングルトン起動、定数定義
+#### プラグイン本体 (`rss-display/`)
+- [x] エントリポイント (`rss-display.php`) — シングルトン起動、定数定義
 - [x] フィード取得・パース (`class-feed-manager.php`) — SimplePie + トランジェントキャッシュ、重複排除、staleフォールバック
 - [x] OGP画像取得 (`class-ogp-fetcher.php`) — DOMXPathによるog:image解析、1ヶ月キャッシュ、negative cache
-- [x] ショートコード (`class-shortcode.php`) — `[rss_grid_card]` 実装、パラメータ処理、HTML生成
+- [x] ショートコード (`class-shortcode.php`) — `[rss_display]` 実装、パラメータ処理、HTML生成
 - [x] 管理画面 (`class-admin.php`) — 設定保存、キャッシュ手動クリア、メディアライブラリ対応
-- [x] フロントCSS (`assets/css/grid-card.css`) — カードグリッドUI、CSS変数、レスポンシブ
+- [x] フロントCSS (`assets/css/rss-display.css`) — カードグリッドUI、CSS変数、レスポンシブ
 - [x] 管理画面CSS/JS (`assets/css/admin.css`, `assets/js/admin.js`)
 - [x] プレースホルダー画像 (`assets/img/placeholder.png`)
 - [x] WordPress.org用readme (`readme.txt`)
@@ -20,24 +20,21 @@
 - [x] プレビューサーバー (`index.php`) — フィードURL・列数・件数・順序・リンクをGETパラメータで制御
 - [x] ルーター (`router.php`) — 静的アセット配信 + パストラバーサル防止
 
-#### GitHub Pages 静的プレビュー (`docs/`)
+#### 静的プレビュー (`docs/`)
 - [x] 静的プレビュー (`docs/index.html`) — ダミーデータ12件、JS制御パネル（列数/件数/タイトル行数/順序）
-- [x] CSSコピー (`docs/grid-card.css`)
+- [x] CSS (`docs/grid-card.css`)
 
 #### リポジトリ管理
 - [x] `.gitignore`
 - [x] `CLAUDE.md` (Claude Code用アーキテクチャガイド)
 - [x] `README.md`
-- [x] git初期コミット済み (`e709970`)
+- [x] GitHub Actions (`release.yml`) — `v*` タグ push で `rss-display.zip` を自動リリース
+- [x] GitHub プライベートリポジトリ push 済み (`m-masaki72/rss-display`)
+- [x] v1.0.0 リリース済み
 
 ---
 
 ### 残タスク
-
-#### すぐにできる
-- [ ] GitHubにリモートリポジトリを作成してpush
-- [ ] GitHub Pages を `docs/` フォルダから有効化
-- [ ] `docs/grid-card.css` の同期手順をワークフロー化（plugin側更新時に手動コピーが必要）
 
 #### 品質・テスト
 - [ ] WordPress実環境での手動テスト（インストール〜表示まで一通り）
@@ -46,10 +43,9 @@
 - [ ] OGP negative cacheの動作確認
 
 #### 将来の改善候補
+- [ ] カード型以外のレイアウト追加（リスト型・マガジン型等）
 - [ ] WordPress.org への申請
 - [ ] Pro機能検討（複数フィード高度フィルタ、AJAXページング、カスタムテーマ等）
-- [ ] Freemius組み込み（サブスクリプション販売向け）
-- [ ] `docs/` プレビューのランディングページ化（マネタイズ導線）
 
 ---
 
