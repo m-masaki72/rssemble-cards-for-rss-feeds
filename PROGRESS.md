@@ -30,7 +30,7 @@
 - [x] `README.md`
 - [x] GitHub Actions (`release.yml`) — `v*` タグ push で `rss-display.zip` を自動リリース
 - [x] GitHub プライベートリポジトリ push 済み (`m-masaki72/rss-display`)
-- [x] v1.0.0 / v1.0.1 リリース済み（v1.0.2 は次回タグ時）
+- [x] v1.0.0 / v1.0.1 リリース済み
 
 ---
 
@@ -44,8 +44,6 @@
 ### 残タスク
 
 #### 品質・テスト
-- [ ] WordPress実環境での手動テスト（インストール〜表示まで一通り）
-- [ ] PHP 7.4 互換確認（`str_starts_with` は PHP 8.0+ のためrouterのみ影響、本体は問題なし）
 - [ ] 取得失敗時のstaleフォールバック動作確認
 - [ ] OGP negative cacheの動作確認
 
