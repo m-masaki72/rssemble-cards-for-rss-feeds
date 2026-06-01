@@ -3,17 +3,17 @@
  * 記事ページから OGP 画像URLを取得するクラス。
  * 取得結果（未検出含む）は記事URLをキーに1ヶ月トランジェントキャッシュする。
  *
- * @package RSS_Grid_Card
+ * @package RSS_Display
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class RSS_GC_OGP_Fetcher {
+class RSS_D_OGP_Fetcher {
 
 	/** トランジェントのキー接頭辞 */
-	const CACHE_PREFIX = 'rss_gc_ogp_';
+	const CACHE_PREFIX = 'rss_d_ogp_';
 
 	/** OGP キャッシュ期間（固定1ヶ月） */
 	const CACHE_TTL = MONTH_IN_SECONDS;
@@ -63,7 +63,7 @@ class RSS_GC_OGP_Fetcher {
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 3,
 				'sslverify'   => false,
-				'user-agent'  => 'WordPress/RSS-Grid-Card',
+				'user-agent'  => 'WordPress/RSS-Display',
 				'headers'     => array(
 					'Accept' => 'text/html,application/xhtml+xml',
 				),

@@ -1,16 +1,16 @@
 /**
- * RSS Grid Card - 管理画面JS（メディアライブラリ選択用）
+ * RSS Display - 管理画面JS（メディアライブラリ選択用）
  */
 ( function ( $ ) {
 	'use strict';
 
 	$( function () {
 		var frame;
-		var $idInput  = $( '#rss_gc_default_image_id' );
-		var $preview  = $( '.rss-gc-image-preview' );
-		var $urlInput = $( '#rss_gc_default_image_url' );
+		var $idInput  = $( '#rss_d_default_image_id' );
+		var $preview  = $( '.rss-d-image-preview' );
+		var $urlInput = $( '#rss_d_default_image_url' );
 
-		$( '#rss_gc_select_image' ).on( 'click', function ( e ) {
+		$( '#rss_d_select_image' ).on( 'click', function ( e ) {
 			e.preventDefault();
 
 			if ( frame ) {
@@ -19,9 +19,9 @@
 			}
 
 			frame = wp.media( {
-				title: ( window.rssGcAdmin && rssGcAdmin.chooseTitle ) || 'Select image',
+				title: ( window.rssDAdmin && rssDAdmin.chooseTitle ) || 'Select image',
 				button: {
-					text: ( window.rssGcAdmin && rssGcAdmin.chooseButton ) || 'Use this image'
+					text: ( window.rssDAdmin && rssDAdmin.chooseButton ) || 'Use this image'
 				},
 				library: { type: 'image' },
 				multiple: false
@@ -45,7 +45,7 @@
 			frame.open();
 		} );
 
-		$( '#rss_gc_clear_image' ).on( 'click', function ( e ) {
+		$( '#rss_d_clear_image' ).on( 'click', function ( e ) {
 			e.preventDefault();
 			$idInput.val( '' );
 			$preview.empty();

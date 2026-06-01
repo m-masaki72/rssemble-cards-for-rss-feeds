@@ -2,17 +2,17 @@
 /**
  * RSS フィードの取得・パース・トランジェントキャッシュ・重複排除を担当するクラス。
  *
- * @package RSS_Grid_Card
+ * @package RSS_Display
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class RSS_GC_Feed_Manager {
+class RSS_D_Feed_Manager {
 
 	/** トランジェントのキー接頭辞 */
-	const CACHE_PREFIX = 'rss_gc_feed_';
+	const CACHE_PREFIX = 'rss_d_feed_';
 
 	/**
 	 * データ自体の保持期間（最大1ヶ月）。
@@ -27,14 +27,14 @@ class RSS_GC_Feed_Manager {
 	/**
 	 * OGP 画像取得クラス（現状は直接利用しないが将来拡張のため保持）。
 	 *
-	 * @var RSS_GC_OGP_Fetcher
+	 * @var RSS_D_OGP_Fetcher
 	 */
 	private $ogp_fetcher;
 
 	/**
 	 * コンストラクタ。
 	 *
-	 * @param RSS_GC_OGP_Fetcher $ogp_fetcher OGP 取得クラス。
+	 * @param RSS_D_OGP_Fetcher $ogp_fetcher OGP 取得クラス。
 	 */
 	public function __construct( $ogp_fetcher ) {
 		$this->ogp_fetcher = $ogp_fetcher;
@@ -46,7 +46,7 @@ class RSS_GC_Feed_Manager {
 	 * @return int
 	 */
 	private function get_ttl() {
-		$settings = RSS_Grid_Card::get_settings();
+		$settings = RSS_Display::get_settings();
 		$ttl      = absint( $settings['cache_ttl'] );
 
 		return $ttl > 0 ? $ttl : DAY_IN_SECONDS;

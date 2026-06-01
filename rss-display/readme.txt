@@ -1,6 +1,6 @@
-=== RSS Grid Card ===
+=== RSS Display ===
 Contributors: mori
-Tags: rss, feed, grid, ogp, card
+Tags: rss, feed, display, ogp, grid
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -12,9 +12,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-RSS Grid Card は、複数のRSSフィードをまとめて取得し、OGP画像を背景にしたカードグリッド
-（忍者RSS風デザイン）で表示するWordPressプラグインです。外部サービスへの依存はなく、
-WordPress組み込み機能（SimplePie / トランジェント / DOMDocument）のみで動作します。
+RSS Display は、複数のRSSフィードをまとめて取得し、OGP画像を背景にしたカードグリッドで表示するWordPressプラグインです。外部サービスへの依存はなく、WordPress組み込み機能（SimplePie / トランジェント / DOMDocument）のみで動作します。
 
 主な特徴:
 
@@ -31,23 +29,23 @@ WordPress組み込み機能（SimplePie / トランジェント / DOMDocument）
 
 == Installation ==
 
-1. `rss-grid-card` フォルダを `/wp-content/plugins/` にアップロードします
+1. `rss-display` フォルダを `/wp-content/plugins/` にアップロードします
    （または管理画面の「プラグイン > 新規追加 > プラグインのアップロード」からZIPを直接アップロード）。
 2. 管理画面の「プラグイン」からプラグインを有効化します。
-3. 「設定 > RSS Grid Card」でフィードURL等を設定します。
+3. 「設定 > RSS Display」でフィードURL等を設定します。
 4. 投稿・固定ページ・ウィジェットにショートコードを貼り付けます。
 
 == Usage ==
 
 基本:
 
-`[rss_grid_card]`
+`[rss_display]`
 
 パラメータ指定:
 
-`[rss_grid_card columns="4" count="8"]`
-`[rss_grid_card columns="2" count="6" feed="https://example.com/feed"]`
-`[rss_grid_card orderby="random" target="_self"]`
+`[rss_display columns="4" count="8"]`
+`[rss_display columns="2" count="6" feed="https://example.com/feed"]`
+`[rss_display orderby="random" target="_self"]`
 
 パラメータ一覧:
 
@@ -64,7 +62,7 @@ RSSに画像が含まれず、記事ページのog:imageも取得できない場
 管理画面で指定したデフォルト画像（未設定時は同梱のプレースホルダー）が表示されます。
 
 = キャッシュをすぐに更新したい =
-「設定 > RSS Grid Card」の「今すぐ更新」ボタンでRSSキャッシュをクリアできます。
+「設定 > RSS Display」の「今すぐ更新」ボタンでRSSキャッシュをクリアできます。
 OGP画像キャッシュ（1ヶ月固定）はクリアされません。
 
 = Cron は使いますか =

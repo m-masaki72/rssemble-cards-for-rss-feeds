@@ -1,12 +1,12 @@
 /**
- * RSS Grid Card - 管理画面CSS
+ * RSS Display - 管理画面CSS
  */
 
-.rss-gc-admin .rss-gc-image-preview {
+.rss-d-admin .rss-d-image-preview {
 	margin: 8px 0;
 }
 
-.rss-gc-admin .rss-gc-image-preview img {
+.rss-d-admin .rss-d-image-preview img {
 	max-width: 320px;
 	height: auto;
 	border: 1px solid #ccd0d4;
@@ -14,16 +14,16 @@
 	display: block;
 }
 
-.rss-gc-admin .rss-gc-status-table {
+.rss-d-admin .rss-d-status-table {
 	max-width: 900px;
 	margin-top: 8px;
 }
 
-.rss-gc-admin .rss-gc-status-url {
+.rss-d-admin .rss-d-status-url {
 	word-break: break-all;
 }
 
-.rss-gc-admin code {
+.rss-d-admin code {
 	background: #f0f0f1;
 	padding: 2px 6px;
 	border-radius: 3px;

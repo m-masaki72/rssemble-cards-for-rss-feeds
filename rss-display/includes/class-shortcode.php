@@ -1,41 +1,41 @@
 <?php
 /**
- * ショートコード [rss_grid_card] を処理し、カードグリッドHTMLを生成するクラス。
+ * ショートコード [rss_display] を処理し、表示HTMLを生成するクラス。
  *
- * @package RSS_Grid_Card
+ * @package RSS_Display
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class RSS_GC_Shortcode {
+class RSS_D_Shortcode {
 
 	/**
 	 * フィードマネージャ。
 	 *
-	 * @var RSS_GC_Feed_Manager
+	 * @var RSS_D_Feed_Manager
 	 */
 	private $feed_manager;
 
 	/**
 	 * OGP 取得クラス。
 	 *
-	 * @var RSS_GC_OGP_Fetcher
+	 * @var RSS_D_OGP_Fetcher
 	 */
 	private $ogp_fetcher;
 
 	/**
 	 * コンストラクタ。
 	 *
-	 * @param RSS_GC_Feed_Manager $feed_manager フィードマネージャ。
-	 * @param RSS_GC_OGP_Fetcher  $ogp_fetcher  OGP 取得クラス。
+	 * @param RSS_D_Feed_Manager $feed_manager フィードマネージャ。
+	 * @param RSS_D_OGP_Fetcher  $ogp_fetcher  OGP 取得クラス。
 	 */
 	public function __construct( $feed_manager, $ogp_fetcher ) {
 		$this->feed_manager = $feed_manager;
 		$this->ogp_fetcher  = $ogp_fetcher;
 
-		add_shortcode( 'rss_grid_card', array( $this, 'render' ) );
+		add_shortcode( 'rss_display', array( $this, 'render' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_register_style' ) );
 	}
 
@@ -46,17 +46,17 @@ class RSS_GC_Shortcode {
 	 */
 	public function maybe_register_style() {
 		wp_register_style(
-			'rss-grid-card',
-			RSS_GC_URL . 'assets/css/grid-card.css',
+			'rss-display',
+			RSS_D_URL . 'assets/css/rss-display.css',
 			array(),
-			RSS_GC_VERSION
+			RSS_D_VERSION
 		);
 
 		// 投稿本文にショートコードがあれば head 出力のため先読み enqueue する。
 		if ( is_singular() ) {
 			$post = get_post();
-			if ( $post && has_shortcode( $post->post_content, 'rss_grid_card' ) ) {
-				wp_enqueue_style( 'rss-grid-card' );
+			if ( $post && has_shortcode( $post->post_content, 'rss_display' ) ) {
+				wp_enqueue_style( 'rss-display' );
 			}
 		}
 	}
@@ -68,7 +68,7 @@ class RSS_GC_Shortcode {
 	 * @return string
 	 */
 	public function render( $atts ) {
-		$settings = RSS_Grid_Card::get_settings();
+		$settings = RSS_Display::get_settings();
 
 		$atts = shortcode_atts(
 			array(
@@ -79,7 +79,7 @@ class RSS_GC_Shortcode {
 				'target'  => '',
 			),
 			$atts,
-			'rss_grid_card'
+			'rss_display'
 		);
 
 		// 列数（2/3/4のみ許可）。
@@ -125,15 +125,15 @@ class RSS_GC_Shortcode {
 		}
 
 		// このページではCSSが必要なため enqueue する（footer出力にもフォールバック）。
-		if ( ! wp_style_is( 'rss-grid-card', 'registered' ) ) {
+		if ( ! wp_style_is( 'rss-display', 'registered' ) ) {
 			wp_register_style(
-				'rss-grid-card',
-				RSS_GC_URL . 'assets/css/grid-card.css',
+				'rss-display',
+				RSS_D_URL . 'assets/css/rss-display.css',
 				array(),
-				RSS_GC_VERSION
+				RSS_D_VERSION
 			);
 		}
-		wp_enqueue_style( 'rss-grid-card' );
+		wp_enqueue_style( 'rss-display' );
 
 		$default_image = $this->get_default_image_url( $settings );
 
@@ -147,7 +147,7 @@ class RSS_GC_Shortcode {
 
 		ob_start();
 		?>
-		<div class="rss-gc-grid" style="--rss-gc-columns:<?php echo esc_attr( $columns ); ?>;--rss-gc-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-grid" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				// 画像解決：RSS内画像 → OGP取得 → デフォルト画像。
@@ -167,17 +167,17 @@ class RSS_GC_Shortcode {
 				$date_label = $item['timestamp'] ? date_i18n( $date_format, $item['timestamp'] ) : '';
 				?>
 				<?php if ( '' !== $link ) : ?>
-				<a class="rss-gc-card" href="<?php echo esc_url( $link ); ?>"<?php echo $target_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?>>
+				<a class="rss-d-card" href="<?php echo esc_url( $link ); ?>"<?php echo $target_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?>>
 				<?php else : ?>
-				<div class="rss-gc-card">
+				<div class="rss-d-card">
 				<?php endif; ?>
-					<img class="rss-gc-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-					<span class="rss-gc-overlay" aria-hidden="true"></span>
+					<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
+					<span class="rss-d-overlay" aria-hidden="true"></span>
 					<?php if ( '' !== $date_label ) : ?>
-						<span class="rss-gc-date"><?php echo esc_html( $date_label ); ?></span>
+						<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
 					<?php endif; ?>
 					<?php if ( '' !== $title ) : ?>
-						<h3 class="rss-gc-title"><?php echo esc_html( $title ); ?></h3>
+						<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
 					<?php endif; ?>
 				<?php if ( '' !== $link ) : ?>
 				</a>
@@ -229,6 +229,6 @@ class RSS_GC_Shortcode {
 			return $settings['default_image_url'];
 		}
 
-		return RSS_GC_URL . 'assets/img/placeholder.png';
+		return RSS_D_URL . 'assets/img/placeholder.png';
 	}
 }

@@ -1,17 +1,17 @@
 /**
- * RSS Grid Card - フロントエンド表示CSS（忍者RSS風カードデザイン）
+ * RSS Display - フロントエンド表示CSS
  */
 
-.rss-gc-grid {
+.rss-d-grid {
 	display: grid;
-	grid-template-columns: repeat(var(--rss-gc-columns, 3), 1fr);
+	grid-template-columns: repeat(var(--rss-d-columns, 3), 1fr);
 	gap: 16px;
 	margin: 0 0 1.5em;
 	padding: 0;
 	list-style: none;
 }
 
-.rss-gc-card {
+.rss-d-card {
 	position: relative;
 	display: block;
 	aspect-ratio: 16 / 9;
@@ -23,13 +23,13 @@
 	transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.rss-gc-card:focus-visible {
+.rss-d-card:focus-visible {
 	outline: 2px solid #4a90d9;
 	outline-offset: 2px;
 }
 
 /* 全面背景画像 */
-.rss-gc-img {
+.rss-d-img {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -40,7 +40,7 @@
 }
 
 /* 下部グラデーションオーバーレイ（下部70%） */
-.rss-gc-overlay {
+.rss-d-overlay {
 	position: absolute;
 	inset: 0;
 	background: linear-gradient(
@@ -52,7 +52,7 @@
 }
 
 /* 右上の日付バッジ */
-.rss-gc-date {
+.rss-d-date {
 	position: absolute;
 	top: 8px;
 	right: 8px;
@@ -67,7 +67,7 @@
 }
 
 /* 左下のタイトル */
-.rss-gc-title {
+.rss-d-title {
 	position: absolute;
 	left: 12px;
 	right: 12px;
@@ -81,31 +81,31 @@
 	color: #ffffff;
 	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 	display: -webkit-box;
-	-webkit-line-clamp: var(--rss-gc-title-lines, 2);
-	line-clamp: var(--rss-gc-title-lines, 2);
+	-webkit-line-clamp: var(--rss-d-title-lines, 2);
+	line-clamp: var(--rss-d-title-lines, 2);
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	word-break: break-word;
 }
 
 /* ホバー時：影を強調＋画像ズーム */
-.rss-gc-card:hover {
+.rss-d-card:hover {
 	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-.rss-gc-card:hover .rss-gc-img {
+.rss-d-card:hover .rss-d-img {
 	transform: scale(1.05);
 }
 
 /* レスポンシブ：タブレット2列 / スマホ1列 */
 @media (max-width: 1024px) {
-	.rss-gc-grid {
+	.rss-d-grid {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
 @media (max-width: 600px) {
-	.rss-gc-grid {
+	.rss-d-grid {
 		grid-template-columns: 1fr;
 	}
 }
