@@ -2,6 +2,22 @@
  * RSS Display - フロントエンド表示CSS
  */
 
+:root {
+	--rss-d-bg:             var(--wp--preset--color--base,       #ffffff);
+	--rss-d-bg-card:        var(--wp--preset--color--base,       #ffffff);
+	--rss-d-bg-muted:       var(--wp--preset--color--base-2,     #f5f5f5);
+	--rss-d-border:         var(--wp--preset--color--base-2,     #e0e0e0);
+	--rss-d-fg:             var(--wp--preset--color--contrast,   #1a1a2e);
+	--rss-d-fg-muted:       var(--wp--preset--color--contrast-2, #555555);
+	--rss-d-fg-subtle:      var(--wp--preset--color--contrast-3, #888888);
+	--rss-d-accent:         var(--wp--preset--color--primary,    #0073aa);
+	--rss-d-accent-hover:   var(--wp--preset--color--primary,    #005d8c);
+	--rss-d-focus:          var(--wp--preset--color--secondary,  #4a90d9);
+	--rss-d-overlay-dark:   rgba(0, 0, 0, 0.55);
+	--rss-d-overlay-darker: rgba(0, 0, 0, 0.80);
+	--rss-d-overlay-light:  rgba(255, 255, 255, 0.85);
+}
+
 .rss-d-grid {
 	display: grid;
 	grid-template-columns: repeat(var(--rss-d-columns, 3), 1fr);
@@ -17,14 +33,14 @@
 	aspect-ratio: 16 / 9;
 	overflow: hidden;
 	border-radius: 8px;
-	background-color: #1a1a2e; /* 画像なし時のフォールバック背景色 */
+	background-color: var(--rss-d-fg); /* 画像なし時のフォールバック背景色 */
 	text-decoration: none;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 	transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .rss-d-card:focus-visible {
-	outline: 2px solid #4a90d9;
+	outline: 2px solid var(--rss-d-focus);
 	outline-offset: 2px;
 }
 
@@ -88,6 +104,10 @@
 	word-break: break-word;
 }
 
+.rss-d-title--bold {
+	font-weight: 900;
+}
+
 /* サイト名バッジ（左上） */
 .rss-d-site {
 	position: absolute;
@@ -98,7 +118,7 @@
 	font-size: 11px;
 	line-height: 1.4;
 	color: #ffffff;
-	background: rgba(0, 0, 0, 0.55);
+	background: var(--rss-d-overlay-dark);
 	border-radius: 4px;
 	white-space: nowrap;
 	max-width: calc(100% - 16px);
@@ -117,7 +137,7 @@
 	padding: 0;
 	font-size: 12px;
 	line-height: 1.4;
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--rss-d-overlay-light);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
@@ -189,19 +209,19 @@
 
 .rss-d-type-list .rss-d-date {
 	font-size: 11px;
-	color: #888;
+	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list .rss-d-site {
 	font-size: 11px;
-	color: #888;
+	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list .rss-d-desc {
 	font-size: 12px;
-	color: #555;
+	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
@@ -230,7 +250,7 @@
 	flex-direction: column;
 	align-items: stretch;
 	border-radius: 8px;
-	background-color: #fff;
+	background-color: var(--rss-d-bg-card);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
@@ -285,13 +305,13 @@
 .rss-d-type-list_vertical .rss-d-date,
 .rss-d-type-list_vertical .rss-d-site {
 	font-size: 11px;
-	color: #888;
+	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list_vertical .rss-d-desc {
 	font-size: 12px;
-	color: #555;
+	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
@@ -309,7 +329,7 @@
 .rss-d-type-text .rss-d-card {
 	aspect-ratio: unset;
 	display: block;
-	background-color: #fff;
+	background-color: var(--rss-d-bg-card);
 	border-radius: 8px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 	padding: 0;
@@ -349,13 +369,13 @@
 .rss-d-type-text .rss-d-date,
 .rss-d-type-text .rss-d-site {
 	font-size: 11px;
-	color: #888;
+	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-text .rss-d-desc {
 	font-size: 12px;
-	color: #555;
+	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
 	line-clamp: 3;
@@ -377,12 +397,12 @@
 	background-color: transparent;
 	border-radius: 0;
 	box-shadow: none;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--rss-d-border);
 	padding: 0;
 }
 
 .rss-d-type-text_line .rss-d-card:first-child {
-	border-top: 1px solid #e0e0e0;
+	border-top: 1px solid var(--rss-d-border);
 }
 
 .rss-d-type-text_line .rss-d-card-body {
@@ -420,8 +440,171 @@
 .rss-d-type-text_line .rss-d-date,
 .rss-d-type-text_line .rss-d-site {
 	font-size: 11px;
-	color: #888;
+	color: var(--rss-d-fg-subtle);
 	flex-shrink: 0;
+}
+
+/* ---- カルーセル ---- */
+
+.rss-d-carousel-wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0;
+	margin: 0 0 1.5em;
+}
+
+.rss-d-carousel-viewport {
+	overflow: hidden;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.rss-d-carousel-track {
+	display: flex;
+	transition: transform 0.35s ease;
+	will-change: transform;
+}
+
+.rss-d-carousel-card {
+	flex: 0 0 calc(100% / var(--rss-d-columns, 3));
+	min-width: 0;
+	padding: 0 8px;
+	box-sizing: border-box;
+}
+
+.rss-d-carousel-btn {
+	flex-shrink: 0;
+	width: 36px;
+	height: 36px;
+	border: none;
+	border-radius: 50%;
+	background: var(--rss-d-overlay-dark);
+	color: #fff;
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+	z-index: 2;
+	transition: background 0.2s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rss-d-carousel-btn:hover {
+	background: var(--rss-d-overlay-darker);
+}
+
+.rss-d-carousel-btn:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+/* ---- ポップアップグリッド ---- */
+
+.rss-d-type-popup_grid .rss-d-card {
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	font: inherit;
+	width: 100%;
+	padding: 0;
+}
+
+.rss-d-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.75);
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	box-sizing: border-box;
+}
+
+.rss-d-modal-overlay[hidden] {
+	display: none;
+}
+
+.rss-d-modal {
+	background: var(--rss-d-bg-card);
+	border-radius: 12px;
+	max-width: 640px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	position: relative;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.rss-d-modal-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 32px;
+	height: 32px;
+	border: none;
+	border-radius: 50%;
+	background: var(--rss-d-overlay-dark);
+	color: #fff;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rss-d-modal-img {
+	width: 100%;
+	max-height: 320px;
+	object-fit: cover;
+	border-radius: 12px 12px 0 0;
+	display: block;
+}
+
+.rss-d-modal-body {
+	padding: 20px 24px 24px;
+}
+
+.rss-d-modal-meta {
+	display: flex;
+	gap: 12px;
+	margin: 0 0 8px;
+	font-size: 12px;
+	color: var(--rss-d-fg-subtle);
+}
+
+.rss-d-modal-title {
+	margin: 0 0 10px;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.4;
+}
+
+.rss-d-modal-desc {
+	margin: 0 0 16px;
+	font-size: 14px;
+	color: var(--rss-d-fg-muted);
+	line-height: 1.6;
+}
+
+.rss-d-modal-link {
+	display: inline-block;
+	padding: 8px 20px;
+	background: var(--rss-d-accent);
+	color: #fff;
+	border-radius: 6px;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.rss-d-modal-link:hover {
+	background: var(--rss-d-accent-hover);
+	color: #fff;
 }
 
 /* ホバー時：影を強調＋画像ズーム */
@@ -440,18 +623,58 @@
 
 .rss-d-type-text .rss-d-card:hover,
 .rss-d-type-text_line .rss-d-card:hover {
-	background-color: #f5f5f5;
+	background-color: var(--rss-d-bg-muted);
 }
 
-/* レスポンシブ：タブレット2列 / スマホ1列 */
+/* レスポンシブ：タブレット2列 / スマホ1列（responsive="1" 時のみ） */
 @media (max-width: 1024px) {
-	.rss-d-grid {
+	.rss-d-responsive.rss-d-grid,
+	.rss-d-responsive.rss-d-type-list_vertical,
+	.rss-d-responsive.rss-d-type-text {
 		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.rss-d-responsive.rss-d-type-list_vertical .rss-d-img {
+		height: 140px;
+	}
+
+	.rss-d-carousel-wrap.rss-d-responsive {
+		--rss-d-columns: 2;
 	}
 }
 
 @media (max-width: 600px) {
-	.rss-d-grid {
+	.rss-d-responsive.rss-d-grid,
+	.rss-d-responsive.rss-d-type-list_vertical,
+	.rss-d-responsive.rss-d-type-text {
 		grid-template-columns: 1fr;
+	}
+
+	.rss-d-carousel-wrap.rss-d-responsive {
+		--rss-d-columns: 1;
+	}
+
+	.rss-d-type-list .rss-d-img {
+		flex: 0 0 90px;
+		width: 90px;
+	}
+
+	.rss-d-type-list_vertical .rss-d-img {
+		height: 180px;
+	}
+
+	.rss-d-type-text_line .rss-d-card-body {
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+
+	.rss-d-type-text_line .rss-d-title {
+		white-space: normal;
+		text-overflow: unset;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
 	}
 }
