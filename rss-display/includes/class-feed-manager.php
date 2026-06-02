@@ -208,6 +208,8 @@ class RSS_D_Feed_Manager {
 
 		$items = array();
 
+		$site_name = html_entity_decode( wp_strip_all_tags( (string) $feed->get_title() ), ENT_QUOTES, 'UTF-8' );
+
 		foreach ( $raw as $item ) {
 			$url   = $item->get_permalink();
 			$url   = $url ? esc_url_raw( $url ) : '';
@@ -216,13 +218,17 @@ class RSS_D_Feed_Manager {
 			$ts    = $item->get_date( 'U' );
 			$ts    = $ts ? (int) $ts : 0;
 			$image = $this->extract_image_from_item( $item );
+			$desc  = $item->get_description();
+			$desc  = $desc ? wp_strip_all_tags( $desc ) : '';
+			$desc  = html_entity_decode( $desc, ENT_QUOTES, 'UTF-8' );
 
 			$items[] = array(
 				'url'       => $url,
 				'title'     => html_entity_decode( $title, ENT_QUOTES, 'UTF-8' ),
 				'timestamp' => $ts,
-				// RSS 内画像。無ければ ''（後段で OGP → デフォルトへフォールバック）。
 				'image'     => $image,
+				'desc'      => $desc,
+				'site'      => $site_name,
 			);
 		}
 

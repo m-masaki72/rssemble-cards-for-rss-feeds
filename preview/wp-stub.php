@@ -18,7 +18,8 @@ function plugin_basename($file) { return basename(dirname($file)) . '/' . basena
 
 // オプション（スタブ設定を返す）
 function get_option($key, $default = false) {
-    if ($key === 'rss_gc_settings') return false; // default_settings() に委ねる
+    if ($key === 'rss_gc_settings') return false;
+    if ($key === 'rss_d_settings')  return false; // default_settings() に委ねる
     if ($key === 'date_format')     return 'Y/m/d';
     if ($key === 'time_format')     return 'H:i';
     return $default;
@@ -132,11 +133,11 @@ function fetch_feed($url) {
 
 // SimplePie が使えない場合の軽量フォールバック
 function _stub_parse_feed($url) {
-    $ctx = stream_context_create([
-        'http' => ['timeout' => 10, 'user_agent' => 'RSS-Grid-Card-Preview'],
-        'ssl'  => ['verify_peer' => false, 'verify_peer_name' => false],
-    ]);
-    $xml = @file_get_contents($url, false, $ctx);
+    $response = wp_remote_get($url, ['timeout' => 15, 'user-agent' => 'RSS-Display-Preview/1.0']);
+    if (is_wp_error($response)) return new WP_Error('feed_error', '取得失敗');
+    $code = wp_remote_retrieve_response_code($response);
+    if ($code < 200 || $code >= 300) return new WP_Error('feed_error', "HTTP $code");
+    $xml = wp_remote_retrieve_body($response);
     if (!$xml) return new WP_Error('feed_error', '取得失敗');
     return new StubFeed($xml);
 }
@@ -145,21 +146,27 @@ function _stub_parse_feed($url) {
 
 class StubFeed {
     private array $items = [];
+    private DOMDocument $doc;
 
     public function __construct(string $xml) {
         libxml_use_internal_errors(true);
-        $doc = new DOMDocument();
-        $doc->loadXML($xml);
+        $this->doc = new DOMDocument();
+        $this->doc->loadXML($xml);
         libxml_clear_errors();
 
-        $nodes = $doc->getElementsByTagName('item');   // RSS
+        $nodes = $this->doc->getElementsByTagName('item');   // RSS
         if ($nodes->length === 0) {
-            $nodes = $doc->getElementsByTagName('entry'); // Atom
+            $nodes = $this->doc->getElementsByTagName('entry'); // Atom
         }
 
         foreach ($nodes as $node) {
             $this->items[] = new StubItem($node);
         }
+    }
+
+    public function get_title(): string {
+        $nl = $this->doc->getElementsByTagName('title');
+        return $nl->length > 0 ? trim($nl->item(0)->textContent) : '';
     }
 
     public function get_item_quantity(int $max): int {
@@ -198,6 +205,10 @@ class StubItem {
 
     public function get_title(): string {
         return $this->text('title');
+    }
+
+    public function get_description(): string {
+        return $this->text('description') ?: $this->text('summary') ?: $this->text('content');
     }
 
     public function get_date(string $format): mixed {

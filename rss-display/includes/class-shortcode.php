@@ -77,6 +77,11 @@ class RSS_D_Shortcode {
 				'feed'    => '',
 				'orderby' => 'date',
 				'target'  => '',
+				'img'     => '',
+				'desc'    => '0',
+				'date'    => '1',
+				'site'    => '0',
+				'type'    => 'grid',
 			),
 			$atts,
 			'rss_display'
@@ -135,7 +140,14 @@ class RSS_D_Shortcode {
 		}
 		wp_enqueue_style( 'rss-display' );
 
-		$default_image = $this->get_default_image_url( $settings );
+		$default_image = '' !== $atts['img'] ? esc_url_raw( $atts['img'] ) : $this->get_default_image_url( $settings );
+
+		$show_desc = ( '1' === (string) $atts['desc'] );
+		$show_date = ( '0' !== (string) $atts['date'] );
+		$show_site = ( '1' === (string) $atts['site'] );
+
+		$allowed_types = array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line' );
+		$type          = in_array( $atts['type'], $allowed_types, true ) ? $atts['type'] : 'grid';
 
 		$title_lines = (int) $settings['title_lines'];
 		if ( ! in_array( $title_lines, array( 1, 2, 3 ), true ) ) {
@@ -156,7 +168,7 @@ class RSS_D_Shortcode {
 
 		ob_start();
 		?>
-		<div class="rss-d-grid" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				// 画像解決：RSS内画像 → OGP取得（並列済み）→ デフォルト画像。
@@ -170,21 +182,71 @@ class RSS_D_Shortcode {
 
 				$title      = $item['title'];
 				$link       = $item['url'];
-				$date_label = $item['timestamp'] ? date_i18n( $date_format, $item['timestamp'] ) : '';
+				$date_label = ( $show_date && $item['timestamp'] ) ? date_i18n( $date_format, $item['timestamp'] ) : '';
+				$desc_text  = $show_desc ? ( $item['desc'] ?? '' ) : '';
+				$site_name  = $show_site ? ( $item['site'] ?? '' ) : '';
 				?>
 				<?php if ( '' !== $link ) : ?>
 				<a class="rss-d-card" href="<?php echo esc_url( $link ); ?>"<?php echo $target_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?>>
 				<?php else : ?>
 				<div class="rss-d-card">
 				<?php endif; ?>
+
+					<?php if ( 'text' === $type || 'text_line' === $type ) : ?>
+					<?php // テキスト系：画像なし ?>
+					<div class="rss-d-card-body">
+						<?php if ( '' !== $site_name ) : ?>
+							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
+						<?php endif; ?>
+						<?php if ( '' !== $title ) : ?>
+							<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+						<?php endif; ?>
+						<?php if ( 'text' === $type && '' !== $desc_text ) : ?>
+							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
+						<?php endif; ?>
+						<?php if ( '' !== $date_label ) : ?>
+							<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<?php elseif ( 'list' === $type || 'list_vertical' === $type ) : ?>
+					<?php // リスト系：画像＋テキスト横並び or 縦並び ?>
+					<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
+					<div class="rss-d-card-body">
+						<?php if ( '' !== $site_name ) : ?>
+							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
+						<?php endif; ?>
+						<?php if ( '' !== $title ) : ?>
+							<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+						<?php endif; ?>
+						<?php if ( '' !== $desc_text ) : ?>
+							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
+						<?php endif; ?>
+						<?php if ( '' !== $date_label ) : ?>
+							<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<?php else : ?>
+					<?php // grid / image_only：全面背景画像 ?>
 					<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
 					<span class="rss-d-overlay" aria-hidden="true"></span>
+					<?php if ( 'grid' === $type ) : ?>
 					<?php if ( '' !== $date_label ) : ?>
 						<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
+					<?php endif; ?>
+					<?php if ( '' !== $site_name ) : ?>
+						<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 					<?php endif; ?>
 					<?php if ( '' !== $title ) : ?>
 						<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
 					<?php endif; ?>
+					<?php if ( '' !== $desc_text ) : ?>
+						<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
+					<?php endif; ?>
+					<?php endif; // image_only は何も出さない ?>
+					<?php endif; ?>
+
 				<?php if ( '' !== $link ) : ?>
 				</a>
 				<?php else : ?>

@@ -14,7 +14,7 @@ if (preg_match('#^/plugin/assets/(.+)$#', $uri, $m)) {
 
     // パストラバーサル防止
     $allowed_base = realpath(dirname(__DIR__) . '/rss-grid-card/assets');
-    if (!$file || !str_starts_with($file, $allowed_base)) {
+    if (!$file || strpos($file, $allowed_base) !== 0) {
         http_response_code(403);
         exit('Forbidden');
     }
@@ -25,15 +25,16 @@ if (preg_match('#^/plugin/assets/(.+)$#', $uri, $m)) {
     }
 
     $ext  = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-    $mime = match($ext) {
+    $mime_map = [
         'css'  => 'text/css',
         'js'   => 'application/javascript',
         'png'  => 'image/png',
-        'jpg', 'jpeg' => 'image/jpeg',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
         'gif'  => 'image/gif',
         'webp' => 'image/webp',
-        default => 'application/octet-stream',
-    };
+    ];
+    $mime = isset($mime_map[$ext]) ? $mime_map[$ext] : 'application/octet-stream';
 
     header("Content-Type: $mime");
     readfile($file);

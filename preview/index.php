@@ -1,41 +1,67 @@
 <?php
 /**
- * RSS Grid Card プレビューサーバー
- * 使い方: php -S localhost:8080 -t preview/
+ * RSS Display プレビューサーバー
+ * 使い方: php -S localhost:8080 preview/router.php
+ * アクセス: http://localhost:8080/?feed=https://zenn.dev/feed
  */
 
 require_once __DIR__ . '/wp-stub.php';
 
-$plugin_dir = dirname(__DIR__) . '/rss-grid-card/';
-define('RSS_GC_VERSION', '1.0.0');
-define('RSS_GC_FILE',    $plugin_dir . 'rss-grid-card.php');
-define('RSS_GC_DIR',     $plugin_dir);
-define('RSS_GC_URL',     '/plugin/');   // 静的アセット配信用
-define('RSS_GC_OPTION',  'rss_gc_settings');
+$plugin_dir = dirname(__DIR__) . '/rss-display/';
+define('RSS_D_VERSION', '1.0.0');
+define('RSS_D_FILE',    $plugin_dir . 'rss-display.php');
+define('RSS_D_DIR',     $plugin_dir);
+define('RSS_D_URL',     '/plugin/');
+define('RSS_D_OPTION',  'rss_d_settings');
+
+// RSS_Display::get_settings() / default_settings() の代替（class-feed-manager が参照するため先に定義）
+class RSS_Display {
+    public static function default_settings() {
+        return [
+            'feeds'             => '',
+            'count'             => 12,
+            'columns'           => 3,
+            'title_lines'       => 2,
+            'cache_ttl'         => 86400,
+            'default_image_id'  => 0,
+            'default_image_url' => '',
+            'link_new_tab'      => 1,
+        ];
+    }
+    public static function get_settings() {
+        return self::default_settings();
+    }
+}
 
 require_once $plugin_dir . 'includes/class-ogp-fetcher.php';
 require_once $plugin_dir . 'includes/class-feed-manager.php';
 
 // --- パラメータ受け取り ---
+$allowed_types = ['grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line'];
+
 $feed_url = $_GET['feed']    ?? 'https://zenn.dev/feed';
 $columns  = (int)($_GET['columns']  ?? 3);
 $count    = (int)($_GET['count']    ?? 12);
 $orderby  = $_GET['orderby'] ?? 'date';
 $target   = $_GET['target']  ?? '_blank';
+$type     = $_GET['type']    ?? 'grid';
+$show_desc = !empty($_GET['desc']);
+$show_date = !isset($_GET['date']) || $_GET['date'] !== '0';
+$show_site = !empty($_GET['site']);
 
-if (!in_array($columns, [2, 3, 4], true)) $columns = 3;
-if ($count < 1 || $count > 100)           $count   = 12;
-if (!in_array($orderby, ['date', 'random'], true)) $orderby = 'date';
-if (!in_array($target,  ['_blank', '_self'], true)) $target  = '_blank';
+if (!in_array($columns, [2, 3, 4], true))           $columns = 3;
+if ($count < 1 || $count > 100)                      $count   = 12;
+if (!in_array($orderby, ['date', 'random'], true))   $orderby = 'date';
+if (!in_array($target,  ['_blank', '_self'], true))  $target  = '_blank';
+if (!in_array($type, $allowed_types, true))          $type    = 'grid';
 
 $feed_url = filter_var(trim($feed_url), FILTER_SANITIZE_URL);
 
 // --- フィード取得 ---
-$ogp_fetcher  = new RSS_GC_OGP_Fetcher();
-$feed_manager = new RSS_GC_Feed_Manager($ogp_fetcher);
+$ogp_fetcher  = new RSS_D_OGP_Fetcher();
+$feed_manager = new RSS_D_Feed_Manager($ogp_fetcher);
 
 $items   = [];
-$error   = '';
 $elapsed = 0;
 
 if ($feed_url) {
@@ -44,24 +70,31 @@ if ($feed_url) {
     $elapsed = round((microtime(true) - $t0) * 1000);
 }
 
-// --- デフォルト画像 ---
-$default_image = '/plugin/assets/img/placeholder.png';
+// OGP並列取得
+$ogp_urls = [];
+foreach ($items as $item) {
+    if ($item['image'] === '' && $item['url'] !== '') {
+        $ogp_urls[] = $item['url'];
+    }
+}
+$ogp_map = !empty($ogp_urls) ? $ogp_fetcher->get_images($ogp_urls) : [];
 
-$title_lines  = 2;
-$date_format  = 'Y/m/d';
-$target_attr  = $target === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
+$default_image = '/plugin/assets/img/placeholder.png';
+$title_lines   = 2;
+$date_format   = 'Y/m/d';
+$target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
 
 ?><!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RSS Grid Card — Preview</title>
-<link rel="stylesheet" href="/plugin/assets/css/grid-card.css">
+<title>RSS Display — Preview</title>
+<link rel="stylesheet" href="/plugin/assets/css/rss-display.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-         background: #f5f5f5; color: #222; }
+         background: #f0f0f0; color: #222; }
   .preview-bar {
     position: sticky; top: 0; z-index: 100;
     background: #1e1e2e; color: #cdd6f4; padding: 12px 20px;
@@ -95,12 +128,19 @@ $target_attr  = $target === '_blank' ? ' target="_blank" rel="noopener noreferre
 <body>
 
 <div class="preview-bar">
-  <h1>RSS Grid Card Preview</h1>
+  <h1>RSS Display Preview</h1>
   <form method="get">
     <div class="field">
-      <label>Feed URL</label>
-      <input type="url" name="feed" value="<?= htmlspecialchars($feed_url) ?>"
-             placeholder="https://zenn.dev/feed">
+      <label>Feed</label>
+      <input type="url" name="feed" value="<?= htmlspecialchars($feed_url) ?>" placeholder="https://zenn.dev/feed">
+    </div>
+    <div class="field">
+      <label>タイプ</label>
+      <select name="type">
+        <?php foreach ($allowed_types as $t): ?>
+          <option value="<?= $t ?>" <?= $t === $type ? 'selected' : '' ?>><?= $t ?></option>
+        <?php endforeach; ?>
+      </select>
     </div>
     <div class="field">
       <label>列数</label>
@@ -122,11 +162,16 @@ $target_attr  = $target === '_blank' ? ' target="_blank" rel="noopener noreferre
       </select>
     </div>
     <div class="field">
-      <label>リンク</label>
-      <select name="target">
-        <option value="_blank" <?= $target === '_blank' ? 'selected' : '' ?>>別タブ</option>
-        <option value="_self"  <?= $target === '_self'  ? 'selected' : '' ?>>同タブ</option>
-      </select>
+      <label>説明文</label>
+      <input type="checkbox" name="desc" value="1" <?= $show_desc ? 'checked' : '' ?>>
+    </div>
+    <div class="field">
+      <label>日付</label>
+      <input type="checkbox" name="date" value="1" <?= $show_date ? 'checked' : '' ?>>
+    </div>
+    <div class="field">
+      <label>サイト名</label>
+      <input type="checkbox" name="site" value="1" <?= $show_site ? 'checked' : '' ?>>
     </div>
     <button type="submit">表示</button>
   </form>
@@ -137,6 +182,7 @@ $target_attr  = $target === '_blank' ? ' target="_blank" rel="noopener noreferre
 <?php if ($feed_url): ?>
   <p class="preview-meta">
     <strong><?= htmlspecialchars($feed_url) ?></strong> &nbsp;|&nbsp;
+    type: <strong><?= htmlspecialchars($type) ?></strong> &nbsp;|&nbsp;
     <?= count($items) ?>件取得 &nbsp;|&nbsp; <?= $elapsed ?>ms
   </p>
 <?php endif; ?>
@@ -144,33 +190,54 @@ $target_attr  = $target === '_blank' ? ' target="_blank" rel="noopener noreferre
 <?php if (empty($items)): ?>
   <div class="preview-empty">フィードを入力して「表示」を押してください。</div>
 <?php else: ?>
-  <div class="rss-gc-grid" style="--rss-gc-columns:<?= $columns ?>;--rss-gc-title-lines:<?= $title_lines ?>;">
+  <div class="rss-d-grid rss-d-type-<?= htmlspecialchars($type) ?>" style="--rss-d-columns:<?= $columns ?>;--rss-d-title-lines:<?= $title_lines ?>;">
     <?php foreach ($items as $item):
       $image = $item['image'];
       if ($image === '' && $item['url'] !== '') {
-          $ogp = $ogp_fetcher->get_image($item['url']);
-          if ($ogp !== '') $image = $ogp;
+          $image = $ogp_map[$item['url']] ?? '';
       }
       if ($image === '') $image = $default_image;
 
       $title      = $item['title'];
       $link       = $item['url'];
-      $date_label = $item['timestamp'] ? date($date_format, $item['timestamp']) : '';
+      $date_label = ($show_date && $item['timestamp']) ? date($date_format, $item['timestamp']) : '';
+      $desc_text  = $show_desc ? ($item['desc'] ?? '') : '';
+      $site_name  = $show_site ? ($item['site'] ?? '') : '';
     ?>
       <?php if ($link !== ''): ?>
-      <a class="rss-gc-card" href="<?= htmlspecialchars($link) ?>"<?= $target_attr ?>>
+      <a class="rss-d-card" href="<?= htmlspecialchars($link) ?>"<?= $target_attr ?>>
       <?php else: ?>
-      <div class="rss-gc-card">
+      <div class="rss-d-card">
       <?php endif; ?>
-        <img class="rss-gc-img" src="<?= htmlspecialchars($image) ?>"
-             alt="<?= htmlspecialchars($title) ?>" loading="lazy">
-        <span class="rss-gc-overlay" aria-hidden="true"></span>
-        <?php if ($date_label !== ''): ?>
-          <span class="rss-gc-date"><?= htmlspecialchars($date_label) ?></span>
+
+        <?php if ($type === 'text' || $type === 'text_line'): ?>
+        <div class="rss-d-card-body">
+          <?php if ($site_name !== ''): ?><span class="rss-d-site"><?= htmlspecialchars($site_name) ?></span><?php endif; ?>
+          <?php if ($title !== ''): ?><h3 class="rss-d-title"><?= htmlspecialchars($title) ?></h3><?php endif; ?>
+          <?php if ($type === 'text' && $desc_text !== ''): ?><p class="rss-d-desc"><?= htmlspecialchars($desc_text) ?></p><?php endif; ?>
+          <?php if ($date_label !== ''): ?><span class="rss-d-date"><?= htmlspecialchars($date_label) ?></span><?php endif; ?>
+        </div>
+
+        <?php elseif ($type === 'list' || $type === 'list_vertical'): ?>
+        <img class="rss-d-img" src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($title) ?>" loading="lazy">
+        <div class="rss-d-card-body">
+          <?php if ($site_name !== ''): ?><span class="rss-d-site"><?= htmlspecialchars($site_name) ?></span><?php endif; ?>
+          <?php if ($title !== ''): ?><h3 class="rss-d-title"><?= htmlspecialchars($title) ?></h3><?php endif; ?>
+          <?php if ($desc_text !== ''): ?><p class="rss-d-desc"><?= htmlspecialchars($desc_text) ?></p><?php endif; ?>
+          <?php if ($date_label !== ''): ?><span class="rss-d-date"><?= htmlspecialchars($date_label) ?></span><?php endif; ?>
+        </div>
+
+        <?php else: ?>
+        <img class="rss-d-img" src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($title) ?>" loading="lazy">
+        <span class="rss-d-overlay" aria-hidden="true"></span>
+        <?php if ($type === 'grid'): ?>
+          <?php if ($date_label !== ''): ?><span class="rss-d-date"><?= htmlspecialchars($date_label) ?></span><?php endif; ?>
+          <?php if ($site_name !== ''): ?><span class="rss-d-site"><?= htmlspecialchars($site_name) ?></span><?php endif; ?>
+          <?php if ($title !== ''): ?><h3 class="rss-d-title"><?= htmlspecialchars($title) ?></h3><?php endif; ?>
+          <?php if ($desc_text !== ''): ?><p class="rss-d-desc"><?= htmlspecialchars($desc_text) ?></p><?php endif; ?>
         <?php endif; ?>
-        <?php if ($title !== ''): ?>
-          <h3 class="rss-gc-title"><?= htmlspecialchars($title) ?></h3>
         <?php endif; ?>
+
       <?php echo $link !== '' ? '</a>' : '</div>'; ?>
     <?php endforeach; ?>
   </div>

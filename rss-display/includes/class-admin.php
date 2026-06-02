@@ -387,6 +387,15 @@ class RSS_D_Admin {
 			<p><code>[rss_display columns="4" count="8"]</code></p>
 			<p><code>[rss_display columns="2" count="6" feed="https://example.com/feed"]</code></p>
 			<p><code>[rss_display orderby="random" target="_self"]</code></p>
+			<p><?php echo esc_html__( 'type オプション（デフォルト: grid）:', 'rss-display' ); ?></p>
+			<ul style="margin-left:1.5em;list-style:disc;">
+				<li><code>type="grid"</code> — <?php echo esc_html__( '全面背景画像＋タイトルオーバーレイ', 'rss-display' ); ?></li>
+				<li><code>type="image_only"</code> — <?php echo esc_html__( '画像のみ（テキストなし）', 'rss-display' ); ?></li>
+				<li><code>type="list"</code> — <?php echo esc_html__( '横並び（サムネイル＋テキスト）', 'rss-display' ); ?></li>
+				<li><code>type="list_vertical"</code> — <?php echo esc_html__( '縦積み（画像上・テキスト下）', 'rss-display' ); ?></li>
+				<li><code>type="text"</code> — <?php echo esc_html__( 'テキストのみカード（説明文あり）', 'rss-display' ); ?></li>
+				<li><code>type="text_line"</code> — <?php echo esc_html__( '1行テキスト・区切り線リスト', 'rss-display' ); ?></li>
+			</ul>
 		</div>
 		<?php
 	}

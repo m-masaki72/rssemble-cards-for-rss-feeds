@@ -8,28 +8,29 @@ WordPress プラグイン。複数のRSSフィードを取得し、OGP画像付�
 
 ## Installation / Testing
 
-このプラグインはWordPress環境で動作する。ローカルでのテストには `/wp-content/plugins/rss-grid-card/` にプラグインディレクトリを配置してWordPress管理画面から有効化する。
+このプラグインはWordPress環境で動作する。ローカルでのテストには `/wp-content/plugins/rss-display/` にプラグインディレクトリを配置してWordPress管理画面から有効化する。
 
 PHPのテストフレームワークは未設定。動作確認はWordPress上で手動テストを行う。
 
 ## Architecture
 
 ```
-rss-grid-card.php          # エントリポイント。定数定義・クラスのインクルード・シングルトン起動
-includes/
-  class-feed-manager.php   # RSSフィード取得・パース・トランジェントキャッシュ・重複排除
-  class-ogp-fetcher.php    # 記事ページからog:image等を取得・キャッシュ
-  class-shortcode.php      # [rss_grid_card] ショートコード処理・HTML生成・CSS enqueue
-  class-admin.php          # 管理画面（設定 → RSS Grid Card）・設定保存・キャッシュ更新
-assets/css/grid-card.css   # フロントエンドのグリッド・カードスタイル
-assets/css/admin.css       # 管理画面スタイル
-assets/js/admin.js         # 管理画面のメディアライブラリ選択UI
-assets/img/placeholder.png # デフォルト画像（フォールバック）
+rss-display/
+  rss-display.php            # エントリポイント。定数定義・クラスのインクルード・シングルトン起動
+  includes/
+    class-feed-manager.php   # RSSフィード取得・パース・トランジェントキャッシュ・重複排除
+    class-ogp-fetcher.php    # 記事ページからog:image等を取得・キャッシュ
+    class-shortcode.php      # [rss_display] ショートコード処理・HTML生成・CSS enqueue
+    class-admin.php          # 管理画面（設定 → RSS Display）・設定保存・キャッシュ更新
+  assets/css/rss-display.css # フロントエンドのグリッド・カードスタイル
+  assets/css/admin.css       # 管理画面スタイル
+  assets/js/admin.js         # 管理画面のメディアライブラリ選択UI
+  assets/img/placeholder.png # デフォルト画像（フォールバック）
 ```
 
 ### データフロー
 
-1. ショートコード実行 → `RSS_GC_Feed_Manager::get_items()` → 各フィードを `get_feed_payload()` で取得
+1. ショートコード実行 → `RSS_D_Feed_Manager::get_items()` → 各フィードを `get_feed_payload()` で取得
 2. キャッシュ戦略：RSSはトランジェント（ユーザー設定TTL: 12h/1d/1w/1m）、OGP画像は固定1ヶ月
 3. 取得失敗時はstaleキャッシュをフォールバック表示
 4. 画像解決の優先順位：RSS内画像（media:content → media:thumbnail → enclosure）→ OGP取得（og:image等）→ デフォルト画像
@@ -37,15 +38,15 @@ assets/img/placeholder.png # デフォルト画像（フォールバック）
 
 ### 設定
 
-`RSS_GC_OPTION`（`rss_gc_settings`）オプションに配列で保存。`RSS_Grid_Card::get_settings()` でデフォルトとマージして取得。
+`RSS_D_OPTION`（`rss_d_settings`）オプションに配列で保存。`RSS_Display::get_settings()` でデフォルトとマージして取得。
 
 ### CSS変数
 
-グリッド列数（`--rss-gc-columns`）とタイトル行数（`--rss-gc-title-lines`）はインラインスタイルのCSS変数でショートコードから渡す。
+グリッド列数（`--rss-d-columns`）とタイトル行数（`--rss-d-title-lines`）はインラインスタイルのCSS変数でショートコードから渡す。
 
 ## Key Constraints
 
 - PHP 7.4+、WordPress 6.0+
 - `ABSPATH` 未定義時の早期 exit を全クラスに実装
 - アンインストール時は設定オプションのみ削除（トランジェントは自然失効に任せる）
-- トランジェントキー：RSS = `rss_gc_feed_{md5(url)}`、OGP = `rss_gc_ogp_{md5(url)}`
+- トランジェントキー：RSS = `rss_d_feed_{md5(url)}`、OGP = `rss_d_ogp_{md5(url)}`
