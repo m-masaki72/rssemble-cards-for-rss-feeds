@@ -14,3 +14,7 @@ phpunit.phar
 # OS
 .DS_Store
 Thumbs.db
+
+# ビルド成果物・テスト結果
+rss-display.zip
+test-results/
