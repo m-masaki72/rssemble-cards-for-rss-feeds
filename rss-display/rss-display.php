@@ -153,11 +153,33 @@ final class RSS_Display {
 			'count'             => 10,
 			'columns'           => 3,
 			'title_lines'       => 2,
-			'cache_ttl'         => 86400, // 1日。
+			'cache_ttl'         => 86400,
 			'default_image_id'  => 0,
 			'default_image_url' => '',
 			'link_new_tab'      => 1,
+			'type'              => 'grid',
+			'orderby'           => 'date',
+			'show_desc'         => 0,
+			'show_date'         => 1,
+			'show_site'         => 0,
 		);
+	}
+
+	/**
+	 * 改行区切りのフィードURLテキストをURL配列にパースする。
+	 *
+	 * @param string $raw 改行区切りのフィードURL文字列。
+	 * @return array
+	 */
+	public static function parse_feeds( $raw ) {
+		$feeds = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' !== $line ) {
+				$feeds[] = $line;
+			}
+		}
+		return $feeds;
 	}
 
 	/**
@@ -195,6 +217,19 @@ register_uninstall_hook( __FILE__, array( 'RSS_Display', 'uninstall' ) );
 function rss_display() {
 	return RSS_Display::instance();
 }
+
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		wp_register_script(
+			'rss-display',
+			RSS_D_URL . 'assets/js/rss-display.js',
+			array(),
+			RSS_D_VERSION,
+			true
+		);
+	}
+);
 
 // アンインストール処理実行中は本体を起動しない。
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {

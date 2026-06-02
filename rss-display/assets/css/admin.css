@@ -2,6 +2,8 @@
  * RSS Display - 管理画面CSS
  */
 
+/* ---- 共通 ---- */
+
 .rss-d-admin .rss-d-image-preview {
 	margin: 8px 0;
 }
@@ -27,4 +29,133 @@
 	background: #f0f0f1;
 	padding: 2px 6px;
 	border-radius: 3px;
+}
+
+/* ---- タブナビゲーション ---- */
+
+.rss-d-tabs {
+	display: flex;
+	gap: 0;
+	border-bottom: 2px solid #c3c4c7;
+	margin: 12px 0 0;
+}
+
+.rss-d-tab {
+	padding: 10px 20px;
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -2px;
+	background: transparent;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	color: #50575e;
+	transition: color 0.15s, border-color 0.15s;
+}
+
+.rss-d-tab:hover {
+	color: #2271b1;
+}
+
+.rss-d-tab.active {
+	color: #2271b1;
+	border-bottom-color: #2271b1;
+	font-weight: 700;
+}
+
+/* ---- タブパネル ---- */
+
+.rss-d-tab-panel {
+	display: none;
+	padding: 20px 0;
+}
+
+.rss-d-tab-panel.active {
+	display: block;
+}
+
+/* ---- プレビューツールバー ---- */
+
+.rss-d-preview-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+	padding: 12px 16px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px 4px 0 0;
+	margin-bottom: 0;
+}
+
+.rss-d-preview-devices {
+	display: flex;
+	gap: 4px;
+}
+
+.rss-d-device-btn {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.15s, border-color 0.15s;
+}
+
+.rss-d-device-btn:hover {
+	background: #e8f0fe;
+	border-color: #2271b1;
+}
+
+.rss-d-device-btn.active {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+.rss-d-device-btn .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.rss-d-preview-toolbar label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.rss-d-preview-toolbar select,
+.rss-d-preview-toolbar input[type="number"] {
+	font-size: 13px;
+}
+
+/* ---- プレビューフレーム ---- */
+
+.rss-d-preview-frame-wrap {
+	transition: max-width 0.3s ease;
+	max-width: 100%;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	border-radius: 0 0 4px 4px;
+	background: #fff;
+	min-height: 300px;
+	overflow-x: auto;
+}
+
+.rss-d-preview-frame {
+	padding: 20px;
+	min-height: 300px;
+	box-sizing: border-box;
+}
+
+.rss-d-preview-placeholder {
+	color: #888;
+	text-align: center;
+	margin-top: 80px;
 }

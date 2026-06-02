@@ -26,6 +26,11 @@ class RSS_Display {
             'default_image_id'  => 0,
             'default_image_url' => '',
             'link_new_tab'      => 1,
+            'type'              => 'grid',
+            'orderby'           => 'date',
+            'show_desc'         => 0,
+            'show_date'         => 1,
+            'show_site'         => 0,
         ];
     }
     public static function get_settings() {
@@ -37,7 +42,7 @@ require_once $plugin_dir . 'includes/class-ogp-fetcher.php';
 require_once $plugin_dir . 'includes/class-feed-manager.php';
 
 // --- パラメータ受け取り ---
-$allowed_types = ['grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line'];
+$allowed_types = ['grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid'];
 
 $feed_url = $_GET['feed']    ?? 'https://zenn.dev/feed';
 $columns  = (int)($_GET['columns']  ?? 3);
@@ -91,6 +96,7 @@ $target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferr
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RSS Display — Preview</title>
 <link rel="stylesheet" href="/plugin/assets/css/rss-display.css">
+<script src="/plugin/assets/js/rss-display.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -189,6 +195,83 @@ $target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferr
 
 <?php if (empty($items)): ?>
   <div class="preview-empty">フィードを入力して「表示」を押してください。</div>
+<?php elseif ($type === 'carousel'): ?>
+  <div class="rss-d-carousel-wrap" id="rss-d-carousel-1" style="--rss-d-columns:<?= $columns ?>;--rss-d-title-lines:<?= $title_lines ?>;">
+    <button class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="前へ">&#10094;</button>
+    <div class="rss-d-carousel-viewport">
+      <div class="rss-d-carousel-track">
+        <?php foreach ($items as $item):
+          $image = $item['image'];
+          if ($image === '' && $item['url'] !== '') {
+              $image = $ogp_map[$item['url']] ?? '';
+          }
+          if ($image === '') $image = $default_image;
+
+          $title      = $item['title'];
+          $link       = $item['url'];
+          $date_label = ($show_date && $item['timestamp']) ? date($date_format, $item['timestamp']) : '';
+          $site_name  = $show_site ? ($item['site'] ?? '') : '';
+        ?>
+          <?php if ($link !== ''): ?>
+          <a class="rss-d-card rss-d-carousel-card" href="<?= htmlspecialchars($link) ?>"<?= $target_attr ?>>
+          <?php else: ?>
+          <div class="rss-d-card rss-d-carousel-card">
+          <?php endif; ?>
+            <img class="rss-d-img" src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($title) ?>" loading="lazy">
+            <span class="rss-d-overlay" aria-hidden="true"></span>
+            <?php if ($date_label !== ''): ?><span class="rss-d-date"><?= htmlspecialchars($date_label) ?></span><?php endif; ?>
+            <?php if ($site_name !== ''): ?><span class="rss-d-site"><?= htmlspecialchars($site_name) ?></span><?php endif; ?>
+            <?php if ($title !== ''): ?><h3 class="rss-d-title"><?= htmlspecialchars($title) ?></h3><?php endif; ?>
+          <?php echo $link !== '' ? '</a>' : '</div>'; ?>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <button class="rss-d-carousel-btn rss-d-carousel-next" aria-label="次へ">&#10095;</button>
+  </div>
+<?php elseif ($type === 'popup_grid'): ?>
+  <div class="rss-d-grid rss-d-type-popup_grid" id="rss-d-popup-1" style="--rss-d-columns:<?= $columns ?>;--rss-d-title-lines:<?= $title_lines ?>;">
+    <?php foreach ($items as $item):
+      $image = $item['image'];
+      if ($image === '' && $item['url'] !== '') {
+          $image = $ogp_map[$item['url']] ?? '';
+      }
+      if ($image === '') $image = $default_image;
+
+      $title      = $item['title'];
+      $link       = $item['url'];
+      $date_label = ($show_date && $item['timestamp']) ? date($date_format, $item['timestamp']) : '';
+      $desc_text  = $show_desc ? ($item['desc'] ?? '') : '';
+      $site_name  = $show_site ? ($item['site'] ?? '') : '';
+      $newtab     = $target === '_blank' ? '1' : '0';
+    ?>
+      <button class="rss-d-card rss-d-popup-trigger"
+        data-image="<?= htmlspecialchars($image) ?>"
+        data-title="<?= htmlspecialchars($title) ?>"
+        data-link="<?= htmlspecialchars($link) ?>"
+        data-date="<?= htmlspecialchars($date_label) ?>"
+        data-desc="<?= htmlspecialchars($desc_text) ?>"
+        data-site="<?= htmlspecialchars($site_name) ?>"
+        data-newtab="<?= $newtab ?>">
+        <img class="rss-d-img" src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($title) ?>" loading="lazy">
+        <span class="rss-d-overlay" aria-hidden="true"></span>
+        <?php if ($date_label !== ''): ?><span class="rss-d-date"><?= htmlspecialchars($date_label) ?></span><?php endif; ?>
+        <?php if ($site_name !== ''): ?><span class="rss-d-site"><?= htmlspecialchars($site_name) ?></span><?php endif; ?>
+        <?php if ($title !== ''): ?><h3 class="rss-d-title"><?= htmlspecialchars($title) ?></h3><?php endif; ?>
+      </button>
+    <?php endforeach; ?>
+  </div>
+  <div class="rss-d-modal-overlay" id="rss-d-popup-1-modal" role="dialog" aria-modal="true" aria-label="記事詳細" hidden>
+    <div class="rss-d-modal">
+      <button class="rss-d-modal-close" type="button" aria-label="閉じる">&times;</button>
+      <img class="rss-d-modal-img" src="" alt="" />
+      <div class="rss-d-modal-body">
+        <p class="rss-d-modal-meta"><span class="rss-d-modal-site"></span><span class="rss-d-modal-date"></span></p>
+        <h2 class="rss-d-modal-title"></h2>
+        <p class="rss-d-modal-desc"></p>
+        <a class="rss-d-modal-link button" href="#">記事を読む →</a>
+      </div>
+    </div>
+  </div>
 <?php else: ?>
   <div class="rss-d-grid rss-d-type-<?= htmlspecialchars($type) ?>" style="--rss-d-columns:<?= $columns ?>;--rss-d-title-lines:<?= $title_lines ?>;">
     <?php foreach ($items as $item):

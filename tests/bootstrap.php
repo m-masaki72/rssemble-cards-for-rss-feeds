@@ -14,6 +14,9 @@ function esc_url_raw( $url ) { return $url; }
 function esc_url( $url ) { return htmlspecialchars( $url, ENT_QUOTES ); }
 function esc_attr( $v ) { return htmlspecialchars( (string) $v, ENT_QUOTES ); }
 function esc_html( $v ) { return htmlspecialchars( (string) $v ); }
+function esc_html__( $text, $domain = 'default' ) { return $text; }
+function esc_html_e( $text, $domain = 'default' ) { echo $text; }
+function __( $text, $domain = 'default' ) { return $text; }
 function wp_strip_all_tags( $s ) { return strip_tags( (string) $s ); }
 function absint( $v ) { return abs( (int) $v ); }
 function shortcode_atts( array $pairs, $atts, $shortcode = '' ): array {
@@ -30,6 +33,7 @@ function add_filter( $hook, $cb ) {}
 function remove_filter( $hook, $cb ) {}
 function wp_register_style() {}
 function wp_enqueue_style() {}
+function wp_enqueue_script() {}
 function wp_style_is() { return false; }
 function wp_get_attachment_image_url() { return false; }
 function get_option( $k, $d = '' ) {
@@ -64,7 +68,23 @@ class RSS_Display {
 			'default_image_id'  => 0,
 			'default_image_url' => '',
 			'link_new_tab'      => 1,
+			'type'              => 'grid',
+			'orderby'           => 'date',
+			'show_desc'         => 0,
+			'show_date'         => 1,
+			'show_site'         => 0,
 		);
+	}
+
+	public static function parse_feeds( $raw ) {
+		$feeds = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' !== $line ) {
+				$feeds[] = $line;
+			}
+		}
+		return $feeds;
 	}
 }
 

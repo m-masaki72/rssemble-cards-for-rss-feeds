@@ -11,8 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'RSS_D_FREE_MAX_FEEDS',   3 );
 define( 'RSS_D_FREE_MAX_COLUMNS', 2 );
-define( 'RSS_D_FREE_TYPES',   array( 'grid' ) );
+define( 'RSS_D_FREE_MAX_COUNT',   20 );
+define( 'RSS_D_FREE_TYPES',   array( 'grid', 'list_vertical', 'text', 'text_line' ) );
 define( 'RSS_D_FREE_ORDERBY', array( 'date' ) );
+define( 'RSS_D_FREE_CACHE_TTL',   86400 );
 
 /**
  * Freemius インスタンスを返す。SDK が未インストールの場合は null。

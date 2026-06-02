@@ -6,12 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 WordPress プラグイン。複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示する。外部サービス依存なし（WordPress組み込みのSimplePie・トランジェント・DOMDocumentのみ使用）。
 
-## Installation / Testing
-
-このプラグインはWordPress環境で動作する。ローカルでのテストには `/wp-content/plugins/rss-display/` にプラグインディレクトリを配置してWordPress管理画面から有効化する。
-
-PHPのテストフレームワークは未設定。動作確認はWordPress上で手動テストを行う。
-
 ## Architecture
 
 ```
@@ -43,6 +37,8 @@ rss-display/
 ### CSS変数
 
 グリッド列数（`--rss-d-columns`）とタイトル行数（`--rss-d-title-lines`）はインラインスタイルのCSS変数でショートコードから渡す。
+
+カラーは `rss-display.css` の `:root` にプラグイン独自変数（`--rss-d-*`）を定義し、値は `var(--wp--preset--color--*, フォールバック値)` 形式で WordPress FSE テーマに自動追従する。FSE 非対応テーマでは固定色（黒白ベース）にフォールバック。overlay 上の白文字（`#fff`）のみ固定値。
 
 ## Key Constraints
 

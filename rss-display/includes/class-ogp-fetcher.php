@@ -3,6 +3,12 @@
  * 記事ページから OGP 画像URLを取得するクラス。
  * 取得結果（未検出含む）は記事URLをキーに1ヶ月トランジェントキャッシュする。
  *
+ * 並列取得には curl_multi を使用するが、WordPress HTTP API（wp_remote_get）とは
+ * 異なるレイヤーで動作するため、pre_http_request フィルタはバイパスされる。
+ * ただし WP_HTTP_Proxy 経由でプロキシ設定、https_ssl_verify フィルタで SSL 検証、
+ * WordPress 同梱の CA バンドルを適用することで主要な WP 環境設定には対応している。
+ * curl_multi が使えない環境は fetch_ogp_image()（wp_remote_get ベース）で直列実行する。
+ *
  * @package RSS_Display
  */
 
@@ -81,6 +87,16 @@ class RSS_D_OGP_Fetcher {
 		$mh      = curl_multi_init();
 		$handles = array();
 
+		// WP の SSL 検証設定を取得。
+		$ssl_verify = (bool) apply_filters( 'https_ssl_verify', true );
+		$ca_cert    = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
+
+		// WP の User-Agent 文字列を生成。
+		$user_agent = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
+
+		// WP HTTP プロキシ設定を取得。
+		$proxy = new WP_HTTP_Proxy();
+
 		foreach ( $to_fetch as $url ) {
 			$ch = curl_init( $url );
 			if ( false === $ch ) {
@@ -94,17 +110,32 @@ class RSS_D_OGP_Fetcher {
 					CURLOPT_FOLLOWLOCATION => true,
 					CURLOPT_MAXREDIRS      => 3,
 					CURLOPT_TIMEOUT        => self::TIMEOUT,
-					CURLOPT_SSL_VERIFYPEER => false,
-					CURLOPT_USERAGENT      => 'WordPress/RSS-Display',
+					CURLOPT_SSL_VERIFYPEER => $ssl_verify,
+					CURLOPT_SSL_VERIFYHOST => $ssl_verify ? 2 : 0,
+					CURLOPT_USERAGENT      => $user_agent,
 					CURLOPT_HTTPHEADER     => array( 'Accept: text/html,application/xhtml+xml' ),
 					// <head> が取れれば十分なので最大128KBで打ち切る。
-					CURLOPT_BUFFERSIZE        => 131072,
-					CURLOPT_NOPROGRESS        => false,
-					CURLOPT_PROGRESSFUNCTION  => static function ( $ch, $dl_total, $dl_now ) {
+					CURLOPT_BUFFERSIZE       => 131072,
+					CURLOPT_NOPROGRESS       => false,
+					CURLOPT_PROGRESSFUNCTION => static function ( $ch, $dl_total, $dl_now ) {
 						return $dl_now > 131072 ? 1 : 0;
 					},
 				)
 			);
+
+			// WP 同梱の CA バンドルを適用。
+			if ( $ssl_verify && file_exists( $ca_cert ) ) {
+				curl_setopt( $ch, CURLOPT_CAINFO, $ca_cert );
+			}
+
+			// WP HTTP プロキシ設定を curl に適用。
+			if ( $proxy->is_enabled() && $proxy->send_through_proxy( $url ) ) {
+				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() . ':' . $proxy->port() );
+				if ( $proxy->use_authentication() ) {
+					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() );
+				}
+			}
+
 			curl_multi_add_handle( $mh, $ch );
 			$handles[ $url ] = $ch;
 		}
