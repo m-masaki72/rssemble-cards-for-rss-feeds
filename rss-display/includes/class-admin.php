@@ -195,6 +195,10 @@ class RSS_D_Admin {
 				'chooseButton' => __( 'この画像を使う', 'rss-display' ),
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'nonce'        => wp_create_nonce( 'rss_d_preview' ),
+				'isPaying'     => $is_paying,
+				'upgradeUrl'   => $upgrade_url,
+				'proTypes'     => array_values( array_diff( array_keys( $types ), RSS_D_FREE_TYPES ) ),
+				'proMsg'       => __( 'このオプションはProプランが必要です。', 'rss-display' ),
 			)
 		);
 	}
@@ -646,32 +650,131 @@ class RSS_D_Admin {
 			<!-- ========== 使い方タブ ========== -->
 			<div class="rss-d-tab-panel" data-panel="usage">
 
-				<h2><?php esc_html_e( 'ショートコードの使い方', 'rss-display' ); ?></h2>
-				<p><code>[rss_display]</code> — <?php esc_html_e( '管理画面の設定値で表示', 'rss-display' ); ?></p>
-				<p><code>[rss_display columns="4" count="8"]</code> <?php echo ! $is_paying ? '<em>— columns=3/4 はProプランが必要です</em>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-				<p><code>[rss_display columns="2" count="6" feed="https://example.com/feed"]</code></p>
-				<p><code>[rss_display orderby="random" target="_self"]</code> <?php echo ! $is_paying ? '<em>— orderby=random はProプランが必要です</em>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+				<!-- ショートコードジェネレーター -->
+				<h2><?php esc_html_e( 'ショートコードジェネレーター', 'rss-display' ); ?></h2>
+				<div class="rss-d-generator">
 
-				<h3><?php esc_html_e( 'type オプション', 'rss-display' ); ?></h3>
-				<ul style="margin-left:1.5em;list-style:disc;">
-					<li><code>type="grid"</code> — <?php esc_html_e( '全面背景画像＋タイトルオーバーレイ', 'rss-display' ); ?></li>
-					<li><code>type="list_vertical"</code> — <?php esc_html_e( '縦積み（画像上・テキスト下）', 'rss-display' ); ?></li>
-					<li><code>type="text"</code> — <?php esc_html_e( 'テキストのみカード（説明文あり）', 'rss-display' ); ?></li>
-					<li><code>type="text_line"</code> — <?php esc_html_e( '1行テキスト・区切り線リスト', 'rss-display' ); ?></li>
-					<li><code>type="image_only"</code> — <?php esc_html_e( '画像のみ（テキストなし）', 'rss-display' ); ?> <?php echo ! $is_paying ? '<strong>(Pro)</strong>' : ''; // phpcs:ignore ?></li>
-					<li><code>type="list"</code> — <?php esc_html_e( '横並び（サムネイル＋テキスト）', 'rss-display' ); ?> <?php echo ! $is_paying ? '<strong>(Pro)</strong>' : ''; // phpcs:ignore ?></li>
-					<li><code>type="carousel"</code> — <?php esc_html_e( 'カルーセルスライダー', 'rss-display' ); ?> <?php echo ! $is_paying ? '<strong>(Pro)</strong>' : ''; // phpcs:ignore ?></li>
-					<li><code>type="popup_grid"</code> — <?php esc_html_e( 'グリッド＋ポップアップモーダル', 'rss-display' ); ?> <?php echo ! $is_paying ? '<strong>(Pro)</strong>' : ''; // phpcs:ignore ?></li>
-				</ul>
+					<table class="form-table rss-d-generator-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="rss-d-gen-feed"><?php esc_html_e( 'フィードURL', 'rss-display' ); ?></label></th>
+							<td>
+								<input type="text" id="rss-d-gen-feed" class="large-text" placeholder="https://example.com/feed, https://example.org/feed" />
+								<p class="description"><?php esc_html_e( 'カンマ区切りで複数指定可。空欄の場合は管理画面登録済みフィードを使用。', 'rss-display' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rss-d-gen-type"><?php esc_html_e( '表示タイプ', 'rss-display' ); ?></label></th>
+							<td>
+								<select id="rss-d-gen-type">
+									<?php foreach ( $types as $val => $label ) :
+										$locked = ! $is_paying && ! in_array( $val, RSS_D_FREE_TYPES, true );
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php disabled( $locked ); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rss-d-gen-columns"><?php esc_html_e( '列数', 'rss-display' ); ?></label></th>
+							<td>
+								<select id="rss-d-gen-columns">
+									<?php foreach ( array( 2, 3, 4 ) as $c ) :
+										$locked = ! $is_paying && $c > RSS_D_FREE_MAX_COLUMNS;
+									?>
+										<option value="<?php echo esc_attr( $c ); ?>" <?php disabled( $locked ); ?>><?php echo esc_html( $c . '列' . ( $locked ? '（Pro）' : '' ) ); ?></option>
+									<?php endforeach; ?>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rss-d-gen-count"><?php esc_html_e( '表示件数', 'rss-display' ); ?></label></th>
+							<td>
+								<input type="number" id="rss-d-gen-count" value="6" min="1" max="<?php echo $is_paying ? '100' : RSS_D_FREE_MAX_COUNT; ?>" class="small-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rss-d-gen-orderby"><?php esc_html_e( 'ソート順', 'rss-display' ); ?></label></th>
+							<td>
+								<select id="rss-d-gen-orderby">
+									<option value=""><?php esc_html_e( '管理画面設定に従う', 'rss-display' ); ?></option>
+									<option value="date"><?php esc_html_e( '日付順（新しい順）', 'rss-display' ); ?></option>
+									<option value="random" <?php disabled( ! $is_paying ); ?>><?php esc_html_e( 'ランダム (Pro)', 'rss-display' ); ?></option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rss-d-gen-target"><?php esc_html_e( 'リンクの開き方', 'rss-display' ); ?></label></th>
+							<td>
+								<select id="rss-d-gen-target">
+									<option value=""><?php esc_html_e( '管理画面設定に従う', 'rss-display' ); ?></option>
+									<option value="_blank"><?php esc_html_e( '別タブで開く', 'rss-display' ); ?></option>
+									<option value="_self"><?php esc_html_e( '同じタブで開く', 'rss-display' ); ?></option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( '表示オプション', 'rss-display' ); ?></th>
+							<td>
+								<fieldset>
+									<label style="display:inline-block;margin-right:16px;">
+										<input type="checkbox" id="rss-d-gen-date" checked />
+										<?php esc_html_e( '日付', 'rss-display' ); ?>
+									</label>
+									<label style="display:inline-block;margin-right:16px;">
+										<input type="checkbox" id="rss-d-gen-site" />
+										<?php esc_html_e( 'サイト名', 'rss-display' ); ?>
+									</label>
+									<label style="display:inline-block;margin-right:16px;">
+										<input type="checkbox" id="rss-d-gen-desc" />
+										<?php esc_html_e( '説明文', 'rss-display' ); ?>
+									</label>
+									<label style="display:inline-block;">
+										<input type="checkbox" id="rss-d-gen-bold" />
+										<?php esc_html_e( 'タイトル太字', 'rss-display' ); ?>
+									</label>
+								</fieldset>
+							</td>
+						</tr>
+					</table>
 
-				<h3><?php esc_html_e( 'その他のパラメータ', 'rss-display' ); ?></h3>
-				<ul style="margin-left:1.5em;list-style:disc;">
-					<li><code>desc="1"</code> — <?php esc_html_e( '説明文を表示', 'rss-display' ); ?></li>
-					<li><code>date="0"</code> — <?php esc_html_e( '日付を非表示', 'rss-display' ); ?></li>
-					<li><code>site="1"</code> — <?php esc_html_e( 'サイト名を表示', 'rss-display' ); ?></li>
-					<li><code>target="_blank"</code> — <?php esc_html_e( '別タブで開く', 'rss-display' ); ?></li>
-					<li><code>img="https://..."</code> — <?php esc_html_e( 'デフォルト画像URLを上書き', 'rss-display' ); ?></li>
-				</ul>
+					<!-- 生成結果 -->
+					<div class="rss-d-generator-output">
+						<label for="rss-d-gen-result" style="font-weight:600;display:block;margin-bottom:6px;"><?php esc_html_e( '生成されたショートコード', 'rss-display' ); ?></label>
+						<div class="rss-d-gen-result-wrap">
+							<input type="text" id="rss-d-gen-result" class="large-text code" readonly />
+							<button type="button" id="rss-d-gen-copy" class="button"><?php esc_html_e( 'コピー', 'rss-display' ); ?></button>
+						</div>
+						<p id="rss-d-gen-copy-msg" class="description" style="display:none;color:#00a32a;"><?php esc_html_e( 'コピーしました！', 'rss-display' ); ?></p>
+					</div>
+
+				</div><!-- /rss-d-generator -->
+
+				<hr style="margin:2em 0;" />
+
+				<!-- パラメータ早見表 -->
+				<h2><?php esc_html_e( 'パラメータ一覧', 'rss-display' ); ?></h2>
+				<table class="widefat striped" style="max-width:800px;">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'パラメータ', 'rss-display' ); ?></th>
+							<th><?php esc_html_e( 'デフォルト', 'rss-display' ); ?></th>
+							<th><?php esc_html_e( '説明', 'rss-display' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td><code>feed</code></td><td>—</td><td><?php esc_html_e( 'フィードURL（カンマ区切りで複数可）', 'rss-display' ); ?></td></tr>
+						<tr><td><code>type</code></td><td><code>grid</code></td><td><?php esc_html_e( '表示タイプ', 'rss-display' ); ?></td></tr>
+						<tr><td><code>columns</code></td><td><code>3</code></td><td><?php esc_html_e( '列数 (2/3/4)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>count</code></td><td><code>6</code></td><td><?php esc_html_e( '表示件数', 'rss-display' ); ?></td></tr>
+						<tr><td><code>orderby</code></td><td><code>date</code></td><td><?php esc_html_e( 'ソート順 (date/random)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>target</code></td><td>—</td><td><?php esc_html_e( 'リンクの開き方 (_blank/_self)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>date</code></td><td><code>1</code></td><td><?php esc_html_e( '日付表示 (1/0)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>site</code></td><td><code>0</code></td><td><?php esc_html_e( 'サイト名表示 (1/0)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>desc</code></td><td><code>0</code></td><td><?php esc_html_e( '説明文表示 (1/0)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>bold</code></td><td><code>0</code></td><td><?php esc_html_e( 'タイトル太字 (1/0)', 'rss-display' ); ?></td></tr>
+						<tr><td><code>img</code></td><td>—</td><td><?php esc_html_e( 'デフォルト画像URLを上書き', 'rss-display' ); ?></td></tr>
+					</tbody>
+				</table>
 
 			</div><!-- /usage -->
 

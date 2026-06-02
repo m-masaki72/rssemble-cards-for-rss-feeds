@@ -76,6 +76,7 @@ class RSS_D_Shortcode {
 				'date'    => (string) $settings['show_date'],
 				'site'    => (string) $settings['show_site'],
 				'type'    => $settings['type'],
+				'bold'    => '0',
 			),
 			$atts,
 			'rss_display'
@@ -108,9 +109,9 @@ class RSS_D_Shortcode {
 			return $this->upgrade_notice();
 		}
 
-		// 対象フィード。
+		// 対象フィード（カンマ区切りで複数指定可）。
 		if ( '' !== $atts['feed'] ) {
-			$feeds = array( $atts['feed'] );
+			$feeds = array_values( array_filter( array_map( 'trim', explode( ',', $atts['feed'] ) ) ) );
 		} else {
 			$feeds = RSS_Display::parse_feeds( $settings['feeds'] );
 			if ( ! $is_paying && count( $feeds ) > RSS_D_FREE_MAX_FEEDS ) {
@@ -144,6 +145,7 @@ class RSS_D_Shortcode {
 		$show_desc     = ( '1' === (string) $atts['desc'] );
 		$show_date     = ( '0' !== (string) $atts['date'] );
 		$show_site     = ( '1' === (string) $atts['site'] );
+		$bold_title    = ( '1' === (string) $atts['bold'] );
 
 		$allowed_types = array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
 		$type          = in_array( $atts['type'], $allowed_types, true ) ? $atts['type'] : 'grid';
@@ -158,7 +160,7 @@ class RSS_D_Shortcode {
 
 		$resolved = $this->resolve_items( $items, $default_image, $show_date, $show_desc, $show_site );
 
-		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site );
+		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title );
 	}
 
 	/**
@@ -213,14 +215,15 @@ class RSS_D_Shortcode {
 	 * @param bool   $show_site   サイト名表示フラグ。
 	 * @return string
 	 */
-	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site ) {
+	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false ) {
+		$title_class = 'rss-d-title' . ( $bold_title ? ' rss-d-title--bold' : '' );
 		ob_start();
 		if ( 'carousel' === $type ) {
-			$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site );
+			$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class );
 		} elseif ( 'popup_grid' === $type ) {
-			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab );
+			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class );
 		} else {
-			$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site );
+			$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class );
 		}
 		return ob_get_clean();
 	}
@@ -238,7 +241,7 @@ class RSS_D_Shortcode {
 	 * @param bool   $show_site
 	 * @return void
 	 */
-	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site ) {
+	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
 		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 		?>
 		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
@@ -263,7 +266,7 @@ class RSS_D_Shortcode {
 							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 						<?php endif; ?>
 						<?php if ( '' !== $title ) : ?>
-							<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+							<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 						<?php endif; ?>
 						<?php if ( 'text' === $type && $show_desc && '' !== $desc_text ) : ?>
 							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
@@ -280,7 +283,7 @@ class RSS_D_Shortcode {
 							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 						<?php endif; ?>
 						<?php if ( '' !== $title ) : ?>
-							<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+							<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 						<?php endif; ?>
 						<?php if ( $show_desc && '' !== $desc_text ) : ?>
 							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
@@ -301,7 +304,7 @@ class RSS_D_Shortcode {
 							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 						<?php endif; ?>
 						<?php if ( '' !== $title ) : ?>
-							<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+							<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 						<?php endif; ?>
 						<?php if ( $show_desc && '' !== $desc_text ) : ?>
 							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
@@ -331,7 +334,7 @@ class RSS_D_Shortcode {
 	 * @param bool  $show_site
 	 * @return void
 	 */
-	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site ) {
+	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
 		static $carousel_id = 0;
 		$carousel_id++;
 		$uid         = 'rss-d-carousel-' . $carousel_id;
@@ -364,7 +367,7 @@ class RSS_D_Shortcode {
 								<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 							<?php endif; ?>
 							<?php if ( '' !== $title ) : ?>
-								<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+								<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 							<?php endif; ?>
 							<?php if ( $show_desc && '' !== $desc_text ) : ?>
 								<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
@@ -391,7 +394,7 @@ class RSS_D_Shortcode {
 	 * @param bool  $new_tab
 	 * @return void
 	 */
-	private function render_popup_grid( $items, $columns, $title_lines, $new_tab ) {
+	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title' ) {
 		static $popup_id = 0;
 		$popup_id++;
 		$uid = 'rss-d-popup-' . $popup_id;
@@ -427,7 +430,7 @@ class RSS_D_Shortcode {
 						<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
 					<?php endif; ?>
 					<?php if ( '' !== $title ) : ?>
-						<h3 class="rss-d-title"><?php echo esc_html( $title ); ?></h3>
+						<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 					<?php endif; ?>
 				</button>
 			<?php endforeach; ?>

@@ -104,6 +104,10 @@
 	word-break: break-word;
 }
 
+.rss-d-title--bold {
+	font-weight: 900;
+}
+
 /* サイト名バッジ（左上） */
 .rss-d-site {
 	position: absolute;
