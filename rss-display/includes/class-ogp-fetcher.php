@@ -1,13 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * 記事ページから OGP 画像URLを取得するクラス。
- * 取得結果（未検出含む）は記事URLをキーに1ヶ月トランジェントキャッシュする。
+ * Fetches OGP image URLs from article pages and caches the results.
  *
- * 並列取得には curl_multi を使用するが、WordPress HTTP API（wp_remote_get）とは
- * 異なるレイヤーで動作するため、pre_http_request フィルタはバイパスされる。
- * ただし WP_HTTP_Proxy 経由でプロキシ設定、https_ssl_verify フィルタで SSL 検証、
- * WordPress 同梱の CA バンドルを適用することで主要な WP 環境設定には対応している。
- * curl_multi が使えない環境は fetch_ogp_image()（wp_remote_get ベース）で直列実行する。
+ * Parallel fetching uses curl_multi. This bypasses the pre_http_request filter
+ * but respects WP_HTTP_Proxy settings, https_ssl_verify filter, and the bundled
+ * CA certificate. Environments without curl_multi fall back to wp_remote_get.
  *
  * @package RSS_Display
  */
@@ -16,22 +13,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Fetches and caches OGP image URLs from article pages.
+ */
 class RSS_D_OGP_Fetcher {
 
-	/** トランジェントのキー接頭辞 */
+	/** Transient key prefix. */
 	const CACHE_PREFIX = 'rss_d_ogp_';
 
-	/** OGP キャッシュ期間（固定1ヶ月） */
+	/** OGP cache duration (fixed 1 month). */
 	const CACHE_TTL = MONTH_IN_SECONDS;
 
-	/** HTTP タイムアウト（秒） */
+	/** HTTP timeout in seconds. */
 	const TIMEOUT = 5;
 
 	/**
-	 * 記事URLから OGP 画像URLを取得する（単一URL用ラッパー）。
+	 * Returns the OGP image URL for a single article URL.
 	 *
-	 * @param string $article_url 記事URL。
-	 * @return string 画像URL。見つからなければ ''。
+	 * @param string $article_url Article URL.
+	 * @return string Image URL, or '' if not found.
 	 */
 	public function get_image( $article_url ) {
 		$map = $this->get_images( array( $article_url ) );
@@ -40,17 +40,17 @@ class RSS_D_OGP_Fetcher {
 	}
 
 	/**
-	 * 複数記事URLの OGP 画像を取得する。
-	 * キャッシュ済みはスキップし、未取得URLのみ curl_multi で並列リクエスト（使えない環境は直列）。
-	 * 空URLは透過的にスキップする。
+	 * Returns OGP image URLs for multiple article URLs.
+	 * Cached URLs are skipped; uncached ones are fetched in parallel via curl_multi
+	 * (or serially via wp_remote_get if curl_multi is unavailable).
 	 *
-	 * @param string[] $urls 記事URLの配列。
-	 * @return array URL => 画像URL のマップ（未検出は ''）。
+	 * @param string[] $urls Article URLs.
+	 * @return array Map of URL => image URL ('' if not found).
 	 */
 	public function get_images( $urls ) {
 		$results  = array();
 		$to_fetch = array();
-		$keys     = array(); // md5 の再計算を避けるキャッシュ。
+		$keys     = array(); // Avoids repeated md5() calls.
 
 		$seen = array();
 		foreach ( $urls as $url ) {
@@ -58,9 +58,9 @@ class RSS_D_OGP_Fetcher {
 			if ( '' === $url || isset( $seen[ $url ] ) ) {
 				continue;
 			}
-			$seen[ $url ]  = true;
-			$keys[ $url ]  = self::CACHE_PREFIX . md5( $url );
-			$cached        = get_transient( $keys[ $url ] );
+			$seen[ $url ] = true;
+			$keys[ $url ] = self::CACHE_PREFIX . md5( $url );
+			$cached       = get_transient( $keys[ $url ] );
 			if ( false !== $cached ) {
 				$results[ $url ] = (string) $cached;
 			} else {
@@ -73,48 +73,43 @@ class RSS_D_OGP_Fetcher {
 		}
 
 		if ( ! function_exists( 'curl_multi_init' ) ) {
-			// curl_multi が使えない環境は直列フォールバック。
+			// Serial fallback when curl_multi is unavailable.
 			foreach ( $to_fetch as $url ) {
-				$image           = $this->fetch_ogp_image( $url );
+				$image = $this->fetch_ogp_image( $url );
 				set_transient( $keys[ $url ], $image, self::CACHE_TTL );
 				$results[ $url ] = $image;
 			}
 			return $results;
 		}
 
-		// curl_multi で並列リクエスト。
-		// 注意: WordPress HTTP フィルタ（pre_http_request 等）はバイパスされる。
-		$mh      = curl_multi_init();
+		// Parallel requests via curl_multi.
+		// Note: WordPress HTTP filters (pre_http_request etc.) are bypassed here.
+		$mh      = curl_multi_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_init
 		$handles = array();
 
-		// WP の SSL 検証設定を取得。
 		$ssl_verify = (bool) apply_filters( 'https_ssl_verify', true );
 		$ca_cert    = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
-
-		// WP の User-Agent 文字列を生成。
 		$user_agent = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
-
-		// WP HTTP プロキシ設定を取得。
-		$proxy = new WP_HTTP_Proxy();
+		$proxy      = new WP_HTTP_Proxy();
 
 		foreach ( $to_fetch as $url ) {
-			$ch = curl_init( $url );
+			$ch = curl_init( $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
 			if ( false === $ch ) {
 				$results[ $url ] = '';
 				continue;
 			}
-			curl_setopt_array(
+			curl_setopt_array( // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt_array
 				$ch,
 				array(
-					CURLOPT_RETURNTRANSFER => true,
-					CURLOPT_FOLLOWLOCATION => true,
-					CURLOPT_MAXREDIRS      => 3,
-					CURLOPT_TIMEOUT        => self::TIMEOUT,
-					CURLOPT_SSL_VERIFYPEER => $ssl_verify,
-					CURLOPT_SSL_VERIFYHOST => $ssl_verify ? 2 : 0,
-					CURLOPT_USERAGENT      => $user_agent,
-					CURLOPT_HTTPHEADER     => array( 'Accept: text/html,application/xhtml+xml' ),
-					// <head> が取れれば十分なので最大128KBで打ち切る。
+					CURLOPT_RETURNTRANSFER   => true,
+					CURLOPT_FOLLOWLOCATION   => true,
+					CURLOPT_MAXREDIRS        => 3,
+					CURLOPT_TIMEOUT          => self::TIMEOUT,
+					CURLOPT_SSL_VERIFYPEER   => $ssl_verify,
+					CURLOPT_SSL_VERIFYHOST   => $ssl_verify ? 2 : 0,
+					CURLOPT_USERAGENT        => $user_agent,
+					CURLOPT_HTTPHEADER       => array( 'Accept: text/html,application/xhtml+xml' ),
+					// Abort after 128 KB — enough to capture the <head>.
 					CURLOPT_BUFFERSIZE       => 131072,
 					CURLOPT_NOPROGRESS       => false,
 					CURLOPT_PROGRESSFUNCTION => static function ( $ch, $dl_total, $dl_now ) {
@@ -123,54 +118,54 @@ class RSS_D_OGP_Fetcher {
 				)
 			);
 
-			// WP 同梱の CA バンドルを適用。
+			// Apply WordPress-bundled CA certificate.
 			if ( $ssl_verify && file_exists( $ca_cert ) ) {
-				curl_setopt( $ch, CURLOPT_CAINFO, $ca_cert );
+				curl_setopt( $ch, CURLOPT_CAINFO, $ca_cert ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			}
 
-			// WP HTTP プロキシ設定を curl に適用。
+			// Apply WordPress proxy settings to curl.
 			if ( $proxy->is_enabled() && $proxy->send_through_proxy( $url ) ) {
-				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() . ':' . $proxy->port() );
+				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() . ':' . $proxy->port() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 				if ( $proxy->use_authentication() ) {
-					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() );
+					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 				}
 			}
 
-			curl_multi_add_handle( $mh, $ch );
+			curl_multi_add_handle( $mh, $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_add_handle
 			$handles[ $url ] = $ch;
 		}
 
-		// 全リクエスト完了まで待つ。
-		$running = null;
+		// Wait for all requests to complete, with a wall-clock deadline to prevent infinite loops.
+		$running  = null;
+		$deadline = microtime( true ) + self::TIMEOUT + 2;
 		do {
-			curl_multi_exec( $mh, $running );
-			if ( -1 === curl_multi_select( $mh ) ) {
+			curl_multi_exec( $mh, $running ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_exec
+			if ( $running > 0 && -1 === curl_multi_select( $mh ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_select
 				usleep( 100000 );
 			}
-		} while ( $running > 0 );
+		} while ( $running > 0 && microtime( true ) < $deadline );
 
 		foreach ( $handles as $url => $ch ) {
-			$body  = curl_multi_getcontent( $ch );
+			$body  = curl_multi_getcontent( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_getcontent
 			$image = $body ? $this->parse_og_image( $body ) : '';
 			if ( '' !== $image ) {
 				$image = esc_url_raw( $this->to_absolute_url( $image, $url ) );
 			}
 			set_transient( $keys[ $url ], $image, self::CACHE_TTL );
 			$results[ $url ] = $image;
-			curl_multi_remove_handle( $mh, $ch );
-			curl_close( $ch );
+			curl_multi_remove_handle( $mh, $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_remove_handle
 		}
 
-		curl_multi_close( $mh );
+		curl_multi_close( $mh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_close
 
 		return $results;
 	}
 
 	/**
-	 * 記事HTMLを取得し、OGP 画像URLを抽出する。
+	 * Fetches an article page and extracts its OGP image URL.
 	 *
-	 * @param string $url 記事URL。
-	 * @return string 画像URL。失敗・未検出なら ''。
+	 * @param string $url Article URL.
+	 * @return string Image URL, or '' on failure.
 	 */
 	private function fetch_ogp_image( $url ) {
 		$response = wp_remote_get(
@@ -178,7 +173,7 @@ class RSS_D_OGP_Fetcher {
 			array(
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 3,
-				'sslverify'   => false,
+				'sslverify'   => (bool) apply_filters( 'https_ssl_verify', true ),
 				'user-agent'  => 'WordPress/RSS-Display',
 				'headers'     => array(
 					'Accept' => 'text/html,application/xhtml+xml',
@@ -209,10 +204,10 @@ class RSS_D_OGP_Fetcher {
 	}
 
 	/**
-	 * DOMDocument + DOMXPath で og:image 等のメタタグを抽出する（正規表現不使用）。
+	 * Parses OGP/Twitter meta tags from HTML using DOMDocument + DOMXPath.
 	 *
-	 * @param string $html HTML文字列。
-	 * @return string 画像URL。未検出なら ''。
+	 * @param string $html HTML string.
+	 * @return string Image URL, or '' if not found.
 	 */
 	private function parse_og_image( $html ) {
 		if ( ! class_exists( 'DOMDocument' ) ) {
@@ -222,7 +217,7 @@ class RSS_D_OGP_Fetcher {
 		$prev = libxml_use_internal_errors( true );
 		$doc  = new DOMDocument();
 
-		// 文字コードのヒントを付与して UTF-8 として読み込む。
+		// Prepend XML encoding hint to ensure UTF-8 parsing.
 		$loaded = $doc->loadHTML( '<?xml encoding="UTF-8">' . $html );
 
 		libxml_clear_errors();
@@ -234,7 +229,7 @@ class RSS_D_OGP_Fetcher {
 
 		$xpath = new DOMXPath( $doc );
 
-		// 優先順位順にメタタグを探索する。
+		// Query meta tags in priority order.
 		$queries = array(
 			'//meta[@property="og:image"]/@content',
 			'//meta[@property="og:image:url"]/@content',
@@ -257,10 +252,10 @@ class RSS_D_OGP_Fetcher {
 	}
 
 	/**
-	 * 相対URL／プロトコル相対URLを基準URLで絶対URL化する。
+	 * Converts a relative or protocol-relative URL to an absolute URL.
 	 *
-	 * @param string $maybe_relative 対象URL（絶対・相対いずれも可）。
-	 * @param string $base_url       基準となる記事URL。
+	 * @param string $maybe_relative Target URL (absolute or relative).
+	 * @param string $base_url       Base article URL for resolution.
 	 * @return string
 	 */
 	private function to_absolute_url( $maybe_relative, $base_url ) {

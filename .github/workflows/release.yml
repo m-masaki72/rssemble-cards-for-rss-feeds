@@ -14,13 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Freemius SDK
-        run: |
-          curl -L https://github.com/Freemius/wordpress-sdk/archive/refs/heads/master.zip -o freemius.zip
-          unzip freemius.zip -d freemius_tmp
-          mv freemius_tmp/wordpress-sdk-master rss-display/freemius
-          rm -rf freemius.zip freemius_tmp
-
       - name: Create ZIP
         run: zip -r rss-display.zip rss-display/
 

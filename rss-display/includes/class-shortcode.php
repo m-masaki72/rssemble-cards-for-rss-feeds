@@ -1,6 +1,6 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * ショートコード [rss_display] を処理し、表示HTMLを生成するクラス。
+ * Handles the [rss_display] shortcode and generates display HTML.
  *
  * @package RSS_Display
  */
@@ -9,25 +9,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Registers and renders the [rss_display] shortcode.
+ */
 class RSS_D_Shortcode {
 
 	/**
-	 * フィードマネージャ。
+	 * Feed manager instance.
 	 *
 	 * @var RSS_D_Feed_Manager
 	 */
 	private $feed_manager;
 
 	/**
-	 * OGP 取得クラス。
+	 * OGP fetcher instance.
 	 *
 	 * @var RSS_D_OGP_Fetcher
 	 */
 	private $ogp_fetcher;
 
 	/**
-	 * @param RSS_D_Feed_Manager $feed_manager
-	 * @param RSS_D_OGP_Fetcher  $ogp_fetcher
+	 * Constructor.
+	 *
+	 * @param RSS_D_Feed_Manager $feed_manager Feed manager instance.
+	 * @param RSS_D_OGP_Fetcher  $ogp_fetcher  OGP fetcher instance.
 	 */
 	public function __construct( $feed_manager, $ogp_fetcher ) {
 		$this->feed_manager = $feed_manager;
@@ -38,31 +43,22 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * フロントエンド用CSSを登録し、ショートコードを含む投稿では先読みで enqueue する。
+	 * Registers frontend CSS and enqueues it eagerly on singular posts containing the shortcode.
 	 *
 	 * @return void
 	 */
 	public function maybe_register_style() {
 		wp_register_style( 'rss-display', RSS_D_URL . 'assets/css/rss-display.css', array(), RSS_D_VERSION );
-
-		if ( is_singular() ) {
-			$post = get_post();
-			if ( $post && has_shortcode( $post->post_content, 'rss_display' ) ) {
-				wp_enqueue_style( 'rss-display' );
-				wp_enqueue_script( 'rss-display' );
-			}
-		}
 	}
 
 	/**
-	 * ショートコードのレンダリング処理。
+	 * Renders the shortcode output.
 	 *
-	 * @param array $atts ショートコード属性。
+	 * @param array $atts Shortcode attributes.
 	 * @return string
 	 */
 	public function render( $atts ) {
-		$settings  = RSS_Display::get_settings();
-		$is_paying = rss_display_fs_is_paying();
+		$settings = RSS_Display::get_settings();
 
 		$atts = shortcode_atts(
 			array(
@@ -82,7 +78,7 @@ class RSS_D_Shortcode {
 			'rss_display'
 		);
 
-		// 列数（2/3/4のみ許可）。
+		// Columns: only 2/3/4 are valid.
 		$columns = (int) $atts['columns'];
 		if ( ! in_array( $columns, array( 2, 3, 4 ), true ) ) {
 			$columns = (int) $settings['columns'];
@@ -90,40 +86,37 @@ class RSS_D_Shortcode {
 				$columns = 3;
 			}
 		}
-		if ( ! $is_paying && $columns > RSS_D_FREE_MAX_COLUMNS ) {
-			$columns = RSS_D_FREE_MAX_COLUMNS;
-		}
 
-		// 表示件数。
+		// Item count.
 		$count = absint( $atts['count'] );
 		if ( $count <= 0 ) {
 			$count = absint( $settings['count'] );
 		}
-		if ( ! $is_paying && $count > RSS_D_FREE_MAX_COUNT ) {
-			$count = RSS_D_FREE_MAX_COUNT;
-		}
 
-		// ソート順。
+		// Sort order.
 		$orderby = ( 'random' === $atts['orderby'] ) ? 'random' : 'date';
-		if ( ! $is_paying && ! in_array( $orderby, RSS_D_FREE_ORDERBY, true ) ) {
-			return $this->upgrade_notice();
-		}
 
-		// 対象フィード（カンマ区切りで複数指定可）。
+		// Feed URLs (comma-separated shortcode attribute takes priority).
+		// Only http/https schemes are permitted to prevent SSRF via internal URLs.
 		if ( '' !== $atts['feed'] ) {
-			$feeds = array_values( array_filter( array_map( 'trim', explode( ',', $atts['feed'] ) ) ) );
+			$feeds = array_values(
+				array_filter(
+					array_map( 'trim', explode( ',', $atts['feed'] ) ),
+					static function ( $u ) {
+						$scheme = wp_parse_url( $u, PHP_URL_SCHEME );
+						return in_array( strtolower( (string) $scheme ), array( 'http', 'https' ), true );
+					}
+				)
+			);
 		} else {
 			$feeds = RSS_Display::parse_feeds( $settings['feeds'] );
-			if ( ! $is_paying && count( $feeds ) > RSS_D_FREE_MAX_FEEDS ) {
-				$feeds = array_slice( $feeds, 0, RSS_D_FREE_MAX_FEEDS );
-			}
 		}
 
 		if ( empty( $feeds ) ) {
 			return '';
 		}
 
-		// リンクの開き方（ショートコード指定 > 管理画面設定）。
+		// Link target: shortcode attribute overrides admin setting.
 		if ( '_self' === $atts['target'] || '_blank' === $atts['target'] ) {
 			$new_tab = ( '_blank' === $atts['target'] );
 		} else {
@@ -149,9 +142,6 @@ class RSS_D_Shortcode {
 
 		$allowed_types = array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
 		$type          = in_array( $atts['type'], $allowed_types, true ) ? $atts['type'] : 'grid';
-		if ( ! $is_paying && ! in_array( $type, RSS_D_FREE_TYPES, true ) ) {
-			return $this->upgrade_notice();
-		}
 
 		$title_lines = (int) $settings['title_lines'];
 		if ( ! in_array( $title_lines, array( 1, 2, 3 ), true ) ) {
@@ -164,17 +154,17 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * OGP画像解決＋表示用フィールドを付与した $resolved 配列を返す。
+	 * Resolves OGP images and attaches display fields to each item.
 	 *
-	 * @param array  $items         フィードアイテム配列。
-	 * @param string $default_image デフォルト画像URL。
-	 * @param bool   $show_date     日付表示フラグ。
-	 * @param bool   $show_desc     説明文表示フラグ。
-	 * @param bool   $show_site     サイト名表示フラグ。
+	 * @param array  $items         Feed item array.
+	 * @param string $default_image Fallback image URL.
+	 * @param bool   $show_date     Whether to show the date.
+	 * @param bool   $show_desc     Whether to show the description.
+	 * @param bool   $show_site     Whether to show the site name.
 	 * @return array
 	 */
 	private function resolve_items( $items, $default_image, $show_date, $show_desc, $show_site ) {
-		// RSS画像がないアイテムのURLのみ並列OGP取得。
+		// Collect URLs that need OGP fetching (no RSS image).
 		$ogp_urls = array();
 		foreach ( $items as $item ) {
 			if ( '' === $item['image'] && '' !== $item['url'] ) {
@@ -203,16 +193,17 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * タイプに応じたレンダラーにディスパッチしHTMLを返す。
+	 * Dispatches rendering to the appropriate method based on type.
 	 *
-	 * @param array  $resolved    解決済みアイテム配列。
-	 * @param string $type        表示タイプ。
-	 * @param int    $columns     列数。
-	 * @param int    $title_lines タイトル最大行数。
-	 * @param bool   $new_tab     別タブで開くか。
-	 * @param bool   $show_desc   説明文表示フラグ。
-	 * @param bool   $show_date   日付表示フラグ。
-	 * @param bool   $show_site   サイト名表示フラグ。
+	 * @param array  $resolved    Resolved item array.
+	 * @param string $type        Display type.
+	 * @param int    $columns     Number of columns.
+	 * @param int    $title_lines Maximum title lines.
+	 * @param bool   $new_tab     Open links in new tab.
+	 * @param bool   $show_desc   Show description.
+	 * @param bool   $show_date   Show date.
+	 * @param bool   $show_site   Show site name.
+	 * @param bool   $bold_title  Bold title.
 	 * @return string
 	 */
 	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false ) {
@@ -229,16 +220,17 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * 通常タイプ（grid/list/list_vertical/text/text_line/image_only）のHTML出力。
+	 * Renders standard layout types (grid/list/list_vertical/text/text_line/image_only).
 	 *
-	 * @param array  $items
-	 * @param string $type
-	 * @param int    $columns
-	 * @param int    $title_lines
-	 * @param bool   $new_tab
-	 * @param bool   $show_desc
-	 * @param bool   $show_date
-	 * @param bool   $show_site
+	 * @param array  $items       Resolved item array.
+	 * @param string $type        Display type.
+	 * @param int    $columns     Number of columns.
+	 * @param int    $title_lines Maximum title lines.
+	 * @param bool   $new_tab     Open links in new tab.
+	 * @param bool   $show_desc   Show description.
+	 * @param bool   $show_date   Show date.
+	 * @param bool   $show_site   Show site name.
+	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
 	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
@@ -294,22 +286,7 @@ class RSS_D_Shortcode {
 					</div>
 
 					<?php else : ?>
-					<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-					<span class="rss-d-overlay" aria-hidden="true"></span>
-					<?php if ( 'grid' === $type ) : ?>
-						<?php if ( $show_date && '' !== $date_label ) : ?>
-							<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
-						<?php endif; ?>
-						<?php if ( $show_site && '' !== $site_name ) : ?>
-							<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
-						<?php endif; ?>
-						<?php if ( '' !== $title ) : ?>
-							<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
-						<?php endif; ?>
-						<?php if ( $show_desc && '' !== $desc_text ) : ?>
-							<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
-						<?php endif; ?>
-					<?php endif; ?>
+						<?php $this->render_card_overlay_body( $image, $title, $date_label, $site_name, $desc_text, $show_date, $show_site, $show_desc, $title_class, 'grid' === $type ); ?>
 					<?php endif; ?>
 
 				<?php if ( '' !== $link ) : ?>
@@ -323,25 +300,26 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * カルーセルタイプのHTML出力。
+	 * Renders the carousel layout.
 	 *
-	 * @param array $items
-	 * @param int   $columns
-	 * @param int   $title_lines
-	 * @param bool  $new_tab
-	 * @param bool  $show_desc
-	 * @param bool  $show_date
-	 * @param bool  $show_site
+	 * @param array  $items       Resolved item array.
+	 * @param int    $columns     Number of visible columns.
+	 * @param int    $title_lines Maximum title lines.
+	 * @param bool   $new_tab     Open links in new tab.
+	 * @param bool   $show_desc   Show description.
+	 * @param bool   $show_date   Show date.
+	 * @param bool   $show_site   Show site name.
+	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
 	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
 		static $carousel_id = 0;
-		$carousel_id++;
+		++$carousel_id;
 		$uid         = 'rss-d-carousel-' . $carousel_id;
 		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 		?>
 		<div class="rss-d-carousel-wrap" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
-			<button class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="前へ" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
+			<button class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="Previous" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
 			<div class="rss-d-carousel-viewport">
 				<div class="rss-d-carousel-track">
 					<?php foreach ( $items as $item ) : ?>
@@ -358,20 +336,7 @@ class RSS_D_Shortcode {
 						<?php else : ?>
 						<div class="rss-d-card rss-d-carousel-card">
 						<?php endif; ?>
-							<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-							<span class="rss-d-overlay" aria-hidden="true"></span>
-							<?php if ( $show_date && '' !== $date_label ) : ?>
-								<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
-							<?php endif; ?>
-							<?php if ( $show_site && '' !== $site_name ) : ?>
-								<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
-							<?php endif; ?>
-							<?php if ( '' !== $title ) : ?>
-								<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
-							<?php endif; ?>
-							<?php if ( $show_desc && '' !== $desc_text ) : ?>
-								<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
-							<?php endif; ?>
+							<?php $this->render_card_overlay_body( $image, $title, $date_label, $site_name, $desc_text, $show_date, $show_site, $show_desc, $title_class ); ?>
 						<?php if ( '' !== $link ) : ?>
 						</a>
 						<?php else : ?>
@@ -380,27 +345,28 @@ class RSS_D_Shortcode {
 					<?php endforeach; ?>
 				</div>
 			</div>
-			<button class="rss-d-carousel-btn rss-d-carousel-next" aria-label="次へ" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
+			<button class="rss-d-carousel-btn rss-d-carousel-next" aria-label="Next" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
 		</div>
 		<?php
 	}
 
 	/**
-	 * ポップアップグリッドタイプのHTML出力。
+	 * Renders the popup grid layout.
 	 *
-	 * @param array $items
-	 * @param int   $columns
-	 * @param int   $title_lines
-	 * @param bool  $new_tab
+	 * @param array  $items       Resolved item array.
+	 * @param int    $columns     Number of columns.
+	 * @param int    $title_lines Maximum title lines.
+	 * @param bool   $new_tab     Open links in new tab.
+	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
 	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title' ) {
 		static $popup_id = 0;
-		$popup_id++;
+		++$popup_id;
 		$uid = 'rss-d-popup-' . $popup_id;
 		?>
 		<div class="rss-d-grid rss-d-type-popup_grid" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
-			<?php foreach ( $items as $index => $item ) : ?>
+			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];
 				$title      = $item['title'];
@@ -415,7 +381,7 @@ class RSS_D_Shortcode {
 					aria-haspopup="dialog"
 					data-image="<?php echo esc_attr( $image ); ?>"
 					data-title="<?php echo esc_attr( $title ); ?>"
-					data-link="<?php echo esc_attr( $link ); ?>"
+					data-link="<?php echo esc_url( $link ); ?>"
 					data-date="<?php echo esc_attr( $date_label ); ?>"
 					data-desc="<?php echo esc_attr( $desc_text ); ?>"
 					data-site="<?php echo esc_attr( $site_name ); ?>"
@@ -436,10 +402,9 @@ class RSS_D_Shortcode {
 			<?php endforeach; ?>
 		</div>
 
-		<!-- モーダル -->
-		<div class="rss-d-modal-overlay" id="<?php echo esc_attr( $uid . '-modal' ); ?>" role="dialog" aria-modal="true" aria-label="記事詳細" hidden>
+		<div class="rss-d-modal-overlay" id="<?php echo esc_attr( $uid . '-modal' ); ?>" role="dialog" aria-modal="true" aria-label="Article detail" hidden>
 			<div class="rss-d-modal">
-				<button class="rss-d-modal-close" type="button" aria-label="閉じる">&times;</button>
+				<button class="rss-d-modal-close" type="button" aria-label="Close">&times;</button>
 				<img class="rss-d-modal-img" src="" alt="" />
 				<div class="rss-d-modal-body">
 					<p class="rss-d-modal-meta">
@@ -448,7 +413,7 @@ class RSS_D_Shortcode {
 					</p>
 					<h2 class="rss-d-modal-title"></h2>
 					<p class="rss-d-modal-desc"></p>
-					<a class="rss-d-modal-link button" href="#">記事を読む →</a>
+					<a class="rss-d-modal-link button" href="#">Read article &rarr;</a>
 				</div>
 			</div>
 		</div>
@@ -456,26 +421,46 @@ class RSS_D_Shortcode {
 	}
 
 	/**
-	 * Pro 機能にアクセスした無料ユーザー向けのアップグレード案内 HTML を返す。
+	 * Renders the overlay image block shared by grid and carousel cards.
 	 *
-	 * @return string
+	 * @param string $image       Image URL.
+	 * @param string $title       Article title.
+	 * @param string $date_label  Formatted date string (empty to hide).
+	 * @param string $site_name   Site name (empty to hide).
+	 * @param string $desc_text   Description text (empty to hide).
+	 * @param bool   $show_date   Whether to show the date.
+	 * @param bool   $show_site   Whether to show the site name.
+	 * @param bool   $show_desc   Whether to show the description.
+	 * @param string $title_class CSS class string for the title element.
+	 * @param bool   $show_body   Whether to render the text body (false for image_only).
+	 * @return void
 	 */
-	private function upgrade_notice() {
-		$fs          = rss_display_fs();
-		$upgrade_url = $fs ? $fs->get_upgrade_url() : '#';
-		return sprintf(
-			'<p class="rss-d-upgrade-notice">%s <a href="%s">%s</a></p>',
-			esc_html__( 'この機能は RSS Display Pro プランでご利用いただけます。', 'rss-display' ),
-			esc_url( $upgrade_url ),
-			esc_html__( 'アップグレードする →', 'rss-display' )
-		);
+	private function render_card_overlay_body( $image, $title, $date_label, $site_name, $desc_text, $show_date, $show_site, $show_desc, $title_class = 'rss-d-title', $show_body = true ) {
+		?>
+		<img class="rss-d-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
+		<span class="rss-d-overlay" aria-hidden="true"></span>
+		<?php if ( $show_body ) : ?>
+			<?php if ( $show_date && '' !== $date_label ) : ?>
+				<span class="rss-d-date"><?php echo esc_html( $date_label ); ?></span>
+			<?php endif; ?>
+			<?php if ( $show_site && '' !== $site_name ) : ?>
+				<span class="rss-d-site"><?php echo esc_html( $site_name ); ?></span>
+			<?php endif; ?>
+			<?php if ( '' !== $title ) : ?>
+				<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
+			<?php endif; ?>
+			<?php if ( $show_desc && '' !== $desc_text ) : ?>
+				<p class="rss-d-desc"><?php echo esc_html( $desc_text ); ?></p>
+			<?php endif; ?>
+		<?php endif; ?>
+		<?php
 	}
 
 	/**
-	 * デフォルト画像URLを取得する。
-	 * 優先順位：メディアライブラリ選択 → URL直接指定 → 同梱プレースホルダー。
+	 * Returns the default image URL.
+	 * Priority: Media Library selection → direct URL → bundled placeholder.
 	 *
-	 * @param array $settings 設定配列。
+	 * @param array $settings Plugin settings array.
 	 * @return string
 	 */
 	private function get_default_image_url( $settings ) {

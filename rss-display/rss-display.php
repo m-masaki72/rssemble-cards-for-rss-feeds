@@ -1,12 +1,12 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Plugin Name:       RSS Display
- * Plugin URI:        https://example.com/rss-display
- * Description:        複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するプラグイン。外部サービス依存なし。
+ * Plugin URI:        https://github.com/m-masaki72/rss-display
+ * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
- * Author:            森
+ * Author:            Masaki Mori
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       rss-display
@@ -25,36 +25,6 @@ define( 'RSS_D_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RSS_D_URL', plugin_dir_url( __FILE__ ) );
 define( 'RSS_D_OPTION', 'rss_d_settings' );
 
-// Freemius ヘルパー（SDK 不在でも必ず読み込む）。
-require_once RSS_D_DIR . 'includes/freemius.php';
-
-if ( file_exists( RSS_D_DIR . 'freemius/start.php' ) ) {
-	require_once RSS_D_DIR . 'freemius/start.php';
-
-	global $rss_display_fs;
-
-	$rss_display_fs = fs_dynamic_init(
-		array(
-			'id'                  => '31014',
-			'slug'                => 'rss-display',
-			'type'                => 'plugin',
-			'public_key'          => 'pk_5ffc0948f5ae1165eecc134a9bc38',
-			'is_premium'          => false,
-			'has_premium_version' => true,
-			'has_affiliation'     => false,
-			'has_addons'          => false,
-			'menu'                => array(
-				'slug'       => 'rss-display',
-				'first-path' => 'options-general.php?page=rss-display',
-				'account'    => false,
-				'support'    => false,
-			),
-			'is_live'             => true,
-		)
-	);
-
-	// アンインストールは register_uninstall_hook で一元管理するため after_uninstall は登録しない。
-}
 
 require_once RSS_D_DIR . 'includes/class-feed-manager.php';
 require_once RSS_D_DIR . 'includes/class-ogp-fetcher.php';
@@ -119,7 +89,7 @@ final class RSS_Display {
 	 */
 	private function __construct() {
 		$this->ogp_fetcher  = new RSS_D_OGP_Fetcher();
-		$this->feed_manager = new RSS_D_Feed_Manager( $this->ogp_fetcher );
+		$this->feed_manager = new RSS_D_Feed_Manager();
 		$this->shortcode    = new RSS_D_Shortcode( $this->feed_manager, $this->ogp_fetcher );
 
 		if ( is_admin() ) {
@@ -166,9 +136,9 @@ final class RSS_Display {
 	}
 
 	/**
-	 * 改行区切りのフィードURLテキストをURL配列にパースする。
+	 * Parses a newline-separated feed URL string into an array of URLs.
 	 *
-	 * @param string $raw 改行区切りのフィードURL文字列。
+	 * @param string $raw Newline-separated feed URL string.
 	 * @return array
 	 */
 	public static function parse_feeds( $raw ) {
@@ -188,12 +158,21 @@ final class RSS_Display {
 	 * @return array
 	 */
 	public static function get_settings() {
-		$saved = get_option( RSS_D_OPTION, array() );
-		if ( ! is_array( $saved ) ) {
-			$saved = array();
+		static $cache = null;
+		if ( null === $cache ) {
+			$saved = get_option( RSS_D_OPTION, array() );
+			$cache = wp_parse_args( is_array( $saved ) ? $saved : array(), self::default_settings() );
 		}
+		return $cache;
+	}
 
-		return wp_parse_args( $saved, self::default_settings() );
+	/**
+	 * Returns the list of valid display types.
+	 *
+	 * @return string[]
+	 */
+	public static function allowed_types() {
+		return array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
 	}
 
 	/**
@@ -214,7 +193,7 @@ register_uninstall_hook( __FILE__, array( 'RSS_Display', 'uninstall' ) );
  *
  * @return RSS_Display
  */
-function rss_display() {
+function rss_display() { // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase, Universal.Files.SeparateFunctionsFromOO.Mixed
 	return RSS_Display::instance();
 }
 
@@ -231,7 +210,7 @@ add_action(
 	}
 );
 
-// アンインストール処理実行中は本体を起動しない。
+// Do not boot the plugin during uninstall.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	rss_display();
 }

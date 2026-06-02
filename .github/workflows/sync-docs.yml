@@ -18,7 +18,7 @@ jobs:
         run: cp rss-display/assets/css/rss-display.css docs/rss-display.css
 
       - name: Commit if changed
-        uses: stefanprodan/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: sync docs/rss-display.css from plugin CSS"
           file_pattern: docs/rss-display.css

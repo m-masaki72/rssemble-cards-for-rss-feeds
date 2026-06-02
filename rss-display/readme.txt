@@ -2,7 +2,7 @@
 Contributors: mori
 Tags: rss, feed, display, ogp, grid
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.7
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -68,7 +68,17 @@ OGP画像キャッシュ（1ヶ月固定）はクリアされません。
 = Cron は使いますか =
 使いません。ショートコード実行時にキャッシュが無い／古い場合のみ取得します。
 
+== Screenshots ==
+
+1. Card grid display on the front end.
+2. Admin settings screen.
+
 == Changelog ==
 
 = 1.0.0 =
 * 初回リリース。
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release.

@@ -1,6 +1,6 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * RSS フィードの取得・パース・トランジェントキャッシュ・重複排除を担当するクラス。
+ * Fetches, parses, caches, and deduplicates RSS feed items.
  *
  * @package RSS_Display
  */
@@ -9,56 +9,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Manages RSS feed fetching, transient caching, and deduplication.
+ */
 class RSS_D_Feed_Manager {
 
-	/** トランジェントのキー接頭辞 */
+	/** Transient key prefix. */
 	const CACHE_PREFIX = 'rss_d_feed_';
 
 	/**
-	 * データ自体の保持期間（最大1ヶ月）。
-	 * 「鮮度」はペイロード内の fetched 時刻とユーザー設定TTLで判定するため、
-	 * データそのものはフォールバック用に長めに保持しておく。
+	 * How long to keep cached data (max 1 month).
+	 * Freshness is determined by the fetched timestamp + user TTL setting;
+	 * the raw payload is kept longer as a stale fallback.
 	 */
 	const STORE_TTL = MONTH_IN_SECONDS;
 
-	/** 1フィードあたり取得する最大件数 */
+	/** Maximum items fetched per feed. */
 	const MAX_ITEMS_PER_FEED = 24;
 
 	/**
-	 * OGP 画像取得クラス（現状は直接利用しないが将来拡張のため保持）。
-	 *
-	 * @var RSS_D_OGP_Fetcher
+	 * Constructor.
 	 */
-	private $ogp_fetcher;
-
-	/**
-	 * コンストラクタ。
-	 *
-	 * @param RSS_D_OGP_Fetcher $ogp_fetcher OGP 取得クラス。
-	 */
-	public function __construct( $ogp_fetcher ) {
-		$this->ogp_fetcher = $ogp_fetcher;
+	public function __construct() {
 	}
 
 	/**
-	 * 設定された RSS キャッシュTTL（秒）を取得する。
+	 * Returns the configured RSS cache TTL in seconds.
 	 *
 	 * @return int
 	 */
 	private function get_ttl() {
-		$settings = RSS_Display::get_settings();
-		$ttl      = absint( $settings['cache_ttl'] );
-
-		return $ttl > 0 ? $ttl : DAY_IN_SECONDS;
+		static $ttl = null;
+		if ( null === $ttl ) {
+			$settings = RSS_Display::get_settings();
+			$value    = absint( $settings['cache_ttl'] );
+			$ttl      = $value > 0 ? $value : DAY_IN_SECONDS;
+		}
+		return $ttl;
 	}
 
 	/**
-	 * 複数フィードから表示用アイテム配列を取得する。
-	 * 重複排除・ソート・件数制限まで済ませた状態で返す。
+	 * Returns display items merged from multiple feeds, deduplicated and sorted.
 	 *
-	 * @param array  $feeds   フィードURLの配列。
-	 * @param int    $count   表示件数。
-	 * @param string $orderby ソート順（date|random）。
+	 * @param array  $feeds   Array of feed URLs.
+	 * @param int    $count   Number of items to return.
+	 * @param string $orderby Sort order: 'date' or 'random'.
 	 * @return array
 	 */
 	public function get_items( $feeds, $count, $orderby = 'date' ) {
@@ -100,10 +95,9 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * 記事URLをキーに重複排除する。
-	 * 重複時は日付（timestamp）が新しい方を優先する。
+	 * Deduplicates items by URL, keeping the one with the newer timestamp.
 	 *
-	 * @param array $items アイテム配列。
+	 * @param array $items Raw item array.
 	 * @return array
 	 */
 	private function deduplicate( $items ) {
@@ -113,7 +107,7 @@ class RSS_D_Feed_Manager {
 			$key = isset( $item['url'] ) ? $item['url'] : '';
 
 			if ( '' === $key ) {
-				// URL が無いものはユニーク扱いとして残す。
+				// Items without a URL are kept as unique entries.
 				$map[ uniqid( 'nourl_', true ) ] = $item;
 				continue;
 			}
@@ -127,15 +121,14 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * 単一フィードのペイロードを取得する。
-	 * キャッシュには常に MAX_ITEMS_PER_FEED 件フルで保存する（件数スライスは呼び出し側の責務）。
+	 * Returns the payload for a single feed, fetching and caching as needed.
 	 *
-	 * 動作：
-	 *   1. キャッシュがあり鮮度内ならそのまま返す（リアルタイム取得＋キャッシュ）。
-	 *   2. 鮮度切れなら再取得し、成功すれば上書きして返す。
-	 *   3. 再取得に失敗した場合は、前回キャッシュ（stale）をフォールバックとして返す。
+	 * Strategy:
+	 *   1. Return cached payload if still fresh (within user-configured TTL).
+	 *   2. Re-fetch on stale; update cache on success.
+	 *   3. On fetch failure, return stale cache payload as fallback.
 	 *
-	 * @param string $feed_url フィードURL。
+	 * @param string $feed_url Feed URL.
 	 * @return array { fetched:int, items:array, count:int, error:bool }
 	 */
 	public function get_feed_payload( $feed_url ) {
@@ -146,12 +139,12 @@ class RSS_D_Feed_Manager {
 		$payload   = get_transient( $key );
 		$has_cache = ( is_array( $payload ) && isset( $payload['fetched'] ) );
 
-		// 鮮度内ならそのまま返す。
+		// Return cached payload if still fresh.
 		if ( $has_cache && ( $now - $payload['fetched'] ) < $ttl ) {
 			return $payload;
 		}
 
-		// 再取得。
+		// Attempt re-fetch.
 		$items = $this->fetch_and_normalize( $feed_url );
 
 		if ( false !== $items ) {
@@ -166,15 +159,15 @@ class RSS_D_Feed_Manager {
 			return $payload;
 		}
 
-		// 取得失敗：前回キャッシュ（stale）があればフォールバックとして返す。
-		// トランジェントは上書きしないため、保持期間内は stale データが残る。
+		// Fetch failed: return stale cache if available.
+		// The transient is intentionally not overwritten so stale data persists until STORE_TTL expires.
 		if ( $has_cache ) {
 			$payload['error'] = true;
 
 			return $payload;
 		}
 
-		// キャッシュも無い完全な失敗。
+		// No cache and fetch failed.
 		return array(
 			'fetched' => $now,
 			'items'   => array(),
@@ -184,9 +177,9 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * フィードを取得して表示用に正規化する。失敗時は false を返す。
+	 * Fetches a feed and normalizes items into display arrays. Returns false on failure.
 	 *
-	 * @param string $feed_url フィードURL。
+	 * @param string $feed_url Feed URL.
 	 * @return array|false
 	 */
 	private function fetch_and_normalize( $feed_url ) {
@@ -194,7 +187,7 @@ class RSS_D_Feed_Manager {
 			include_once ABSPATH . WPINC . '/feed.php';
 		}
 
-		// SimplePie 側のキャッシュは無効化し、本プラグインのトランジェントで一元管理する。
+		// Disable SimplePie's own cache; this plugin manages caching via transients.
 		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'zero_lifetime' ) );
 		$feed = fetch_feed( $feed_url );
 		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'zero_lifetime' ) );
@@ -212,7 +205,7 @@ class RSS_D_Feed_Manager {
 
 		foreach ( $raw as $item ) {
 			$url   = $item->get_permalink();
-			$url   = $url ? esc_url_raw( $url ) : '';
+			$url   = $url ? esc_url( $url ) : '';
 			$title = $item->get_title();
 			$title = $title ? wp_strip_all_tags( $title ) : '';
 			$ts    = $item->get_date( 'U' );
@@ -221,6 +214,7 @@ class RSS_D_Feed_Manager {
 			$desc  = $item->get_description();
 			$desc  = $desc ? wp_strip_all_tags( $desc ) : '';
 			$desc  = html_entity_decode( $desc, ENT_QUOTES, 'UTF-8' );
+			$desc  = mb_substr( $desc, 0, 300 );
 
 			$items[] = array(
 				'url'       => $url,
@@ -236,7 +230,7 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * SimplePie キャッシュ無効化用フィルタコールバック。
+	 * Filter callback that disables SimplePie's transient cache lifetime.
 	 *
 	 * @return int
 	 */
@@ -245,16 +239,16 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * RSS アイテムから画像URLを抽出する。
-	 * 優先順位：media:content → media:thumbnail → enclosure。無ければ ''。
+	 * Extracts an image URL from an RSS item.
+	 * Priority: media:content → media:thumbnail → enclosure. Returns '' if none found.
 	 *
-	 * @param object $item SimplePie_Item。
+	 * @param object $item SimplePie_Item instance.
 	 * @return string
 	 */
 	private function extract_image_from_item( $item ) {
 		$media_ns = 'http://search.yahoo.com/mrss/';
 
-		// 1. media:content（Media RSS 名前空間）。
+		// 1. media:content (Media RSS namespace).
 		$contents = $item->get_item_tags( $media_ns, 'content' );
 		if ( is_array( $contents ) ) {
 			foreach ( $contents as $content ) {
@@ -270,19 +264,19 @@ class RSS_D_Feed_Manager {
 				}
 			}
 
-			// medium / type が不明でも url があれば最初のものを採用。
+			// Fall back to first entry even if medium/type is unknown.
 			if ( ! empty( $contents[0]['attribs']['']['url'] ) ) {
 				return esc_url_raw( $contents[0]['attribs']['']['url'] );
 			}
 		}
 
-		// media:thumbnail。
+		// 2. media:thumbnail.
 		$thumbs = $item->get_item_tags( $media_ns, 'thumbnail' );
 		if ( is_array( $thumbs ) && ! empty( $thumbs[0]['attribs']['']['url'] ) ) {
 			return esc_url_raw( $thumbs[0]['attribs']['']['url'] );
 		}
 
-		// 2. enclosure。
+		// 3. enclosure.
 		$enclosure = $item->get_enclosure();
 		if ( $enclosure ) {
 			$thumb = $enclosure->get_thumbnail();
@@ -301,9 +295,9 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * URL の拡張子から画像らしいかどうかを判定する（HTML パースではなく URL 判定）。
+	 * Returns true if the URL path extension looks like an image file.
 	 *
-	 * @param string $url 判定対象URL。
+	 * @param string $url URL to inspect.
 	 * @return bool
 	 */
 	private function looks_like_image( $url ) {
@@ -318,9 +312,9 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * 指定フィード群の RSS キャッシュのみをクリアする（OGP キャッシュは残す）。
+	 * Clears RSS transient cache for the given feeds (OGP cache is preserved).
 	 *
-	 * @param array $feeds フィードURLの配列。
+	 * @param array $feeds Array of feed URLs.
 	 * @return void
 	 */
 	public function clear_feed_cache( $feeds ) {
@@ -334,9 +328,9 @@ class RSS_D_Feed_Manager {
 	}
 
 	/**
-	 * 管理画面ステータス表示用：フィードの取得状態を返す（フェッチはしない）。
+	 * Returns cached feed status for admin display without triggering a fetch.
 	 *
-	 * @param string $feed_url フィードURL。
+	 * @param string $feed_url Feed URL.
 	 * @return array { fetched:int, count:int, error:bool, cached:bool }
 	 */
 	public function get_feed_status( $feed_url ) {

@@ -120,40 +120,22 @@
 
 		// ---- ショートコードジェネレーター ----
 
-		var $proWarn = $( '<p id="rss-d-gen-pro-warn" style="display:none;margin-top:8px;"></p>' ).insertAfter( '#rss-d-gen-copy-msg' );
-
-		function checkProWarnings( type, columns, orderby ) {
-			if ( ! window.rssDAdmin || rssDAdmin.isPaying ) { $proWarn.hide(); return; }
-			var warnings = [];
-
-			if ( rssDAdmin.proTypes && rssDAdmin.proTypes.indexOf( type ) !== -1 ) {
-				warnings.push( 'type="' + type + '"' );
-			}
-			if ( columns > 2 ) { warnings.push( 'columns=' + columns ); }
-			if ( orderby === 'random' ) { warnings.push( 'orderby="random"' ); }
-
-			if ( warnings.length ) {
-				$proWarn.html(
-					'⚠ <strong>' + warnings.join( '、' ) + '</strong> は <a href="' + rssDAdmin.upgradeUrl + '">Proプラン</a> が必要です。'
-				).css( 'color', '#b32d2e' ).show();
-			} else {
-				$proWarn.hide();
-			}
-		}
-
 		function buildShortcode() {
-			var parts   = [ 'rss_display' ];
-			var feed    = $.trim( $( '#rss-d-gen-feed' ).val() );
-			var type    = $( '#rss-d-gen-type' ).val();
-			var columns = $( '#rss-d-gen-columns' ).val();
-			var count   = $( '#rss-d-gen-count' ).val();
-			var orderby = $( '#rss-d-gen-orderby' ).val();
-			var target  = $( '#rss-d-gen-target' ).val();
+			var parts      = [ 'rss_display' ];
+			var feed       = $.trim( $( '#rss-d-gen-feed' ).val() );
+			var type       = $( '#rss-d-gen-type' ).val();
+			var columns    = $( '#rss-d-gen-columns' ).val();
+			var count      = $( '#rss-d-gen-count' ).val();
+			var orderby    = $( '#rss-d-gen-orderby' ).val();
+			var target     = $( '#rss-d-gen-target' ).val();
+			var defType    = ( window.rssDAdmin && rssDAdmin.defaultType )    || 'grid';
+			var defColumns = ( window.rssDAdmin && rssDAdmin.defaultColumns ) || '3';
+			var defCount   = ( window.rssDAdmin && rssDAdmin.defaultCount )   || '6';
 
-			if ( feed )                  { parts.push( 'feed="' + feed + '"' ); }
-			if ( type && type !== 'grid' ) { parts.push( 'type="' + type + '"' ); }
-			if ( columns && columns !== '3' ) { parts.push( 'columns="' + columns + '"' ); }
-			if ( count && count !== '6' ) { parts.push( 'count="' + count + '"' ); }
+			if ( feed )                    { parts.push( 'feed="' + feed + '"' ); }
+			if ( type && type !== defType )       { parts.push( 'type="' + type + '"' ); }
+			if ( columns && columns !== defColumns ) { parts.push( 'columns="' + columns + '"' ); }
+			if ( count && count !== defCount )    { parts.push( 'count="' + count + '"' ); }
 			if ( orderby )               { parts.push( 'orderby="' + orderby + '"' ); }
 			if ( target )                { parts.push( 'target="' + target + '"' ); }
 
@@ -163,7 +145,6 @@
 			if ( $( '#rss-d-gen-bold' ).prop( 'checked' ) )   { parts.push( 'bold="1"' ); }
 
 			$( '#rss-d-gen-result' ).val( '[' + parts.join( ' ' ) + ']' );
-			checkProWarnings( type, parseInt( columns, 10 ), orderby );
 		}
 
 		$( '#rss-d-gen-feed, #rss-d-gen-type, #rss-d-gen-columns, #rss-d-gen-count, #rss-d-gen-orderby, #rss-d-gen-target' )
