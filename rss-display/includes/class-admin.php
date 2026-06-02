@@ -38,9 +38,23 @@ class RSS_D_Admin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_post_rss_d_save', array( $this, 'handle_save' ) );
 		add_action( 'admin_post_rss_d_refresh', array( $this, 'handle_refresh' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_rss_d_preview', array( $this, 'ajax_preview' ) );
+		add_filter( 'plugin_action_links_rss-display/rss-display.php', array( $this, 'add_settings_link' ) );
+	}
+
+	/**
+	 * Add a "Settings" link to the plugin action links.
+	 *
+	 * @param string[] $links Existing action links.
+	 * @return string[]
+	 */
+	public function add_settings_link( $links ) {
+		$url = admin_url( 'options-general.php?page=' . $this->page_slug );
+		array_unshift( $links, sprintf( '<a href="%s">%s</a>', esc_url( $url ), __( 'Settings', 'rss-display' ) ) );
+		return $links;
 	}
 
 	/**
@@ -91,18 +105,8 @@ class RSS_D_Admin {
 
 		// Feed URLs (one per line).
 		$feeds_raw   = isset( $input['feeds'] ) ? (string) $input['feeds'] : '';
-		$lines       = preg_split( '/\r\n|\r|\n/', $feeds_raw );
-		$clean_lines = array();
-		foreach ( $lines as $line ) {
-			$line = trim( $line );
-			if ( '' === $line ) {
-				continue;
-			}
-			$url = esc_url_raw( $line );
-			if ( '' !== $url ) {
-				$clean_lines[] = $url;
-			}
-		}
+		$clean_lines = array_map( 'esc_url_raw', RSS_Display::parse_feeds( $feeds_raw ) );
+		$clean_lines = array_filter( $clean_lines );
 		$out['feeds'] = implode( "\n", $clean_lines );
 
 		// Display count (1–100).
@@ -172,8 +176,43 @@ class RSS_D_Admin {
 				'defaultType'    => $defaults['type'],
 				'defaultColumns' => (string) $defaults['columns'],
 				'defaultCount'   => (string) $defaults['count'],
+				'msgLoading'     => __( '読み込み中…', 'rss-display' ),
+				'msgError'       => __( '取得に失敗しました。', 'rss-display' ),
+				'msgNetError'    => __( '通信エラーが発生しました。', 'rss-display' ),
+				'btnCopy'        => __( 'Copy', 'rss-display' ),
+				'btnCopied'      => __( 'Copied!', 'rss-display' ),
 			)
 		);
+	}
+
+	/**
+	 * Handle settings form save and redirect back to the plugin settings page.
+	 *
+	 * @return void
+	 */
+	public function handle_save() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'rss-display' ) );
+		}
+
+		check_admin_referer( 'rss_d_save' );
+
+		$input = isset( $_POST[ RSS_D_OPTION ] ) && is_array( $_POST[ RSS_D_OPTION ] )
+			? wp_unslash( $_POST[ RSS_D_OPTION ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			: array();
+
+		update_option( RSS_D_OPTION, $this->sanitize( $input ) );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'       => $this->page_slug,
+					'rss_d_saved' => '1',
+				),
+				admin_url( 'options-general.php' )
+			)
+		);
+		exit;
 	}
 
 	/**
@@ -219,17 +258,32 @@ class RSS_D_Admin {
 		$allowed_types = RSS_Display::allowed_types();
 		$post_type     = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
 		$type          = in_array( $post_type, $allowed_types, true ) ? $post_type : 'grid';
-		$columns = isset( $_POST['columns'] ) ? (int) $_POST['columns'] : 3; // phpcs:ignore
-		$columns       = in_array( $columns, array( 2, 3, 4 ), true ) ? $columns : 3;
-		$count   = isset( $_POST['count'] ) ? absint( $_POST['count'] ) : 6; // phpcs:ignore
-		$count         = min( max( 1, $count ), 100 );
+		$columns     = isset( $_POST['columns'] ) ? (int) $_POST['columns'] : 3; // phpcs:ignore
+		$columns     = in_array( $columns, array( 2, 3, 4 ), true ) ? $columns : 3;
+		$count       = isset( $_POST['count'] ) ? absint( $_POST['count'] ) : 6; // phpcs:ignore
+		$count       = min( max( 1, $count ), 100 );
+		$responsive  = isset( $_POST['responsive'] ) && '0' === $_POST['responsive'] ? '0' : '1'; // phpcs:ignore
+		$new_tab     = ! empty( $_POST['new_tab'] ) ? '1' : '0'; // phpcs:ignore
+		$show_desc   = ! empty( $_POST['show_desc'] ) ? '1' : '0'; // phpcs:ignore
+		$show_date   = ! empty( $_POST['show_date'] ) ? '1' : '0'; // phpcs:ignore
+		$show_site   = ! empty( $_POST['show_site'] ) ? '1' : '0'; // phpcs:ignore
+		$bold_title  = ! empty( $_POST['bold_title'] ) ? '1' : '0'; // phpcs:ignore
+		$title_lines = isset( $_POST['title_lines'] ) ? absint( $_POST['title_lines'] ) : 2; // phpcs:ignore
+		$title_lines = min( $title_lines, 10 );
 
 		$html = do_shortcode(
 			sprintf(
-				'[rss_display type="%s" columns="%d" count="%d"]',
+				'[rss_display type="%s" columns="%d" count="%d" responsive="%s" target="%s" desc="%s" date="%s" site="%s" bold="%s" title_lines="%d"]',
 				esc_attr( $type ),
 				$columns,
-				$count
+				$count,
+				$responsive,
+				$new_tab ? '_blank' : '_self',
+				$show_desc,
+				$show_date,
+				$show_site,
+				$bold_title,
+				$title_lines
 			)
 		);
 
@@ -269,18 +323,24 @@ class RSS_D_Admin {
 		$option = RSS_D_OPTION;
 
 		$types = array(
-			'grid'          => 'grid — image background with title overlay',
-			'list_vertical' => 'list_vertical — image top, text bottom card',
-			'text'          => 'text — text-only card with description',
-			'text_line'     => 'text_line — single-line text with dividers',
-			'image_only'    => 'image_only — image only',
-			'list'          => 'list — horizontal thumbnail + text',
-			'carousel'      => 'carousel — sliding carousel',
-			'popup_grid'    => 'popup_grid — grid with popup modal',
+			'grid'          => 'grid — ' . __( '画像背景＋タイトルオーバーレイ', 'rss-display' ),
+			'list_vertical' => 'list_vertical — ' . __( '上画像・下テキストカード', 'rss-display' ),
+			'text'          => 'text — ' . __( 'テキストのみカード（説明付き）', 'rss-display' ),
+			'text_line'     => 'text_line — ' . __( '1行テキスト＋区切り線', 'rss-display' ),
+			'image_only'    => 'image_only — ' . __( '画像のみ', 'rss-display' ),
+			'list'          => 'list — ' . __( 'サムネイル横並び＋テキスト', 'rss-display' ),
+			'carousel'      => 'carousel — ' . __( 'スライドカルーセル', 'rss-display' ),
+			'popup_grid'    => 'popup_grid — ' . __( 'クリックでモーダル表示グリッド', 'rss-display' ),
 		);
 		?>
 		<div class="wrap rss-d-admin">
 			<h1><?php echo esc_html__( 'RSS Display Settings', 'rss-display' ); ?></h1>
+
+			<?php if ( isset( $_GET['rss_d_saved'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+				<div class="notice notice-success is-dismissible">
+					<p><?php esc_html_e( 'Settings saved.', 'rss-display' ); ?></p>
+				</div>
+			<?php endif; ?>
 
 			<?php if ( isset( $_GET['rss_d_refreshed'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<div class="notice notice-success is-dismissible">
@@ -295,10 +355,12 @@ class RSS_D_Admin {
 				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="preview"><?php esc_html_e( 'Preview', 'rss-display' ); ?></button>
 				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="status"><?php esc_html_e( 'Feed Status', 'rss-display' ); ?></button>
 				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="usage"><?php esc_html_e( 'Usage', 'rss-display' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="about"><?php esc_html_e( 'About', 'rss-display' ); ?></button>
 			</nav>
 
-			<form method="post" action="options.php" id="rss-d-settings-form">
-				<?php settings_fields( 'rss_d_group' ); ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="rss-d-settings-form">
+				<input type="hidden" name="action" value="rss_d_save" />
+				<?php wp_nonce_field( 'rss_d_save' ); ?>
 
 				<!-- ========== Basic tab ========== -->
 				<div class="rss-d-tab-panel active" data-panel="basic">
@@ -364,15 +426,6 @@ class RSS_D_Admin {
 					</table>
 
 					<?php submit_button(); ?>
-
-					<hr />
-
-					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom:1em;">
-						<input type="hidden" name="action" value="rss_d_refresh" />
-						<?php wp_nonce_field( 'rss_d_refresh' ); ?>
-						<?php submit_button( __( 'Refresh Now (clear RSS cache)', 'rss-display' ), 'secondary', 'submit', false ); ?>
-						<span class="description"><?php esc_html_e( 'OGP image cache is not cleared.', 'rss-display' ); ?></span>
-					</form>
 
 				</div><!-- /basic -->
 
@@ -478,7 +531,7 @@ class RSS_D_Admin {
 							<button type="button" class="rss-d-device-btn active" data-width="100%" title="Desktop">
 								<span class="dashicons dashicons-desktop"></span>
 							</button>
-							<button type="button" class="rss-d-device-btn" data-width="768px" title="Tablet">
+							<button type="button" class="rss-d-device-btn" data-width="1024px" title="Tablet">
 								<span class="dashicons dashicons-tablet"></span>
 							</button>
 							<button type="button" class="rss-d-device-btn" data-width="375px" title="Smartphone">
@@ -510,6 +563,42 @@ class RSS_D_Admin {
 						</label>
 
 						<button type="button" id="rss-d-preview-btn" class="button button-primary"><?php esc_html_e( 'Refresh Preview', 'rss-display' ); ?></button>
+					</div>
+
+					<!-- オプション行 -->
+					<div class="rss-d-preview-options">
+						<label title="<?php esc_attr_e( 'タブレット2列・スマホ1列に自動調整', 'rss-display' ); ?>">
+							<input type="checkbox" id="rss-d-preview-responsive" checked />
+							<?php esc_html_e( 'レスポンシブ', 'rss-display' ); ?>
+						</label>
+						<label>
+							<input type="checkbox" id="rss-d-preview-new-tab" />
+							<?php esc_html_e( '新規タブ', 'rss-display' ); ?>
+						</label>
+						<label>
+							<input type="checkbox" id="rss-d-preview-show-desc" />
+							<?php esc_html_e( '説明', 'rss-display' ); ?>
+						</label>
+						<label>
+							<input type="checkbox" id="rss-d-preview-show-date" />
+							<?php esc_html_e( '日付', 'rss-display' ); ?>
+						</label>
+						<label>
+							<input type="checkbox" id="rss-d-preview-show-site" />
+							<?php esc_html_e( 'サイト名', 'rss-display' ); ?>
+						</label>
+						<label>
+							<input type="checkbox" id="rss-d-preview-bold-title" />
+							<?php esc_html_e( '太字タイトル', 'rss-display' ); ?>
+						</label>
+						<label title="<?php esc_attr_e( '表示タイトル行数（0=無制限）', 'rss-display' ); ?>"><?php esc_html_e( 'タイトル行数:', 'rss-display' ); ?>
+							<input type="number" id="rss-d-preview-title-lines" value="2" min="0" max="10" style="width:46px;" />
+						</label>
+					</div>
+
+					<div id="rss-d-preview-shortcode" style="display:none;margin:8px 0;padding:6px 12px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:3px;display:none;align-items:center;gap:8px;">
+						<code id="rss-d-preview-shortcode-text" style="flex:1;font-size:13px;word-break:break-all;background:none;padding:0;"></code>
+						<button type="button" id="rss-d-preview-shortcode-copy" class="button button-small"><?php esc_html_e( 'Copy', 'rss-display' ); ?></button>
 					</div>
 
 					<div class="rss-d-preview-frame-wrap">
@@ -577,103 +666,6 @@ class RSS_D_Admin {
 			<!-- ========== Usage tab ========== -->
 			<div class="rss-d-tab-panel" data-panel="usage">
 
-				<!-- Shortcode generator -->
-				<h2><?php esc_html_e( 'Shortcode Generator', 'rss-display' ); ?></h2>
-				<div class="rss-d-generator">
-
-					<table class="form-table rss-d-generator-table" role="presentation">
-						<tr>
-							<th scope="row"><label for="rss-d-gen-feed"><?php esc_html_e( 'Feed URL', 'rss-display' ); ?></label></th>
-							<td>
-								<input type="text" id="rss-d-gen-feed" class="large-text" placeholder="https://example.com/feed, https://example.org/feed" />
-								<p class="description"><?php esc_html_e( 'Comma-separated. Leave empty to use feeds registered in the admin settings.', 'rss-display' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="rss-d-gen-type"><?php esc_html_e( 'Display Type', 'rss-display' ); ?></label></th>
-							<td>
-								<select id="rss-d-gen-type">
-									<?php foreach ( $types as $val => $label ) : ?>
-										<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
-									<?php endforeach; ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="rss-d-gen-columns"><?php esc_html_e( 'Columns', 'rss-display' ); ?></label></th>
-							<td>
-								<select id="rss-d-gen-columns">
-									<?php foreach ( array( 2, 3, 4 ) as $c ) : ?>
-										<option value="<?php echo esc_attr( $c ); ?>"><?php echo esc_html( $c ); ?></option>
-									<?php endforeach; ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="rss-d-gen-count"><?php esc_html_e( 'Item Count', 'rss-display' ); ?></label></th>
-							<td>
-								<input type="number" id="rss-d-gen-count" value="6" min="1" max="100" class="small-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="rss-d-gen-orderby"><?php esc_html_e( 'Order By', 'rss-display' ); ?></label></th>
-							<td>
-								<select id="rss-d-gen-orderby">
-									<option value=""><?php esc_html_e( 'Use admin setting', 'rss-display' ); ?></option>
-									<option value="date"><?php esc_html_e( 'Date (newest first)', 'rss-display' ); ?></option>
-									<option value="random"><?php esc_html_e( 'Random', 'rss-display' ); ?></option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="rss-d-gen-target"><?php esc_html_e( 'Link Target', 'rss-display' ); ?></label></th>
-							<td>
-								<select id="rss-d-gen-target">
-									<option value=""><?php esc_html_e( 'Use admin setting', 'rss-display' ); ?></option>
-									<option value="_blank"><?php esc_html_e( 'New tab', 'rss-display' ); ?></option>
-									<option value="_self"><?php esc_html_e( 'Same tab', 'rss-display' ); ?></option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Display Options', 'rss-display' ); ?></th>
-							<td>
-								<fieldset>
-									<label style="display:inline-block;margin-right:16px;">
-										<input type="checkbox" id="rss-d-gen-date" checked />
-										<?php esc_html_e( 'Date', 'rss-display' ); ?>
-									</label>
-									<label style="display:inline-block;margin-right:16px;">
-										<input type="checkbox" id="rss-d-gen-site" />
-										<?php esc_html_e( 'Site name', 'rss-display' ); ?>
-									</label>
-									<label style="display:inline-block;margin-right:16px;">
-										<input type="checkbox" id="rss-d-gen-desc" />
-										<?php esc_html_e( 'Description', 'rss-display' ); ?>
-									</label>
-									<label style="display:inline-block;">
-										<input type="checkbox" id="rss-d-gen-bold" />
-										<?php esc_html_e( 'Bold title', 'rss-display' ); ?>
-									</label>
-								</fieldset>
-							</td>
-						</tr>
-					</table>
-
-					<!-- Generated shortcode -->
-					<div class="rss-d-generator-output">
-						<label for="rss-d-gen-result" style="font-weight:600;display:block;margin-bottom:6px;"><?php esc_html_e( 'Generated shortcode', 'rss-display' ); ?></label>
-						<div class="rss-d-gen-result-wrap">
-							<input type="text" id="rss-d-gen-result" class="large-text code" readonly />
-							<button type="button" id="rss-d-gen-copy" class="button"><?php esc_html_e( 'Copy', 'rss-display' ); ?></button>
-						</div>
-						<p id="rss-d-gen-copy-msg" class="description" style="display:none;color:#00a32a;"><?php esc_html_e( 'Copied!', 'rss-display' ); ?></p>
-					</div>
-
-				</div><!-- /rss-d-generator -->
-
-				<hr style="margin:2em 0;" />
-
 				<!-- Parameter reference -->
 				<h2><?php esc_html_e( 'Parameter Reference', 'rss-display' ); ?></h2>
 				<table class="widefat striped" style="max-width:800px;">
@@ -700,6 +692,58 @@ class RSS_D_Admin {
 				</table>
 
 			</div><!-- /usage -->
+
+			<!-- ========== About tab ========== -->
+			<div class="rss-d-tab-panel" data-panel="about">
+
+				<div class="rss-d-about-wrap">
+
+					<div class="rss-d-about-header">
+						<h2>RSS Display <span class="rss-d-about-version">v<?php echo esc_html( RSS_D_VERSION ); ?></span></h2>
+						<p><?php esc_html_e( '複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。', 'rss-display' ); ?></p>
+					</div>
+
+					<div class="rss-d-about-grid">
+
+						<div class="rss-d-about-card">
+							<h3><?php esc_html_e( '主な機能', 'rss-display' ); ?></h3>
+							<ul>
+								<li><?php esc_html_e( '8種類のレイアウト（grid / list / carousel など）', 'rss-display' ); ?></li>
+								<li><?php esc_html_e( '複数フィードの集約・重複排除', 'rss-display' ); ?></li>
+								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ', 'rss-display' ); ?></li>
+								<li><?php esc_html_e( 'レスポンシブ対応（PC/タブレット/スマホ）', 'rss-display' ); ?></li>
+								<li><?php esc_html_e( '外部サービス依存なし（WordPress組み込み機能のみ）', 'rss-display' ); ?></li>
+							</ul>
+						</div>
+
+						<div class="rss-d-about-card">
+							<h3><?php esc_html_e( '基本情報', 'rss-display' ); ?></h3>
+							<table class="rss-d-about-table">
+								<tr><th><?php esc_html_e( 'バージョン', 'rss-display' ); ?></th><td><?php echo esc_html( RSS_D_VERSION ); ?></td></tr>
+								<tr><th><?php esc_html_e( '必要環境', 'rss-display' ); ?></th><td>PHP 7.4+ / WordPress 6.0+</td></tr>
+								<tr><th><?php esc_html_e( 'ライセンス', 'rss-display' ); ?></th><td>GPL-2.0-or-later</td></tr>
+								<tr>
+									<th><?php esc_html_e( 'ウェブサイト', 'rss-display' ); ?></th>
+									<td><a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer">rss-display.pages.dev</a></td>
+								</tr>
+							</table>
+						</div>
+
+						<div class="rss-d-about-card rss-d-about-card--full">
+							<h3><?php esc_html_e( 'サポート・お問い合わせ', 'rss-display' ); ?></h3>
+							<p>
+								<?php esc_html_e( 'ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。', 'rss-display' ); ?>
+							</p>
+							<a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer" class="button button-primary">
+								<?php esc_html_e( '公式サイトを開く', 'rss-display' ); ?>
+							</a>
+						</div>
+
+					</div><!-- /rss-d-about-grid -->
+
+				</div><!-- /rss-d-about-wrap -->
+
+			</div><!-- /about -->
 
 		</div><!-- /wrap -->
 		<?php

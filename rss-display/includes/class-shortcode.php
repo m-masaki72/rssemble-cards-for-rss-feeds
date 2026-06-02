@@ -62,17 +62,19 @@ class RSS_D_Shortcode {
 
 		$atts = shortcode_atts(
 			array(
-				'columns' => $settings['columns'],
-				'count'   => $settings['count'],
-				'feed'    => '',
-				'orderby' => $settings['orderby'],
-				'target'  => '',
-				'img'     => '',
-				'desc'    => (string) $settings['show_desc'],
-				'date'    => (string) $settings['show_date'],
-				'site'    => (string) $settings['show_site'],
-				'type'    => $settings['type'],
-				'bold'    => '0',
+				'columns'     => $settings['columns'],
+				'count'       => $settings['count'],
+				'feed'        => '',
+				'orderby'     => $settings['orderby'],
+				'target'      => '',
+				'img'         => '',
+				'desc'        => (string) $settings['show_desc'],
+				'date'        => (string) $settings['show_date'],
+				'site'        => (string) $settings['show_site'],
+				'type'        => $settings['type'],
+				'bold'        => '0',
+				'responsive'  => '1',
+				'title_lines' => '',
 			),
 			$atts,
 			'rss_display'
@@ -139,18 +141,18 @@ class RSS_D_Shortcode {
 		$show_date     = ( '0' !== (string) $atts['date'] );
 		$show_site     = ( '1' === (string) $atts['site'] );
 		$bold_title    = ( '1' === (string) $atts['bold'] );
+		$responsive    = ( '1' === (string) $atts['responsive'] );
 
-		$allowed_types = array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
-		$type          = in_array( $atts['type'], $allowed_types, true ) ? $atts['type'] : 'grid';
+		$type = in_array( $atts['type'], RSS_Display::allowed_types(), true ) ? $atts['type'] : 'grid';
 
-		$title_lines = (int) $settings['title_lines'];
+		$title_lines = '' !== $atts['title_lines'] ? (int) $atts['title_lines'] : (int) $settings['title_lines'];
 		if ( ! in_array( $title_lines, array( 1, 2, 3 ), true ) ) {
 			$title_lines = 2;
 		}
 
 		$resolved = $this->resolve_items( $items, $default_image, $show_date, $show_desc, $show_site );
 
-		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title );
+		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title, $responsive );
 	}
 
 	/**
@@ -206,15 +208,15 @@ class RSS_D_Shortcode {
 	 * @param bool   $bold_title  Bold title.
 	 * @return string
 	 */
-	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false ) {
+	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false, $responsive = true ) {
 		$title_class = 'rss-d-title' . ( $bold_title ? ' rss-d-title--bold' : '' );
 		ob_start();
 		if ( 'carousel' === $type ) {
-			$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class );
+			$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
 		} elseif ( 'popup_grid' === $type ) {
-			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class );
+			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class, $responsive );
 		} else {
-			$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class );
+			$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
 		}
 		return ob_get_clean();
 	}
@@ -233,10 +235,11 @@ class RSS_D_Shortcode {
 	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
-	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
-		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true ) {
+		$target_attr    = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?><?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];
@@ -312,14 +315,15 @@ class RSS_D_Shortcode {
 	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
-	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title' ) {
+	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true ) {
 		static $carousel_id = 0;
 		++$carousel_id;
-		$uid         = 'rss-d-carousel-' . $carousel_id;
-		$target_attr = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+		$uid            = 'rss-d-carousel-' . $carousel_id;
+		$target_attr    = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-carousel-wrap" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
-			<button class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="Previous" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
+		<div class="rss-d-carousel-wrap<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+			<button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="Previous" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
 			<div class="rss-d-carousel-viewport">
 				<div class="rss-d-carousel-track">
 					<?php foreach ( $items as $item ) : ?>
@@ -345,7 +349,7 @@ class RSS_D_Shortcode {
 					<?php endforeach; ?>
 				</div>
 			</div>
-			<button class="rss-d-carousel-btn rss-d-carousel-next" aria-label="Next" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
+			<button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="Next" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
 		</div>
 		<?php
 	}
@@ -360,12 +364,13 @@ class RSS_D_Shortcode {
 	 * @param string $title_class CSS class string for the title element.
 	 * @return void
 	 */
-	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title' ) {
+	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title', $responsive = true ) {
 		static $popup_id = 0;
 		++$popup_id;
-		$uid = 'rss-d-popup-' . $popup_id;
+		$uid            = 'rss-d-popup-' . $popup_id;
+		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-grid rss-d-type-popup_grid" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
+		<div class="rss-d-grid rss-d-type-popup_grid<?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];

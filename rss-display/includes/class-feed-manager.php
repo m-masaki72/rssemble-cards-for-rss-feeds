@@ -205,7 +205,7 @@ class RSS_D_Feed_Manager {
 
 		foreach ( $raw as $item ) {
 			$url   = $item->get_permalink();
-			$url   = $url ? esc_url( $url ) : '';
+			$url   = $url ? esc_url_raw( $url ) : '';
 			$title = $item->get_title();
 			$title = $title ? wp_strip_all_tags( $title ) : '';
 			$ts    = $item->get_date( 'U' );

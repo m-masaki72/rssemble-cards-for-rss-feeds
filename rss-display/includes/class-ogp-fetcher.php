@@ -154,6 +154,7 @@ class RSS_D_OGP_Fetcher {
 			set_transient( $keys[ $url ], $image, self::CACHE_TTL );
 			$results[ $url ] = $image;
 			curl_multi_remove_handle( $mh, $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_remove_handle
+			curl_close( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
 		}
 
 		curl_multi_close( $mh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_close
