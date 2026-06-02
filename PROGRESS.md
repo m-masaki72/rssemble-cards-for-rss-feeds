@@ -41,8 +41,9 @@
 
 ### Phase 4: SVN 申請
 
-- [ ] https://wordpress.org/plugins/developers/add/ から申請
+- [x] https://wordpress.org/plugins/developers/add/ から申請（2026-06-03、スラッグ: rss-display、レビュー待ち）
 - [ ] 審査通過後、SVN に `/trunk/`・`/assets/`・`/tags/1.0.0/` 構成でコミット
+  - SVN デプロイは GitHub Actions で自動化予定（`.github/workflows/deploy-wp.yml`）
 
 ### Phase 5: サイト公開（Cloudflare Pages）
 
