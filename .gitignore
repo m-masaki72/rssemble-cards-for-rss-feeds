@@ -1,6 +1,9 @@
 # PHP preview server log
 *.log
 
+# PHPUnit phar（ローカル専用）
+phpunit.phar
+
 # OS
 .DS_Store
 Thumbs.db

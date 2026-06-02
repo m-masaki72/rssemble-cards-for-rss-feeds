@@ -1,0 +1,24 @@
+name: Sync docs CSS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'rss-display/assets/css/rss-display.css'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy plugin CSS to docs
+        run: cp rss-display/assets/css/rss-display.css docs/rss-display.css
+
+      - name: Commit if changed
+        uses: stefanprodan/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: sync docs/rss-display.css from plugin CSS"
+          file_pattern: docs/rss-display.css
