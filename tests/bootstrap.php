@@ -68,6 +68,7 @@ class RSS_Display {
 	}
 }
 
+require_once __DIR__ . '/../rss-display/includes/freemius.php';
 require_once __DIR__ . '/../rss-display/includes/class-feed-manager.php';
 require_once __DIR__ . '/../rss-display/includes/class-ogp-fetcher.php';
 require_once __DIR__ . '/../rss-display/includes/class-shortcode.php';

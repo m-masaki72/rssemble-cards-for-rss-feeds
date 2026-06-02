@@ -74,8 +74,9 @@ class RSS_D_Admin {
 	 * @return array
 	 */
 	public function sanitize( $input ) {
-		$defaults = RSS_Display::default_settings();
-		$out      = array();
+		$defaults   = RSS_Display::default_settings();
+		$out        = array();
+		$is_paying  = rss_display_fs_is_paying();
 
 		if ( ! is_array( $input ) ) {
 			$input = array();
@@ -95,6 +96,18 @@ class RSS_D_Admin {
 				$clean_lines[] = $url;
 			}
 		}
+		if ( ! $is_paying && count( $clean_lines ) > RSS_D_FREE_MAX_FEEDS ) {
+			$clean_lines = array_slice( $clean_lines, 0, RSS_D_FREE_MAX_FEEDS );
+			add_settings_error(
+				RSS_D_OPTION,
+				'rss_d_feeds_capped',
+				sprintf(
+					'無料プランは最大%d件のフィードURLです。Proプランで無制限に利用できます。',
+					RSS_D_FREE_MAX_FEEDS
+				),
+				'warning'
+			);
+		}
 		$out['feeds'] = implode( "\n", $clean_lines );
 
 		// 表示件数（1〜100）。
@@ -104,6 +117,16 @@ class RSS_D_Admin {
 		// 列数（2/3/4）。
 		$columns        = isset( $input['columns'] ) ? (int) $input['columns'] : $defaults['columns'];
 		$out['columns'] = in_array( $columns, array( 2, 3, 4 ), true ) ? $columns : $defaults['columns'];
+
+		if ( ! $is_paying && $out['columns'] > RSS_D_FREE_MAX_COLUMNS ) {
+			$out['columns'] = RSS_D_FREE_MAX_COLUMNS;
+			add_settings_error(
+				RSS_D_OPTION,
+				'rss_d_columns_capped',
+				'3列・4列はProプランが必要です。',
+				'warning'
+			);
+		}
 
 		// タイトル最大行数（1/2/3）。
 		$tl                 = isset( $input['title_lines'] ) ? (int) $input['title_lines'] : $defaults['title_lines'];
@@ -217,7 +240,10 @@ class RSS_D_Admin {
 			$default_preview = $settings['default_image_url'];
 		}
 
-		$option = RSS_D_OPTION;
+		$option      = RSS_D_OPTION;
+		$is_paying   = rss_display_fs_is_paying();
+		$fs          = rss_display_fs();
+		$upgrade_url = ( ! $is_paying && $fs ) ? $fs->get_upgrade_url() : '#';
 		?>
 		<div class="wrap rss-d-admin">
 			<h1><?php echo esc_html__( 'RSS Display 設定', 'rss-display' ); ?></h1>
@@ -239,6 +265,21 @@ class RSS_D_Admin {
 						<td>
 							<textarea id="rss_d_feeds" name="<?php echo esc_attr( $option ); ?>[feeds]" rows="6" class="large-text code" placeholder="https://example.com/feed&#10;https://example.org/feed"><?php echo esc_textarea( $settings['feeds'] ); ?></textarea>
 							<p class="description"><?php echo esc_html__( '1行に1つのフィードURLを入力してください。', 'rss-display' ); ?></p>
+							<?php if ( ! $is_paying ) : ?>
+								<p class="description" style="color:#b32d2e;">
+									<?php
+									printf(
+										wp_kses(
+											/* translators: %1$d: max feeds, %2$s: upgrade URL */
+											'無料プランは最大%1$d件まで。<a href="%2$s">Proプラン</a>で無制限に利用できます。',
+											array( 'a' => array( 'href' => array() ) )
+										),
+										RSS_D_FREE_MAX_FEEDS,
+										esc_url( $upgrade_url )
+									);
+									?>
+								</p>
+							<?php endif; ?>
 						</td>
 					</tr>
 
@@ -257,10 +298,26 @@ class RSS_D_Admin {
 						</th>
 						<td>
 							<select id="rss_d_columns" name="<?php echo esc_attr( $option ); ?>[columns]">
-								<?php foreach ( array( 2, 3, 4 ) as $c ) : ?>
-									<option value="<?php echo esc_attr( $c ); ?>" <?php selected( $settings['columns'], $c ); ?>><?php echo esc_html( $c . '列' ); ?></option>
+								<?php foreach ( array( 2, 3, 4 ) as $c ) :
+									$is_locked = ( ! $is_paying && $c > RSS_D_FREE_MAX_COLUMNS );
+									$label     = $is_locked ? ( $c . '列（Pro）' ) : ( $c . '列' );
+								?>
+									<option value="<?php echo esc_attr( $c ); ?>" <?php selected( $settings['columns'], $c ); ?> <?php disabled( $is_locked ); ?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
+							<?php if ( ! $is_paying ) : ?>
+								<p class="description">
+									<?php
+									printf(
+										wp_kses(
+											'3列・4列は <a href="%s">Proプラン</a> で利用できます。',
+											array( 'a' => array( 'href' => array() ) )
+										),
+										esc_url( $upgrade_url )
+									);
+									?>
+								</p>
+							<?php endif; ?>
 						</td>
 					</tr>
 
@@ -384,17 +441,17 @@ class RSS_D_Admin {
 
 			<h2><?php echo esc_html__( 'ショートコードの使い方', 'rss-display' ); ?></h2>
 			<p><code>[rss_display]</code> <?php echo esc_html__( '— 管理画面の設定値で表示', 'rss-display' ); ?></p>
-			<p><code>[rss_display columns="4" count="8"]</code></p>
+			<p><code>[rss_display columns="4" count="8"]</code> <?php echo ! $is_paying ? '<em>— columns=3/4 はProプランが必要です</em>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></p>
 			<p><code>[rss_display columns="2" count="6" feed="https://example.com/feed"]</code></p>
-			<p><code>[rss_display orderby="random" target="_self"]</code></p>
+			<p><code>[rss_display orderby="random" target="_self"]</code> <?php echo ! $is_paying ? '<em>— orderby=random はProプランが必要です</em>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></p>
 			<p><?php echo esc_html__( 'type オプション（デフォルト: grid）:', 'rss-display' ); ?></p>
 			<ul style="margin-left:1.5em;list-style:disc;">
 				<li><code>type="grid"</code> — <?php echo esc_html__( '全面背景画像＋タイトルオーバーレイ', 'rss-display' ); ?></li>
-				<li><code>type="image_only"</code> — <?php echo esc_html__( '画像のみ（テキストなし）', 'rss-display' ); ?></li>
-				<li><code>type="list"</code> — <?php echo esc_html__( '横並び（サムネイル＋テキスト）', 'rss-display' ); ?></li>
-				<li><code>type="list_vertical"</code> — <?php echo esc_html__( '縦積み（画像上・テキスト下）', 'rss-display' ); ?></li>
-				<li><code>type="text"</code> — <?php echo esc_html__( 'テキストのみカード（説明文あり）', 'rss-display' ); ?></li>
-				<li><code>type="text_line"</code> — <?php echo esc_html__( '1行テキスト・区切り線リスト', 'rss-display' ); ?></li>
+				<li><code>type="image_only"</code> — <?php echo esc_html__( '画像のみ（テキストなし）', 'rss-display' ); ?><?php echo ! $is_paying ? ' <strong>(Pro)</strong>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></li>
+				<li><code>type="list"</code> — <?php echo esc_html__( '横並び（サムネイル＋テキスト）', 'rss-display' ); ?><?php echo ! $is_paying ? ' <strong>(Pro)</strong>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></li>
+				<li><code>type="list_vertical"</code> — <?php echo esc_html__( '縦積み（画像上・テキスト下）', 'rss-display' ); ?><?php echo ! $is_paying ? ' <strong>(Pro)</strong>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></li>
+				<li><code>type="text"</code> — <?php echo esc_html__( 'テキストのみカード（説明文あり）', 'rss-display' ); ?><?php echo ! $is_paying ? ' <strong>(Pro)</strong>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></li>
+				<li><code>type="text_line"</code> — <?php echo esc_html__( '1行テキスト・区切り線リスト', 'rss-display' ); ?><?php echo ! $is_paying ? ' <strong>(Pro)</strong>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 固定の安全な文字列。 ?></li>
 			</ul>
 		</div>
 		<?php

@@ -25,6 +25,37 @@ define( 'RSS_D_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RSS_D_URL', plugin_dir_url( __FILE__ ) );
 define( 'RSS_D_OPTION', 'rss_d_settings' );
 
+// Freemius ヘルパー（SDK 不在でも必ず読み込む）。
+require_once RSS_D_DIR . 'includes/freemius.php';
+
+if ( file_exists( RSS_D_DIR . 'freemius/start.php' ) ) {
+	require_once RSS_D_DIR . 'freemius/start.php';
+
+	global $rss_display_fs;
+
+	$rss_display_fs = fs_dynamic_init(
+		array(
+			'id'                  => '31014',
+			'slug'                => 'rss-display',
+			'type'                => 'plugin',
+			'public_key'          => 'pk_5ffc0948f5ae1165eecc134a9bc38',
+			'is_premium'          => false,
+			'has_premium_version' => true,
+			'has_affiliation'     => false,
+			'has_addons'          => false,
+			'menu'                => array(
+				'slug'       => 'rss-display',
+				'first-path' => 'options-general.php?page=rss-display',
+				'account'    => false,
+				'support'    => false,
+			),
+			'is_live'             => true,
+		)
+	);
+
+	// アンインストールは register_uninstall_hook で一元管理するため after_uninstall は登録しない。
+}
+
 require_once RSS_D_DIR . 'includes/class-feed-manager.php';
 require_once RSS_D_DIR . 'includes/class-ogp-fetcher.php';
 require_once RSS_D_DIR . 'includes/class-shortcode.php';

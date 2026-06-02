@@ -68,7 +68,8 @@ class RSS_D_Shortcode {
 	 * @return string
 	 */
 	public function render( $atts ) {
-		$settings = RSS_Display::get_settings();
+		$settings   = RSS_Display::get_settings();
+		$is_paying  = rss_display_fs_is_paying();
 
 		$atts = shortcode_atts(
 			array(
@@ -95,6 +96,9 @@ class RSS_D_Shortcode {
 				$columns = 3;
 			}
 		}
+		if ( ! $is_paying && $columns > RSS_D_FREE_MAX_COLUMNS ) {
+			$columns = RSS_D_FREE_MAX_COLUMNS;
+		}
 
 		// 表示件数。
 		$count = absint( $atts['count'] );
@@ -104,12 +108,18 @@ class RSS_D_Shortcode {
 
 		// ソート順。
 		$orderby = ( 'random' === $atts['orderby'] ) ? 'random' : 'date';
+		if ( ! $is_paying && ! in_array( $orderby, RSS_D_FREE_ORDERBY, true ) ) {
+			return $this->upgrade_notice();
+		}
 
 		// 対象フィードの決定（feed 指定があればそのフィードのみ）。
 		if ( '' !== $atts['feed'] ) {
 			$feeds = array( $atts['feed'] );
 		} else {
 			$feeds = $this->parse_feeds( $settings['feeds'] );
+			if ( ! $is_paying && count( $feeds ) > RSS_D_FREE_MAX_FEEDS ) {
+				$feeds = array_slice( $feeds, 0, RSS_D_FREE_MAX_FEEDS );
+			}
 		}
 
 		if ( empty( $feeds ) ) {
@@ -148,6 +158,9 @@ class RSS_D_Shortcode {
 
 		$allowed_types = array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line' );
 		$type          = in_array( $atts['type'], $allowed_types, true ) ? $atts['type'] : 'grid';
+		if ( ! $is_paying && ! in_array( $type, RSS_D_FREE_TYPES, true ) ) {
+			return $this->upgrade_notice();
+		}
 
 		$title_lines = (int) $settings['title_lines'];
 		if ( ! in_array( $title_lines, array( 1, 2, 3 ), true ) ) {
@@ -256,6 +269,22 @@ class RSS_D_Shortcode {
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Pro 機能にアクセスした無料ユーザー向けのアップグレード案内 HTML を返す。
+	 *
+	 * @return string
+	 */
+	private function upgrade_notice() {
+		$fs          = rss_display_fs();
+		$upgrade_url = $fs ? $fs->get_upgrade_url() : '#';
+		return sprintf(
+			'<p class="rss-d-upgrade-notice">%s <a href="%s">%s</a></p>',
+			esc_html__( 'この機能は RSS Display Pro プランでご利用いただけます。', 'rss-display' ),
+			esc_url( $upgrade_url ),
+			esc_html__( 'アップグレードする →', 'rss-display' )
+		);
 	}
 
 	/**

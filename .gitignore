@@ -1,6 +1,9 @@
 # PHP preview server log
 *.log
 
+# Freemius SDK（リリースビルド時にダウンロード）
+rss-display/freemius/
+
 # PHPUnit phar（ローカル専用）
 phpunit.phar
 
