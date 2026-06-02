@@ -323,3 +323,159 @@ msgstr "タイトル太字 (1/0)"
 #: includes/class-admin.php
 msgid "Override default image URL"
 msgstr "デフォルト画像URLを上書き"
+
+#: includes/class-admin.php
+msgid "Settings"
+msgstr "設定"
+
+#: includes/class-admin.php
+msgid "Settings saved."
+msgstr "設定を保存しました。"
+
+#: includes/class-admin.php
+msgid "Display type"
+msgstr "表示タイプ"
+
+#: includes/class-admin.php
+msgid "画像背景＋タイトルオーバーレイ"
+msgstr "画像背景＋タイトルオーバーレイ"
+
+#: includes/class-admin.php
+msgid "上画像・下テキストカード"
+msgstr "上画像・下テキストカード"
+
+#: includes/class-admin.php
+msgid "テキストのみカード（説明付き）"
+msgstr "テキストのみカード（説明付き）"
+
+#: includes/class-admin.php
+msgid "1行テキスト＋区切り線"
+msgstr "1行テキスト＋区切り線"
+
+#: includes/class-admin.php
+msgid "画像のみ"
+msgstr "画像のみ"
+
+#: includes/class-admin.php
+msgid "サムネイル横並び＋テキスト"
+msgstr "サムネイル横並び＋テキスト"
+
+#: includes/class-admin.php
+msgid "スライドカルーセル"
+msgstr "スライドカルーセル"
+
+#: includes/class-admin.php
+msgid "クリックでモーダル表示グリッド"
+msgstr "クリックでモーダル表示グリッド"
+
+#: includes/class-admin.php
+msgid "タブレット2列・スマホ1列に自動調整"
+msgstr "タブレット2列・スマホ1列に自動調整"
+
+#: includes/class-admin.php
+msgid "レスポンシブ"
+msgstr "レスポンシブ"
+
+#: includes/class-admin.php
+msgid "新規タブ"
+msgstr "新規タブ"
+
+#: includes/class-admin.php
+msgid "説明"
+msgstr "説明"
+
+#: includes/class-admin.php
+msgid "日付"
+msgstr "日付"
+
+#: includes/class-admin.php
+msgid "サイト名"
+msgstr "サイト名"
+
+#: includes/class-admin.php
+msgid "太字タイトル"
+msgstr "太字タイトル"
+
+#: includes/class-admin.php
+msgid "表示タイトル行数（0=無制限）"
+msgstr "表示タイトル行数（0=無制限）"
+
+#: includes/class-admin.php
+msgid "タイトル行数:"
+msgstr "タイトル行数:"
+
+#: includes/class-admin.php
+msgid "About"
+msgstr "About"
+
+#: includes/class-admin.php
+msgid "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。"
+msgstr "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。"
+
+#: includes/class-admin.php
+msgid "主な機能"
+msgstr "主な機能"
+
+#: includes/class-admin.php
+msgid "8種類のレイアウト（grid / list / carousel など）"
+msgstr "8種類のレイアウト（grid / list / carousel など）"
+
+#: includes/class-admin.php
+msgid "複数フィードの集約・重複排除"
+msgstr "複数フィードの集約・重複排除"
+
+#: includes/class-admin.php
+msgid "OGP画像の自動取得・キャッシュ"
+msgstr "OGP画像の自動取得・キャッシュ"
+
+#: includes/class-admin.php
+msgid "レスポンシブ対応（PC/タブレット/スマホ）"
+msgstr "レスポンシブ対応（PC/タブレット/スマホ）"
+
+#: includes/class-admin.php
+msgid "外部サービス依存なし（WordPress組み込み機能のみ）"
+msgstr "外部サービス依存なし（WordPress組み込み機能のみ）"
+
+#: includes/class-admin.php
+msgid "基本情報"
+msgstr "基本情報"
+
+#: includes/class-admin.php
+msgid "バージョン"
+msgstr "バージョン"
+
+#: includes/class-admin.php
+msgid "必要環境"
+msgstr "必要環境"
+
+#: includes/class-admin.php
+msgid "ライセンス"
+msgstr "ライセンス"
+
+#: includes/class-admin.php
+msgid "ウェブサイト"
+msgstr "ウェブサイト"
+
+#: includes/class-admin.php
+msgid "サポート・お問い合わせ"
+msgstr "サポート・お問い合わせ"
+
+#: includes/class-admin.php
+msgid "ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。"
+msgstr "ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。"
+
+#: includes/class-admin.php
+msgid "公式サイトを開く"
+msgstr "公式サイトを開く"
+
+#: assets/js/admin.js
+msgid "読み込み中…"
+msgstr "読み込み中…"
+
+#: assets/js/admin.js
+msgid "取得に失敗しました。"
+msgstr "取得に失敗しました。"
+
+#: assets/js/admin.js
+msgid "通信エラーが発生しました。"
+msgstr "通信エラーが発生しました。"

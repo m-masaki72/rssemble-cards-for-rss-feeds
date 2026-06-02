@@ -44,6 +44,20 @@
 - [ ] https://wordpress.org/plugins/developers/add/ から申請
 - [ ] 審査通過後、SVN に `/trunk/`・`/assets/`・`/tags/1.0.0/` 構成でコミット
 
+### Phase 5: サイト公開（Cloudflare Pages）
+
+- [x] `Plugin URI` を `https://rss-display.pages.dev/` に変更（`rss-display.php`）
+- [ ] Cloudflare Pages プロジェクト `rss-display` のデプロイ設定確認
+- [ ] トップページ・デモ・ドキュメントの内容を確認してデプロイ
+- [ ] WordPress.org 審査通過後、サイト上のダウンロードリンクを `.org` URL に更新
+
+### Phase 6: 公開後の問い合わせ対応準備
+
+- [ ] 問い合わせフォームまたはメールアドレスをサイトに設置（Cloudflare Pages + Forms、または mailto リンク）
+- [ ] GitHub Issues を公式サポート窓口として readme.txt / サイトに明記
+- [ ] WordPress.org フォーラム（`https://wordpress.org/support/plugin/rss-display/`）の監視開始
+- [ ] よくある質問（FAQ）をサイト・readme.txt に追記（フィード取得失敗・OGP非表示・キャッシュ更新方法など）
+
 ## 既知の制約
 
 - `curl_multi` パスは `pre_http_request` フィルタをバイパスする（WPプロキシ・SSL設定は適用済み）

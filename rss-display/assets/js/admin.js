@@ -64,11 +64,14 @@
 
 		// ---- プレビュー ----
 
-		var $frame        = $( '#rss-d-preview-frame' );
-		var $previewBtn   = $( '#rss-d-preview-btn' );
-		var $deviceBtns   = $( '.rss-d-device-btn' );
-		var $frameWrap    = $( '.rss-d-preview-frame-wrap' );
-		var rsDisplayLoaded = false;
+		var $frame                 = $( '#rss-d-preview-frame' );
+		var $previewShortcode      = $( '#rss-d-preview-shortcode' );
+		var $previewShortcodeText  = $( '#rss-d-preview-shortcode-text' );
+		var $previewShortcodeCopy  = $( '#rss-d-preview-shortcode-copy' );
+		var $previewBtn            = $( '#rss-d-preview-btn' );
+		var $deviceBtns       = $( '.rss-d-device-btn' );
+		var $frameWrap        = $( '.rss-d-preview-frame-wrap' );
+		var rsDisplayLoaded   = false;
 
 		// デバイス幅切替。
 		$deviceBtns.on( 'click', function () {
@@ -81,27 +84,55 @@
 		$previewBtn.on( 'click', function () {
 			if ( ! window.rssDAdmin ) { return; }
 
-			var type    = $( '#rss-d-preview-type' ).val();
-			var columns = $( '#rss-d-preview-columns' ).val();
-			var count   = $( '#rss-d-preview-count' ).val();
+			var type        = $( '#rss-d-preview-type' ).val();
+			var columns     = $( '#rss-d-preview-columns' ).val();
+			var count       = $( '#rss-d-preview-count' ).val();
+			var responsive  = $( '#rss-d-preview-responsive' ).is( ':checked' ) ? '1' : '0';
+			var newTab      = $( '#rss-d-preview-new-tab' ).is( ':checked' ) ? '1' : '0';
+			var showDesc    = $( '#rss-d-preview-show-desc' ).is( ':checked' ) ? '1' : '0';
+			var showDate    = $( '#rss-d-preview-show-date' ).is( ':checked' ) ? '1' : '0';
+			var showSite    = $( '#rss-d-preview-show-site' ).is( ':checked' ) ? '1' : '0';
+			var boldTitle   = $( '#rss-d-preview-bold-title' ).is( ':checked' ) ? '1' : '0';
+			var titleLines  = $( '#rss-d-preview-title-lines' ).val();
 
-			$frame.html( '<p style="padding:2em;color:#888;">読み込み中…</p>' );
+			$frame.html( '<p style="padding:2em;color:#888;">' + rssDAdmin.msgLoading + '</p>' );
 
 			$.post(
 				rssDAdmin.ajaxUrl,
 				{
-					action      : 'rss_d_preview',
-					_ajax_nonce : rssDAdmin.nonce,
-					type        : type,
-					columns     : columns,
-					count       : count
+					action       : 'rss_d_preview',
+					_ajax_nonce  : rssDAdmin.nonce,
+					type         : type,
+					columns      : columns,
+					count        : count,
+					responsive   : responsive,
+					new_tab      : newTab,
+					show_desc    : showDesc,
+					show_date    : showDate,
+					show_site    : showSite,
+					bold_title   : boldTitle,
+					title_lines  : titleLines
 				},
 				function ( res ) {
 					if ( ! res.success ) {
-						$frame.html( '<p style="padding:2em;color:#c00;">取得に失敗しました。</p>' );
+						$frame.html( '<p style="padding:2em;color:#c00;">' + rssDAdmin.msgError + '</p>' );
+						$previewShortcode.hide();
 						return;
 					}
 					$frame.html( res.data.html );
+
+					// ショートコード表示（デフォルト値と同じ場合は省略）。
+					var sc = '[rss_display type="' + type + '" columns="' + columns + '" count="' + count + '"';
+					if ( '0' === responsive )  { sc += ' responsive="0"'; }
+					if ( '1' === newTab )      { sc += ' new_tab="1"'; }
+					if ( '1' === showDesc )    { sc += ' show_desc="1"'; }
+					if ( '1' === showDate )    { sc += ' show_date="1"'; }
+					if ( '1' === showSite )    { sc += ' show_site="1"'; }
+					if ( '1' === boldTitle )   { sc += ' bold_title="1"'; }
+					if ( '2' !== titleLines )  { sc += ' title_lines="' + titleLines + '"'; }
+					sc += ']';
+					$previewShortcodeText.text( sc );
+					$previewShortcode.css( 'display', 'flex' );
 
 					// rss-display.js は初回のみ取得してキャッシュ、以降はDOMに対して再初期化。
 					if ( res.data.js_url ) {
@@ -114,51 +145,18 @@
 					}
 				}
 			).fail( function () {
-				$frame.html( '<p style="padding:2em;color:#c00;">通信エラーが発生しました。</p>' );
+				$frame.html( '<p style="padding:2em;color:#c00;">' + rssDAdmin.msgNetError + '</p>' );
 			} );
 		} );
 
-		// ---- ショートコードジェネレーター ----
-
-		function buildShortcode() {
-			var parts      = [ 'rss_display' ];
-			var feed       = $.trim( $( '#rss-d-gen-feed' ).val() );
-			var type       = $( '#rss-d-gen-type' ).val();
-			var columns    = $( '#rss-d-gen-columns' ).val();
-			var count      = $( '#rss-d-gen-count' ).val();
-			var orderby    = $( '#rss-d-gen-orderby' ).val();
-			var target     = $( '#rss-d-gen-target' ).val();
-			var defType    = ( window.rssDAdmin && rssDAdmin.defaultType )    || 'grid';
-			var defColumns = ( window.rssDAdmin && rssDAdmin.defaultColumns ) || '3';
-			var defCount   = ( window.rssDAdmin && rssDAdmin.defaultCount )   || '6';
-
-			if ( feed )                    { parts.push( 'feed="' + feed + '"' ); }
-			if ( type && type !== defType )       { parts.push( 'type="' + type + '"' ); }
-			if ( columns && columns !== defColumns ) { parts.push( 'columns="' + columns + '"' ); }
-			if ( count && count !== defCount )    { parts.push( 'count="' + count + '"' ); }
-			if ( orderby )               { parts.push( 'orderby="' + orderby + '"' ); }
-			if ( target )                { parts.push( 'target="' + target + '"' ); }
-
-			if ( ! $( '#rss-d-gen-date' ).prop( 'checked' ) ) { parts.push( 'date="0"' ); }
-			if ( $( '#rss-d-gen-site' ).prop( 'checked' ) )   { parts.push( 'site="1"' ); }
-			if ( $( '#rss-d-gen-desc' ).prop( 'checked' ) )   { parts.push( 'desc="1"' ); }
-			if ( $( '#rss-d-gen-bold' ).prop( 'checked' ) )   { parts.push( 'bold="1"' ); }
-
-			$( '#rss-d-gen-result' ).val( '[' + parts.join( ' ' ) + ']' );
-		}
-
-		$( '#rss-d-gen-feed, #rss-d-gen-type, #rss-d-gen-columns, #rss-d-gen-count, #rss-d-gen-orderby, #rss-d-gen-target' )
-			.on( 'input change', buildShortcode );
-		$( '#rss-d-gen-date, #rss-d-gen-site, #rss-d-gen-desc, #rss-d-gen-bold' )
-			.on( 'change', buildShortcode );
-
-		buildShortcode();
-
-		$( '#rss-d-gen-copy' ).on( 'click', function () {
-			var val = $( '#rss-d-gen-result' ).val();
-			navigator.clipboard.writeText( val );
-			var $msg = $( '#rss-d-gen-copy-msg' );
-			$msg.stop( true ).fadeIn( 100 ).delay( 2000 ).fadeOut( 400 );
+		$previewShortcodeCopy.on( 'click', function () {
+			var text = $previewShortcodeText.text();
+			if ( text ) {
+				navigator.clipboard.writeText( text );
+				var $btn = $( this );
+				$btn.text( rssDAdmin.btnCopied );
+				setTimeout( function () { $btn.text( rssDAdmin.btnCopy ); }, 2000 );
+			}
 		} );
 
 	} );

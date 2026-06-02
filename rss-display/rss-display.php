@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Plugin Name:       RSS Display
- * Plugin URI:        https://github.com/m-masaki72/rss-display
+ * Plugin URI:        https://rss-display.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
  * Version:           1.0.0
  * Requires at least: 6.0

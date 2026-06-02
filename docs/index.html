@@ -3,138 +3,399 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RSS Display — Layout Preview</title>
+<title>RSS Display — WordPress プラグイン</title>
+<meta name="description" content="複数のRSSフィードをOGP画像付きカードグリッドで表示するWordPressプラグイン。外部サービス不要・レスポンシブ対応・8種のレイアウト。">
 <link rel="stylesheet" href="rss-display.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-         background: #f0f0f0; color: #222; }
+*, *::before, *::after { box-sizing: border-box; }
 
-  .preview-bar {
-    position: sticky; top: 0; z-index: 100;
-    background: #1e1e2e; color: #cdd6f4; padding: 12px 20px;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.4);
-  }
-  .preview-bar h1 { margin: 0; font-size: 15px; color: #cba6f7; white-space: nowrap; }
-  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1; }
-  .field { display: flex; align-items: center; gap: 5px; }
-  .field label { font-size: 12px; color: #a6adc8; white-space: nowrap; }
-  .field select, .field input[type=number] {
-    padding: 6px 8px; background: #313244; color: #cdd6f4;
-    border: 1px solid #45475a; border-radius: 6px; font-size: 13px;
-  }
-  .field input[type=checkbox] { cursor: pointer; }
+:root {
+  --c-bg: #0f0f17;
+  --c-surface: #1a1a2e;
+  --c-surface2: #242438;
+  --c-border: #2d2d4a;
+  --c-text: #cdd6f4;
+  --c-muted: #a6adc8;
+  --c-accent: #cba6f7;
+  --c-accent2: #89b4fa;
+  --c-green: #a6e3a1;
+  --radius: 10px;
+}
 
-  .preview-main { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  line-height: 1.7;
+}
 
-  .layout-section { margin-bottom: 48px; }
-  .layout-section h2 {
-    font-size: 13px; font-weight: 700; letter-spacing: .05em;
-    color: #666; text-transform: uppercase; margin: 0 0 12px;
-    padding: 4px 10px; background: #e0e0e0; border-radius: 4px;
-    display: inline-block;
-  }
+a { color: var(--c-accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    background: #e8f4fd; color: #2196f3; font-size: 11px; font-weight: 600;
-  }
-  .preview-note {
-    font-size: 12px; color: #888; margin-bottom: 24px;
-  }
+/* ---- ヘッダー ---- */
+.site-header {
+  padding: 14px 24px;
+  background: rgba(26,26,46,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.site-logo { font-size: 17px; font-weight: 700; color: var(--c-accent); letter-spacing: -.01em; }
+.site-logo span { color: var(--c-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
+.header-links { display: flex; gap: 20px; font-size: 13px; }
+.header-links a { color: var(--c-muted); }
+.header-links a:hover { color: var(--c-text); text-decoration: none; }
+
+/* ---- ヒーロー ---- */
+.hero {
+  text-align: center;
+  padding: 80px 24px 64px;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(203,166,247,.15) 0%, transparent 70%);
+}
+.hero-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  background: rgba(203,166,247,.1); border: 1px solid rgba(203,166,247,.3);
+  color: var(--c-accent); font-size: 12px; font-weight: 600; letter-spacing: .05em;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  margin: 0 0 16px;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #fff 30%, var(--c-accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  max-width: 560px; margin: 0 auto 36px;
+  color: var(--c-muted); font-size: 17px;
+}
+.hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 12px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  text-decoration: none;
+}
+.btn:hover { opacity: .85; text-decoration: none; }
+.btn-primary { background: var(--c-accent); color: #1a1a2e; }
+.btn-secondary {
+  background: transparent; color: var(--c-text);
+  border: 1px solid var(--c-border);
+}
+
+/* ---- セクション共通 ---- */
+.section { padding: 64px 24px; max-width: 1080px; margin: 0 auto; }
+.section-title {
+  text-align: center; font-size: 26px; font-weight: 700;
+  margin: 0 0 8px; color: #fff;
+}
+.section-sub { text-align: center; color: var(--c-muted); margin: 0 0 48px; }
+
+/* ---- 特徴カード ---- */
+.features { background: var(--c-surface); border-radius: var(--radius); }
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;
+}
+.feature-card {
+  background: var(--c-surface2); border: 1px solid var(--c-border);
+  border-radius: var(--radius); padding: 24px;
+}
+.feature-icon { font-size: 28px; margin-bottom: 12px; }
+.feature-card h3 { margin: 0 0 8px; font-size: 15px; color: #fff; }
+.feature-card p { margin: 0; font-size: 13px; color: var(--c-muted); }
+
+/* ---- レイアウト一覧 ---- */
+.layouts-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+}
+.layout-chip {
+  background: var(--c-surface); border: 1px solid var(--c-border);
+  border-radius: 8px; padding: 14px 16px;
+}
+.layout-chip code { font-size: 13px; color: var(--c-accent); font-family: 'SFMono-Regular', Consolas, monospace; }
+.layout-chip p { margin: 6px 0 0; font-size: 12px; color: var(--c-muted); }
+
+/* ---- ショートコード例 ---- */
+.code-block {
+  background: #11111b; border: 1px solid var(--c-border); border-radius: 8px;
+  padding: 20px 24px; font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 14px; color: #cdd6f4; overflow-x: auto; white-space: pre;
+}
+.code-block .sc-bracket { color: #89b4fa; }
+.code-block .sc-name { color: #cba6f7; }
+.code-block .sc-attr { color: #a6e3a1; }
+.code-block .sc-val { color: #fab387; }
+
+/* ---- 動作環境 ---- */
+.requirements {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+}
+.req-badge {
+  padding: 8px 18px; border-radius: 20px;
+  background: var(--c-surface2); border: 1px solid var(--c-border);
+  font-size: 13px; color: var(--c-text);
+}
+.req-badge strong { color: var(--c-green); }
+
+/* ---- プレビューツールバー（デモ用） ---- */
+.preview-bar {
+  background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 8px 8px 0 0;
+  padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+}
+.preview-bar-title { font-size: 13px; color: var(--c-accent); font-weight: 600; }
+.field { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--c-muted); }
+.field select, .field input[type=number] {
+  padding: 4px 8px; background: var(--c-surface2); color: var(--c-text);
+  border: 1px solid var(--c-border); border-radius: 6px; font-size: 13px;
+}
+.preview-frame {
+  background: #fff; border: 1px solid var(--c-border); border-top: none;
+  border-radius: 0 0 8px 8px; padding: 20px; overflow: hidden;
+}
+.preview-note { font-size: 12px; color: var(--c-muted); margin-bottom: 16px; }
+
+/* ---- フッター ---- */
+.site-footer {
+  text-align: center; padding: 40px 24px;
+  border-top: 1px solid var(--c-border);
+  color: var(--c-muted); font-size: 13px;
+}
+.site-footer a { color: var(--c-muted); }
+
+@media (max-width: 600px) {
+  .hero { padding: 56px 16px 48px; }
+  .feature-grid, .layouts-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="preview-bar">
-  <h1>RSS Display <span class="badge">Preview</span></h1>
-  <div class="controls">
-    <div class="field">
-      <label>列数</label>
+<header class="site-header">
+  <div class="site-logo">RSS Display <span>WordPress Plugin</span></div>
+  <nav class="header-links">
+    <a href="#features">特徴</a>
+    <a href="#layouts">レイアウト</a>
+    <a href="#usage">使い方</a>
+    <a href="#demo">デモ</a>
+  </nav>
+</header>
+
+<!-- ヒーロー -->
+<section class="hero">
+  <div class="hero-badge">WordPress Plugin</div>
+  <h1>RSS Display</h1>
+  <p class="hero-sub">複数のRSSフィードをOGP画像付きカードグリッドで美しく表示。外部サービス不要・完全自己完結型。</p>
+  <div class="hero-actions">
+    <a href="https://wordpress.org/plugins/rss-display/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">WordPress.org で入手</a>
+    <a href="#demo" class="btn btn-secondary">デモを見る</a>
+  </div>
+</section>
+
+<!-- 特徴 -->
+<section class="section" id="features">
+  <p class="section-title">特徴</p>
+  <p class="section-sub">WordPressの組み込み機能だけで動作。外部APIへの依存はゼロ。</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🗂️</div>
+      <h3>8種のレイアウト</h3>
+      <p>グリッド・リスト・カルーセル・モーダルなど、用途に合わせて選択できます。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🖼️</div>
+      <h3>OGP画像の自動取得</h3>
+      <p>RSSに画像がなくてもog:imageを取得・キャッシュして表示します。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>レスポンシブ対応</h3>
+      <p>PC・タブレット・スマホで列数を自動調整。<code>responsive="0"</code>で固定も可能。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>トランジェントキャッシュ</h3>
+      <p>RSSはユーザー設定TTL、OGP画像は1ヶ月キャッシュで高速表示。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>マルチフィード対応</h3>
+      <p>複数フィードを集約して日付順にソート。重複記事を自動排除。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>外部サービス不要</h3>
+      <p>SimplePie・DOMDocument・WordPressトランジェントのみ使用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- レイアウト -->
+<section class="section" id="layouts" style="padding-top:0;">
+  <p class="section-title">レイアウト一覧</p>
+  <p class="section-sub">ショートコードの <code style="color:var(--c-accent)">type</code> 属性で切り替え。</p>
+  <div class="layouts-grid">
+    <div class="layout-chip"><code>grid</code><p>画像背景＋タイトルオーバーレイ</p></div>
+    <div class="layout-chip"><code>list_vertical</code><p>上画像・下テキストカード</p></div>
+    <div class="layout-chip"><code>list</code><p>サムネイル横並び＋テキスト</p></div>
+    <div class="layout-chip"><code>text</code><p>テキストのみカード（説明付き）</p></div>
+    <div class="layout-chip"><code>text_line</code><p>1行テキスト＋区切り線</p></div>
+    <div class="layout-chip"><code>image_only</code><p>画像のみ</p></div>
+    <div class="layout-chip"><code>carousel</code><p>スライドカルーセル</p></div>
+    <div class="layout-chip"><code>popup_grid</code><p>クリックでモーダル表示</p></div>
+  </div>
+</section>
+
+<!-- 使い方 -->
+<section class="section" id="usage" style="padding-top:0;">
+  <p class="section-title">使い方</p>
+  <p class="section-sub">投稿・固定ページのエディタにショートコードを貼り付けるだけ。</p>
+
+  <p style="color:var(--c-muted);font-size:14px;margin-bottom:12px;">基本:</p>
+  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span><span class="sc-bracket">]</span></div>
+
+  <p style="color:var(--c-muted);font-size:14px;margin:24px 0 12px;">カスタマイズ例:</p>
+  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span>
+  <span class="sc-attr">type</span>=<span class="sc-val">"carousel"</span>
+  <span class="sc-attr">columns</span>=<span class="sc-val">"3"</span>
+  <span class="sc-attr">count</span>=<span class="sc-val">"9"</span>
+  <span class="sc-attr">show_date</span>=<span class="sc-val">"1"</span>
+  <span class="sc-attr">show_site</span>=<span class="sc-val">"1"</span>
+  <span class="sc-attr">responsive</span>=<span class="sc-val">"1"</span><span class="sc-bracket">]</span></div>
+
+  <p style="color:var(--c-muted);font-size:14px;margin:24px 0 12px;">特定フィードだけ表示（設定済みフィードを上書き）:</p>
+  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span>
+  <span class="sc-attr">feed</span>=<span class="sc-val">"https://example.com/feed/"</span>
+  <span class="sc-attr">type</span>=<span class="sc-val">"list_vertical"</span><span class="sc-bracket">]</span></div>
+
+  <details style="margin-top:28px;">
+    <summary style="cursor:pointer;font-size:14px;color:var(--c-accent2);list-style:none;">全パラメーター一覧を見る ▾</summary>
+    <table style="width:100%;max-width:760px;margin-top:16px;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--c-border);">
+          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">属性</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">デフォルト</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">説明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">feed</code></td><td style="padding:8px 10px;color:var(--c-muted);">—</td><td style="padding:8px 10px;color:var(--c-muted);">フィードURL（複数はカンマ区切り）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">type</code></td><td style="padding:8px 10px;color:var(--c-muted);">grid</td><td style="padding:8px 10px;color:var(--c-muted);">表示タイプ</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">columns</code></td><td style="padding:8px 10px;color:var(--c-muted);">3</td><td style="padding:8px 10px;color:var(--c-muted);">列数（2 / 3 / 4）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">count</code></td><td style="padding:8px 10px;color:var(--c-muted);">6</td><td style="padding:8px 10px;color:var(--c-muted);">表示件数</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">responsive</code></td><td style="padding:8px 10px;color:var(--c-muted);">1</td><td style="padding:8px 10px;color:var(--c-muted);">レスポンシブ（1/0）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">new_tab</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">新規タブで開く（1/0）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_desc</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">説明文表示（1/0）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_date</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">日付表示（1/0）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_site</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">サイト名表示（1/0）</td></tr>
+        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">bold_title</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">タイトル太字（1/0）</td></tr>
+        <tr><td style="padding:8px 10px;"><code style="color:var(--c-accent)">title_lines</code></td><td style="padding:8px 10px;color:var(--c-muted);">2</td><td style="padding:8px 10px;color:var(--c-muted);">タイトル表示行数（0=無制限）</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<!-- デモ -->
+<section class="section" id="demo" style="padding-top:0;">
+  <p class="section-title">レイアウトデモ</p>
+  <p class="section-sub">ダミーデータによる表示確認。</p>
+
+  <div class="preview-bar">
+    <span class="preview-bar-title">▶ プレビュー</span>
+    <div class="field"><label>列数</label>
       <select id="ctrl-columns">
         <option value="2">2列</option>
         <option value="3" selected>3列</option>
         <option value="4">4列</option>
       </select>
     </div>
-    <div class="field">
-      <label>件数</label>
+    <div class="field"><label>件数</label>
       <input type="number" id="ctrl-count" value="6" min="1" max="12" style="width:56px">
     </div>
-    <div class="field">
-      <label>タイトル行数</label>
+    <div class="field"><label>タイトル行数</label>
       <select id="ctrl-lines">
         <option value="1">1行</option>
         <option value="2" selected>2行</option>
         <option value="3">3行</option>
       </select>
     </div>
-    <div class="field">
-      <label>説明文</label>
-      <input type="checkbox" id="ctrl-desc">
+    <div class="field"><label>説明文 <input type="checkbox" id="ctrl-desc"></label></div>
+    <div class="field"><label>日付 <input type="checkbox" id="ctrl-date" checked></label></div>
+    <div class="field"><label>サイト名 <input type="checkbox" id="ctrl-site"></label></div>
+  </div>
+
+  <div class="preview-frame">
+    <p class="preview-note">※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。</p>
+
+    <div style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">grid</p>
+      <div id="grid-grid" class="rss-d-grid rss-d-type-grid rss-d-responsive"></div>
     </div>
-    <div class="field">
-      <label>日付</label>
-      <input type="checkbox" id="ctrl-date" checked>
+    <div style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">list_vertical</p>
+      <div id="grid-list_vertical" class="rss-d-grid rss-d-type-list_vertical rss-d-responsive"></div>
     </div>
-    <div class="field">
-      <label>サイト名</label>
-      <input type="checkbox" id="ctrl-site">
+    <div style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">list</p>
+      <div id="grid-list" class="rss-d-grid rss-d-type-list rss-d-responsive"></div>
+    </div>
+    <div style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">text</p>
+      <div id="grid-text" class="rss-d-grid rss-d-type-text rss-d-responsive"></div>
+    </div>
+    <div style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">text_line</p>
+      <div id="grid-text_line" class="rss-d-grid rss-d-type-text_line rss-d-responsive"></div>
+    </div>
+    <div>
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">image_only</p>
+      <div id="grid-image_only" class="rss-d-grid rss-d-type-image_only rss-d-responsive"></div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="preview-main">
-  <p class="preview-note">
-    ダミーデータでデザイン確認用。実フィードは <code>php -S localhost:8081 preview/router.php</code> でローカルプレビューを使ってくださいませ。
-  </p>
-
-  <div class="layout-section">
-    <h2>grid</h2>
-    <div id="grid-grid" class="rss-d-grid rss-d-type-grid"></div>
+<!-- 動作環境 -->
+<section class="section" style="padding-top:0;text-align:center;">
+  <p class="section-title">動作環境</p>
+  <div class="requirements" style="margin-top:24px;">
+    <span class="req-badge">PHP <strong>7.4+</strong></span>
+    <span class="req-badge">WordPress <strong>6.0+</strong></span>
+    <span class="req-badge">ライセンス <strong>GPL-2.0-or-later</strong></span>
   </div>
+</section>
 
-  <div class="layout-section">
-    <h2>image_only</h2>
-    <div id="grid-image_only" class="rss-d-grid rss-d-type-image_only"></div>
+<!-- サポート -->
+<section class="section" id="support" style="padding-top:0;text-align:center;">
+  <p class="section-title">サポート</p>
+  <p class="section-sub">バグ報告・機能要望・質問はお気軽にどうぞ。</p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:8px;">
+    <a href="mailto:m.masaki7272@gmail.com"
+       style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--radius);color:var(--c-accent2);text-decoration:none;font-weight:600;">
+      m.masaki7272@gmail.com
+    </a>
   </div>
+</section>
 
-  <div class="layout-section">
-    <h2>list</h2>
-    <div id="grid-list" class="rss-d-grid rss-d-type-list"></div>
-  </div>
-
-  <div class="layout-section">
-    <h2>list_vertical</h2>
-    <div id="grid-list_vertical" class="rss-d-grid rss-d-type-list_vertical"></div>
-  </div>
-
-  <div class="layout-section">
-    <h2>text</h2>
-    <div id="grid-text" class="rss-d-grid rss-d-type-text"></div>
-  </div>
-
-  <div class="layout-section">
-    <h2>text_line</h2>
-    <div id="grid-text_line" class="rss-d-grid rss-d-type-text_line"></div>
-  </div>
-</div>
+<footer class="site-footer">
+  <p>RSS Display — <a href="https://wordpress.org/plugins/rss-display/" target="_blank" rel="noopener noreferrer">WordPress.org</a></p>
+</footer>
 
 <script>
 const ITEMS = [
-  { title: "TypeScriptの型システムを完全に理解する — ジェネリクスから条件型まで", url: "https://zenn.dev/example/articles/typescript-types", date: "2026/05/30", image: "https://picsum.photos/seed/ts1/640/360", site: "Zenn", desc: "TypeScriptの型システムについて、基本的なジェネリクスから高度な条件型まで徹底解説します。" },
-  { title: "Next.js 15 App Router 実践ガイド — サーバーコンポーネントの使いどころ", url: "https://zenn.dev/example/articles/nextjs15-app-router", date: "2026/05/29", image: "https://picsum.photos/seed/next2/640/360", site: "Zenn", desc: "Next.js 15のApp Routerを使ったサーバーコンポーネントの実践的な使い方を解説。" },
-  { title: "Rustで作るWebAssemblyモジュール入門", url: "https://qiita.com/example/items/rust-wasm", date: "2026/05/28", image: "https://picsum.photos/seed/rust3/640/360", site: "Qiita", desc: "RustでWASMモジュールをゼロから作る手順を丁寧に解説します。" },
-  { title: "React Server Components でバンドルサイズを60%削減した話", url: "https://zenn.dev/example/articles/rsc-bundle-size", date: "2026/05/27", image: "https://picsum.photos/seed/rsc4/640/360", site: "Zenn", desc: "RSCを導入することでバンドルサイズを大幅に削減できた実例を紹介。" },
-  { title: "PostgreSQL インデックス設計の勘どころ — クエリプランを読む", url: "https://qiita.com/example/items/postgres-index", date: "2026/05/26", image: "https://picsum.photos/seed/pg5/640/360", site: "Qiita", desc: "EXPLAINの読み方からインデックス設計のベストプラクティスまで解説。" },
-  { title: "GitHub Actions で完全自動化するCIパイプライン構築術", url: "https://note.com/example/n/github-actions-ci", date: "2026/05/25", image: "https://picsum.photos/seed/ci6/640/360", site: "note", desc: "テスト・ビルド・デプロイまで全自動化するGitHub Actionsのワークフロー設計。" },
-  { title: "Go言語で書くHTTPサーバー — net/httpパッケージ完全攻略", url: "https://zenn.dev/example/articles/go-http-server", date: "2026/05/24", image: "https://picsum.photos/seed/go7/640/360", site: "Zenn", desc: "Goのnet/httpパッケージを使ってHTTPサーバーをゼロから実装する方法。" },
-  { title: "TailwindCSS v4 の新機能まとめ — ゼロ設定で使えるようになった", url: "https://qiita.com/example/items/tailwind-v4", date: "2026/05/23", image: "https://picsum.photos/seed/tw8/640/360", site: "Qiita", desc: "TailwindCSS v4で導入されたゼロコンフィグ動作と新ユーティリティの概要。" },
-  { title: "Cloudflare Workers + D1 でサーバーレスAPIを作る", url: "https://note.com/example/n/cf-workers-d1", date: "2026/05/22", image: "https://picsum.photos/seed/cf9/640/360", site: "note", desc: "CloudflareのEdge環境でD1データベースを使ったAPIを実装する手順。" },
-  { title: "Docker Compose で開発環境を完全再現する — マルチサービス構成", url: "https://zenn.dev/example/articles/docker-compose-dev", date: "2026/05/21", image: "https://picsum.photos/seed/dk10/640/360", site: "Zenn", desc: "複数のサービスをDocker Composeで管理し、チーム全員が同じ環境を使えるように設定する方法。" },
-  { title: "Vite 6 プラグイン開発入門 — ビルドパイプラインを自由にカスタマイズ", url: "https://qiita.com/example/items/vite6-plugin", date: "2026/05/20", image: "https://picsum.photos/seed/vt11/640/360", site: "Qiita", desc: "Vite 6のプラグインAPIを使って独自のビルド変換処理を実装する入門ガイド。" },
-  { title: "画像なしカードのフォールバックデザイン確認用アイテム（プレースホルダー）", url: "https://zenn.dev/example/articles/no-image", date: "2026/05/19", image: "", site: "Zenn", desc: "画像が存在しない場合のフォールバック表示を確認するためのサンプルアイテム。" },
+  { title: "TypeScriptの型システムを完全に理解する — ジェネリクスから条件型まで", url: "#", date: "2026/05/30", image: "https://picsum.photos/seed/ts1/640/360", site: "Zenn", desc: "TypeScriptの型システムについて、基本的なジェネリクスから高度な条件型まで徹底解説します。" },
+  { title: "Next.js 15 App Router 実践ガイド — サーバーコンポーネントの使いどころ", url: "#", date: "2026/05/29", image: "https://picsum.photos/seed/next2/640/360", site: "Zenn", desc: "Next.js 15のApp Routerを使ったサーバーコンポーネントの実践的な使い方を解説。" },
+  { title: "Rustで作るWebAssemblyモジュール入門", url: "#", date: "2026/05/28", image: "https://picsum.photos/seed/rust3/640/360", site: "Qiita", desc: "RustでWASMモジュールをゼロから作る手順を丁寧に解説します。" },
+  { title: "React Server Components でバンドルサイズを60%削減した話", url: "#", date: "2026/05/27", image: "https://picsum.photos/seed/rsc4/640/360", site: "Zenn", desc: "RSCを導入することでバンドルサイズを大幅に削減できた実例を紹介。" },
+  { title: "PostgreSQL インデックス設計の勘どころ — クエリプランを読む", url: "#", date: "2026/05/26", image: "https://picsum.photos/seed/pg5/640/360", site: "Qiita", desc: "EXPLAINの読み方からインデックス設計のベストプラクティスまで解説。" },
+  { title: "GitHub Actions で完全自動化するCIパイプライン構築術", url: "#", date: "2026/05/25", image: "https://picsum.photos/seed/ci6/640/360", site: "note", desc: "テスト・ビルド・デプロイまで全自動化するGitHub Actionsのワークフロー設計。" },
+  { title: "Go言語で書くHTTPサーバー — net/httpパッケージ完全攻略", url: "#", date: "2026/05/24", image: "https://picsum.photos/seed/go7/640/360", site: "Zenn", desc: "Goのnet/httpパッケージを使ってHTTPサーバーをゼロから実装する方法。" },
+  { title: "TailwindCSS v4 の新機能まとめ — ゼロ設定で使えるようになった", url: "#", date: "2026/05/23", image: "https://picsum.photos/seed/tw8/640/360", site: "Qiita", desc: "TailwindCSS v4で導入されたゼロコンフィグ動作と新ユーティリティの概要。" },
+  { title: "Cloudflare Workers + D1 でサーバーレスAPIを作る", url: "#", date: "2026/05/22", image: "https://picsum.photos/seed/cf9/640/360", site: "note", desc: "CloudflareのEdge環境でD1データベースを使ったAPIを実装する手順。" },
+  { title: "Docker Compose で開発環境を完全再現する — マルチサービス構成", url: "#", date: "2026/05/21", image: "https://picsum.photos/seed/dk10/640/360", site: "Zenn", desc: "複数のサービスをDocker Composeで管理し、チーム全員が同じ環境を使えるように設定する方法。" },
+  { title: "Vite 6 プラグイン開発入門 — ビルドパイプラインを自由にカスタマイズ", url: "#", date: "2026/05/20", image: "https://picsum.photos/seed/vt11/640/360", site: "Qiita", desc: "Vite 6のプラグインAPIを使って独自のビルド変換処理を実装する入門ガイド。" },
+  { title: "画像なしフォールバックサンプル", url: "#", date: "2026/05/19", image: "", site: "Zenn", desc: "画像が存在しない場合のフォールバック表示を確認するためのサンプルアイテム。" },
 ];
 
 const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%231a1a2e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23555' font-size='18' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
@@ -173,23 +434,23 @@ function renderCardText(item, type, showDate, showSite, showDesc) {
 }
 
 function buildAll() {
-  const columns   = +document.getElementById('ctrl-columns').value;
-  const count     = +document.getElementById('ctrl-count').value;
-  const lines     = +document.getElementById('ctrl-lines').value;
-  const showDesc  = document.getElementById('ctrl-desc').checked;
-  const showDate  = document.getElementById('ctrl-date').checked;
-  const showSite  = document.getElementById('ctrl-site').checked;
+  const columns  = +document.getElementById('ctrl-columns').value;
+  const count    = +document.getElementById('ctrl-count').value;
+  const lines    = +document.getElementById('ctrl-lines').value;
+  const showDesc = document.getElementById('ctrl-desc').checked;
+  const showDate = document.getElementById('ctrl-date').checked;
+  const showSite = document.getElementById('ctrl-site').checked;
 
   const items = ITEMS.slice(0, count);
   const style = `--rss-d-columns:${columns};--rss-d-title-lines:${lines};`;
 
   const configs = [
-    { id: 'grid-grid',         type: 'grid',         render: i => renderCardGrid(i, 'grid', showDate, showSite, showDesc) },
-    { id: 'grid-image_only',   type: 'image_only',   render: i => renderCardGrid(i, 'image_only', showDate, showSite, showDesc) },
-    { id: 'grid-list',         type: 'list',         render: i => renderCardList(i, showDate, showSite, showDesc) },
-    { id: 'grid-list_vertical',type: 'list_vertical',render: i => renderCardList(i, showDate, showSite, showDesc) },
-    { id: 'grid-text',         type: 'text',         render: i => renderCardText(i, 'text', showDate, showSite, showDesc) },
-    { id: 'grid-text_line',    type: 'text_line',    render: i => renderCardText(i, 'text_line', showDate, showSite, showDesc) },
+    { id: 'grid-grid',          type: 'grid',         render: i => renderCardGrid(i, 'grid', showDate, showSite, showDesc) },
+    { id: 'grid-list_vertical', type: 'list_vertical',render: i => renderCardList(i, showDate, showSite, showDesc) },
+    { id: 'grid-list',          type: 'list',         render: i => renderCardList(i, showDate, showSite, showDesc) },
+    { id: 'grid-text',          type: 'text',         render: i => renderCardText(i, 'text', showDate, showSite, showDesc) },
+    { id: 'grid-text_line',     type: 'text_line',    render: i => renderCardText(i, 'text_line', showDate, showSite, showDesc) },
+    { id: 'grid-image_only',    type: 'image_only',   render: i => renderCardGrid(i, 'image_only', showDate, showSite, showDesc) },
   ];
 
   for (const { id, render } of configs) {

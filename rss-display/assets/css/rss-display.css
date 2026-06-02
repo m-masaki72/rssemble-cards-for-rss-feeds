@@ -626,31 +626,31 @@
 	background-color: var(--rss-d-bg-muted);
 }
 
-/* レスポンシブ：タブレット2列 / スマホ1列 */
+/* レスポンシブ：タブレット2列 / スマホ1列（responsive="1" 時のみ） */
 @media (max-width: 1024px) {
-	.rss-d-grid,
-	.rss-d-type-list_vertical,
-	.rss-d-type-text {
+	.rss-d-responsive.rss-d-grid,
+	.rss-d-responsive.rss-d-type-list_vertical,
+	.rss-d-responsive.rss-d-type-text {
 		grid-template-columns: repeat(2, 1fr);
 	}
 
-	.rss-d-type-list_vertical .rss-d-img {
+	.rss-d-responsive.rss-d-type-list_vertical .rss-d-img {
 		height: 140px;
 	}
 
-	.rss-d-carousel-wrap {
+	.rss-d-carousel-wrap.rss-d-responsive {
 		--rss-d-columns: 2;
 	}
 }
 
 @media (max-width: 600px) {
-	.rss-d-grid,
-	.rss-d-type-list_vertical,
-	.rss-d-type-text {
+	.rss-d-responsive.rss-d-grid,
+	.rss-d-responsive.rss-d-type-list_vertical,
+	.rss-d-responsive.rss-d-type-text {
 		grid-template-columns: 1fr;
 	}
 
-	.rss-d-carousel-wrap {
+	.rss-d-carousel-wrap.rss-d-responsive {
 		--rss-d-columns: 1;
 	}
 

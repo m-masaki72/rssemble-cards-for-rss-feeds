@@ -345,3 +345,159 @@ msgstr ""
 #: includes/class-admin.php
 msgid "Override default image URL"
 msgstr ""
+
+#: includes/class-admin.php
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Display type"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "画像背景＋タイトルオーバーレイ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "上画像・下テキストカード"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "テキストのみカード（説明付き）"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "1行テキスト＋区切り線"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "画像のみ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "サムネイル横並び＋テキスト"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "スライドカルーセル"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "クリックでモーダル表示グリッド"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "タブレット2列・スマホ1列に自動調整"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "レスポンシブ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "新規タブ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "説明"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "日付"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "サイト名"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "太字タイトル"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "表示タイトル行数（0=無制限）"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "タイトル行数:"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "About"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "主な機能"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "8種類のレイアウト（grid / list / carousel など）"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "複数フィードの集約・重複排除"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "OGP画像の自動取得・キャッシュ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "レスポンシブ対応（PC/タブレット/スマホ）"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "外部サービス依存なし（WordPress組み込み機能のみ）"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "基本情報"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "バージョン"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "必要環境"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "ライセンス"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "ウェブサイト"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "サポート・お問い合わせ"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "公式サイトを開く"
+msgstr ""
+
+#: assets/js/admin.js
+msgid "読み込み中…"
+msgstr ""
+
+#: assets/js/admin.js
+msgid "取得に失敗しました。"
+msgstr ""
+
+#: assets/js/admin.js
+msgid "通信エラーが発生しました。"
+msgstr ""
