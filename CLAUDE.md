@@ -6,6 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 WordPress プラグイン。複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示する。外部サービス依存なし（WordPress組み込みのSimplePie・トランジェント・DOMDocumentのみ使用）。
 
+## Commands
+
+```bash
+# PHP ユニットテスト（PHPUnit不要、独自ランナー）
+php tests/run.php
+
+# ローカルプレビューサーバー（WordPress不要）
+php -S localhost:8080 preview/router.php
+# → http://localhost:8080/?feed=https://example.com/feed
+
+# WordPress.org 提出用 ZIP 作成（スクリーンショット等を自動除外）
+npm run zip
+# → gridify-image-cards-for-rss.zip
+
+# .pot / .po → .mo コンパイル
+node scripts/po2mo.js
+```
+
 ## Architecture
 
 ```
@@ -20,6 +38,9 @@ gridify-image-cards-for-rss/
   assets/css/admin.css       # 管理画面スタイル
   assets/js/admin.js         # 管理画面のメディアライブラリ選択UI
   assets/img/placeholder.png # デフォルト画像（フォールバック）
+preview/                     # WordPress不要のスタンドアロンプレビュー環境（wp-stub.php でWP APIをモック）
+tests/                       # PHPUnit不要の独自テストランナー（tests/run.php）
+tests/e2e/                   # Playwright E2Eテスト
 ```
 
 ### データフロー
@@ -46,3 +67,8 @@ gridify-image-cards-for-rss/
 - `ABSPATH` 未定義時の早期 exit を全クラスに実装
 - アンインストール時は設定オプションのみ削除（トランジェントは自然失効に任せる）
 - トランジェントキー：RSS = `rss_d_feed_{md5(url)}`、OGP = `rss_d_ogp_{md5(url)}`
+
+## WordPress.org 提出
+
+提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  
+提出前に `readme.txt` の `Tested up to:` を WordPress 最新安定版に更新すること。
