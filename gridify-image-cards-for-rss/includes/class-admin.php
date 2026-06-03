@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * Admin settings page (Settings → RSS Display).
+ * Admin settings page (Settings → Gridify Image Cards).
  *
  * @package RSS_Display
  */
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Manages the admin settings page (Settings → RSS Display).
+ * Manages the admin settings page (Settings → Gridify Image Cards).
  */
 class RSS_D_Admin {
 

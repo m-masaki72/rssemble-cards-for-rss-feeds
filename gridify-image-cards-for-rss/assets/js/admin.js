@@ -1,5 +1,5 @@
 /**
- * RSS Display - 管理画面JS
+ * Gridify Image Cards for RSS - 管理画面JS
  */
 ( function ( $ ) {
 	'use strict';

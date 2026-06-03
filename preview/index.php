@@ -1,6 +1,6 @@
 <?php
 /**
- * RSS Display プレビューサーバー
+ * Gridify Image Cards for RSS プレビューサーバー
  * 使い方: php -S localhost:8080 preview/router.php
  * アクセス: http://localhost:8080/?feed=https://zenn.dev/feed
  */
@@ -94,7 +94,7 @@ $target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferr
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RSS Display — Preview</title>
+<title>Gridify Image Cards for RSS — Preview</title>
 <link rel="stylesheet" href="/plugin/assets/css/gridify-image-cards-for-rss.css">
 <script src="/plugin/assets/js/gridify-image-cards-for-rss.js" defer></script>
 <style>
@@ -134,7 +134,7 @@ $target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferr
 <body>
 
 <div class="preview-bar">
-  <h1>RSS Display Preview</h1>
+  <h1>Gridify Image Cards for RSS Preview</h1>
   <form method="get">
     <div class="field">
       <label>Feed</label>

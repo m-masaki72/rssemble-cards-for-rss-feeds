@@ -9,14 +9,14 @@ WordPress プラグイン。複数のRSSフィードを取得し、OGP画像付�
 ## Architecture
 
 ```
-rss-display/
-  rss-display.php            # エントリポイント。定数定義・クラスのインクルード・シングルトン起動
+gridify-image-cards-for-rss/
+  gridify-image-cards-for-rss.php            # エントリポイント。定数定義・クラスのインクルード・シングルトン起動
   includes/
     class-feed-manager.php   # RSSフィード取得・パース・トランジェントキャッシュ・重複排除
     class-ogp-fetcher.php    # 記事ページからog:image等を取得・キャッシュ
     class-shortcode.php      # [rss_display] ショートコード処理・HTML生成・CSS enqueue
-    class-admin.php          # 管理画面（設定 → RSS Display）・設定保存・キャッシュ更新
-  assets/css/rss-display.css # フロントエンドのグリッド・カードスタイル
+    class-admin.php          # 管理画面（設定 → Gridify Image Cards）・設定保存・キャッシュ更新
+  assets/css/gridify-image-cards-for-rss.css # フロントエンドのグリッド・カードスタイル
   assets/css/admin.css       # 管理画面スタイル
   assets/js/admin.js         # 管理画面のメディアライブラリ選択UI
   assets/img/placeholder.png # デフォルト画像（フォールバック）
@@ -38,7 +38,7 @@ rss-display/
 
 グリッド列数（`--rss-d-columns`）とタイトル行数（`--rss-d-title-lines`）はインラインスタイルのCSS変数でショートコードから渡す。
 
-カラーは `rss-display.css` の `:root` にプラグイン独自変数（`--rss-d-*`）を定義し、値は `var(--wp--preset--color--*, フォールバック値)` 形式で WordPress FSE テーマに自動追従する。FSE 非対応テーマでは固定色（黒白ベース）にフォールバック。overlay 上の白文字（`#fff`）のみ固定値。
+カラーは `gridify-image-cards-for-rss.css` の `:root` にプラグイン独自変数（`--rss-d-*`）を定義し、値は `var(--wp--preset--color--*, フォールバック値)` 形式で WordPress FSE テーマに自動追従する。FSE 非対応テーマでは固定色（黒白ベース）にフォールバック。overlay 上の白文字（`#fff`）のみ固定値。
 
 ## Key Constraints
 

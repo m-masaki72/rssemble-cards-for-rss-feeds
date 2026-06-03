@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('ページタイトルが正しく表示される', async ({ page }) => {
-  await expect(page).toHaveTitle(/RSS Display/);
+  await expect(page).toHaveTitle(/Gridify Image Cards for RSS/);
 });
 
 test('コントロールバーが表示される', async ({ page }) => {
