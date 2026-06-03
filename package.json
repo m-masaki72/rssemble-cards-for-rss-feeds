@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "zip": "node scripts/make-zip.js"
   },
   "repository": {
     "type": "git",

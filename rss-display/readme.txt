@@ -1,73 +1,81 @@
-=== RSS Display ===
+=== Gridify Image Cards for RSS ===
 Contributors: masakimori
-Tags: rss, feed, display, ogp, grid
+Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 6.7
 Requires PHP: 7.4
 Stable tag: 1.0.0
 Donate link: https://ofuse.me/801de8c8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示します。外部サービス依存なし。
+Display multiple RSS feeds as OGP image card grids. No external service dependencies.
 
 == Description ==
 
-RSS Display は、複数のRSSフィードをまとめて取得し、OGP画像を背景にしたカードグリッドで表示するWordPressプラグインです。外部サービスへの依存はなく、WordPress組み込み機能（SimplePie / トランジェント / DOMDocument）のみで動作します。
+Gridify Image Cards for RSS fetches multiple RSS feeds and displays them as image card grids using OGP images. It runs entirely on WordPress built-in features (SimplePie, transients, DOMDocument) — no external services required.
 
-主な特徴:
+Key features:
 
-* 複数のRSSフィードを統合表示（記事URLで重複排除、新しい日付を優先）
-* OGP画像の自動取得（media:content → enclosure → og:image → デフォルト画像 の優先順位）
-* カードは画像全面背景・右上に日付・左下にタイトル（16:9固定）
-* レスポンシブ対応（PC3列 / タブレット2列 / スマホ1列、列数は設定可能）
-* ホバー時の画像ズーム＋影
-* リアルタイム取得＋トランジェントキャッシュ（Cron不使用）
-* RSSキャッシュ時間はユーザー設定可（12時間 / 1日 / 1週間 / 1ヶ月）
-* OGP画像URLは固定1ヶ月キャッシュ（取得失敗の negative cache 含む）
-* 取得失敗時は前回キャッシュ（stale）をフォールバック表示
-* Object Cache（Redis等）導入環境では自動的に高速化、Cloudflare環境とも相性良好
+* Aggregates multiple RSS feeds with URL-based deduplication (newest date wins)
+* Automatic OGP image retrieval (priority: media:content → enclosure → og:image → default image)
+* 8 layout types: grid, list, list_vertical, text, text_line, image_only, carousel, popup_grid
+* Responsive layout (3 columns on desktop, 2 on tablet, 1 on mobile — configurable)
+* Hover zoom + shadow effect on cards
+* Transient-based caching (no WP-Cron required)
+* Configurable RSS cache duration (12 hours / 1 day / 1 week / 1 month)
+* OGP image URL cached for 1 month (includes negative cache for failed fetches)
+* Stale cache fallback when a feed fetch fails
+* Compatible with object cache (Redis, Memcached) and Cloudflare
 
 == Installation ==
 
-1. `rss-display` フォルダを `/wp-content/plugins/` にアップロードします
-   （または管理画面の「プラグイン > 新規追加 > プラグインのアップロード」からZIPを直接アップロード）。
-2. 管理画面の「プラグイン」からプラグインを有効化します。
-3. 「設定 > RSS Display」でフィードURL等を設定します。
-4. 投稿・固定ページ・ウィジェットにショートコードを貼り付けます。
+1. Upload the `rss-display` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
+2. Activate the plugin from the **Plugins** screen.
+3. Go to **Settings > Gridify Image Cards** and configure your feed URLs.
+4. Add the shortcode to any post, page, or widget.
 
 == Usage ==
 
-基本:
+Basic:
 
 `[rss_display]`
 
-パラメータ指定:
+With parameters:
 
 `[rss_display columns="4" count="8"]`
 `[rss_display columns="2" count="6" feed="https://example.com/feed"]`
 `[rss_display orderby="random" target="_self"]`
 
-パラメータ一覧:
+Parameter reference:
 
-* columns  : 列数（2 / 3 / 4）。デフォルトは設定値。
-* count    : 表示件数。デフォルトは設定値。
-* feed     : 特定フィードのみ表示（URL）。デフォルトは全フィード。
-* orderby  : ソート順（date / random）。デフォルトは date。
-* target   : リンクの開き方（_blank / _self）。デフォルトは設定値。
+* columns    : Number of columns (2 / 3 / 4). Default: admin setting.
+* count      : Number of items to display. Default: admin setting.
+* feed       : Comma-separated feed URL(s). Default: all registered feeds.
+* orderby    : Sort order (date / random). Default: date.
+* target     : Link target (_blank / _self). Default: admin setting.
+* type       : Display type (grid / list / list_vertical / text / text_line / image_only / carousel / popup_grid).
+* date       : Show date (1 / 0). Default: 1.
+* site       : Show site name (1 / 0). Default: 0.
+* desc       : Show description (1 / 0). Default: 0.
+* bold       : Bold title (1 / 0). Default: 0.
+* responsive : Responsive columns (1 / 0). Default: 1.
+* title_lines: Maximum title lines (1 / 2 / 3). Default: admin setting.
+* img        : Override default image URL.
 
 == Frequently Asked Questions ==
 
-= 画像が表示されません =
-RSSに画像が含まれず、記事ページのog:imageも取得できない場合は、
-管理画面で指定したデフォルト画像（未設定時は同梱のプレースホルダー）が表示されます。
+= No image is displayed =
 
-= キャッシュをすぐに更新したい =
-「設定 > RSS Display」の「今すぐ更新」ボタンでRSSキャッシュをクリアできます。
-OGP画像キャッシュ（1ヶ月固定）はクリアされません。
+If the RSS feed contains no image and the article's og:image cannot be fetched, the default image configured in the admin settings (or the bundled placeholder) is shown.
 
-= Cron は使いますか =
-使いません。ショートコード実行時にキャッシュが無い／古い場合のみ取得します。
+= How do I clear the cache immediately? =
+
+Go to **Settings > Gridify Image Cards** and click **Refresh Now**. This clears the RSS cache; OGP image cache (1-month fixed) is not affected.
+
+= Does it use WP-Cron? =
+
+No. Feeds are fetched on demand when the shortcode runs and the cache is missing or expired.
 
 == Screenshots ==
 
@@ -77,7 +85,7 @@ OGP画像キャッシュ（1ヶ月固定）はクリアされません。
 == Changelog ==
 
 = 1.0.0 =
-* 初回リリース。
+* Initial release.
 
 == Upgrade Notice ==
 

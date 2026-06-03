@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * Plugin Name:       RSS Display
+ * Plugin Name:       Gridify Image Cards for RSS
  * Plugin URI:        https://rss-display.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
  * Version:           1.0.0
@@ -9,7 +9,7 @@
  * Author:            Masaki Mori
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       rss-display
+ * Text Domain:       gridify-image-cards-for-rss
  * Domain Path:       /languages
  *
  * @package RSS_Display
@@ -96,20 +96,6 @@ final class RSS_Display {
 			$this->admin = new RSS_D_Admin( $this->feed_manager );
 		}
 
-		add_action( 'init', array( $this, 'load_textdomain' ) );
-	}
-
-	/**
-	 * 翻訳ファイルを読み込む。
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'rss-display',
-			false,
-			dirname( plugin_basename( __FILE__ ) ) . '/languages'
-		);
 	}
 
 	/**

@@ -18,3 +18,8 @@ Thumbs.db
 # ビルド成果物・テスト結果
 rss-display.zip
 test-results/
+
+# WordPress.org directory assets（zipに含めない）
+rss-display/assets/screenshot-*.png
+rss-display/assets/banner-*.png
+rss-display/assets/icon-*.png

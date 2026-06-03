@@ -53,7 +53,7 @@ class RSS_D_Admin {
 	 */
 	public function add_settings_link( $links ) {
 		$url = admin_url( 'options-general.php?page=' . $this->page_slug );
-		array_unshift( $links, sprintf( '<a href="%s">%s</a>', esc_url( $url ), __( 'Settings', 'rss-display' ) ) );
+		array_unshift( $links, sprintf( '<a href="%s">%s</a>', esc_url( $url ), __( 'Settings', 'gridify-image-cards-for-rss' ) ) );
 		return $links;
 	}
 
@@ -64,8 +64,8 @@ class RSS_D_Admin {
 	 */
 	public function add_menu() {
 		add_options_page(
-			__( 'RSS Display', 'rss-display' ),
-			__( 'RSS Display', 'rss-display' ),
+			__( 'Gridify Image Cards', 'gridify-image-cards-for-rss' ),
+			__( 'Gridify Image Cards', 'gridify-image-cards-for-rss' ),
 			'manage_options',
 			$this->page_slug,
 			array( $this, 'render_page' )
@@ -169,18 +169,18 @@ class RSS_D_Admin {
 			'rss-d-admin',
 			'rssDAdmin',
 			array(
-				'chooseTitle'    => __( 'Select default image', 'rss-display' ),
-				'chooseButton'   => __( 'Use this image', 'rss-display' ),
+				'chooseTitle'    => __( 'Select default image', 'gridify-image-cards-for-rss' ),
+				'chooseButton'   => __( 'Use this image', 'gridify-image-cards-for-rss' ),
 				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'rss_d_preview' ),
 				'defaultType'    => $defaults['type'],
 				'defaultColumns' => (string) $defaults['columns'],
 				'defaultCount'   => (string) $defaults['count'],
-				'msgLoading'     => __( '読み込み中…', 'rss-display' ),
-				'msgError'       => __( '取得に失敗しました。', 'rss-display' ),
-				'msgNetError'    => __( '通信エラーが発生しました。', 'rss-display' ),
-				'btnCopy'        => __( 'Copy', 'rss-display' ),
-				'btnCopied'      => __( 'Copied!', 'rss-display' ),
+				'msgLoading'     => __( '読み込み中…', 'gridify-image-cards-for-rss' ),
+				'msgError'       => __( '取得に失敗しました。', 'gridify-image-cards-for-rss' ),
+				'msgNetError'    => __( '通信エラーが発生しました。', 'gridify-image-cards-for-rss' ),
+				'btnCopy'        => __( 'Copy', 'gridify-image-cards-for-rss' ),
+				'btnCopied'      => __( 'Copied!', 'gridify-image-cards-for-rss' ),
 			)
 		);
 	}
@@ -192,7 +192,7 @@ class RSS_D_Admin {
 	 */
 	public function handle_save() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to do this.', 'rss-display' ) );
+			wp_die( esc_html__( 'You do not have permission to do this.', 'gridify-image-cards-for-rss' ) );
 		}
 
 		check_admin_referer( 'rss_d_save' );
@@ -222,7 +222,7 @@ class RSS_D_Admin {
 	 */
 	public function handle_refresh() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to do this.', 'rss-display' ) );
+			wp_die( esc_html__( 'You do not have permission to do this.', 'gridify-image-cards-for-rss' ) );
 		}
 
 		check_admin_referer( 'rss_d_refresh' );
@@ -288,7 +288,7 @@ class RSS_D_Admin {
 		);
 
 		if ( '' === $html ) {
-			$html = '<p style="padding:2em;color:#888;">' . esc_html__( 'No items found. Make sure feed URLs are registered in the settings.', 'rss-display' ) . '</p>';
+			$html = '<p style="padding:2em;color:#888;">' . esc_html__( 'No items found. Make sure feed URLs are registered in the settings.', 'gridify-image-cards-for-rss' ) . '</p>';
 		}
 
 		wp_send_json_success(
@@ -323,39 +323,39 @@ class RSS_D_Admin {
 		$option = RSS_D_OPTION;
 
 		$types = array(
-			'grid'          => 'grid — ' . __( '画像背景＋タイトルオーバーレイ', 'rss-display' ),
-			'list_vertical' => 'list_vertical — ' . __( '上画像・下テキストカード', 'rss-display' ),
-			'text'          => 'text — ' . __( 'テキストのみカード（説明付き）', 'rss-display' ),
-			'text_line'     => 'text_line — ' . __( '1行テキスト＋区切り線', 'rss-display' ),
-			'image_only'    => 'image_only — ' . __( '画像のみ', 'rss-display' ),
-			'list'          => 'list — ' . __( 'サムネイル横並び＋テキスト', 'rss-display' ),
-			'carousel'      => 'carousel — ' . __( 'スライドカルーセル', 'rss-display' ),
-			'popup_grid'    => 'popup_grid — ' . __( 'クリックでモーダル表示グリッド', 'rss-display' ),
+			'grid'          => 'grid — ' . __( '画像背景＋タイトルオーバーレイ', 'gridify-image-cards-for-rss' ),
+			'list_vertical' => 'list_vertical — ' . __( '上画像・下テキストカード', 'gridify-image-cards-for-rss' ),
+			'text'          => 'text — ' . __( 'テキストのみカード（説明付き）', 'gridify-image-cards-for-rss' ),
+			'text_line'     => 'text_line — ' . __( '1行テキスト＋区切り線', 'gridify-image-cards-for-rss' ),
+			'image_only'    => 'image_only — ' . __( '画像のみ', 'gridify-image-cards-for-rss' ),
+			'list'          => 'list — ' . __( 'サムネイル横並び＋テキスト', 'gridify-image-cards-for-rss' ),
+			'carousel'      => 'carousel — ' . __( 'スライドカルーセル', 'gridify-image-cards-for-rss' ),
+			'popup_grid'    => 'popup_grid — ' . __( 'クリックでモーダル表示グリッド', 'gridify-image-cards-for-rss' ),
 		);
 		?>
 		<div class="wrap rss-d-admin">
-			<h1><?php echo esc_html__( 'RSS Display Settings', 'rss-display' ); ?></h1>
+			<h1><?php echo esc_html__( 'Gridify Image Cards for RSS Settings', 'gridify-image-cards-for-rss' ); ?></h1>
 
 			<?php if ( isset( $_GET['rss_d_saved'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<div class="notice notice-success is-dismissible">
-					<p><?php esc_html_e( 'Settings saved.', 'rss-display' ); ?></p>
+					<p><?php esc_html_e( 'Settings saved.', 'gridify-image-cards-for-rss' ); ?></p>
 				</div>
 			<?php endif; ?>
 
 			<?php if ( isset( $_GET['rss_d_refreshed'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<div class="notice notice-success is-dismissible">
-					<p><?php echo esc_html__( 'RSS cache cleared. Items will be re-fetched on next page load. OGP image cache is preserved.', 'rss-display' ); ?></p>
+					<p><?php echo esc_html__( 'RSS cache cleared. Items will be re-fetched on next page load. OGP image cache is preserved.', 'gridify-image-cards-for-rss' ); ?></p>
 				</div>
 			<?php endif; ?>
 
 			<!-- Tab navigation -->
 			<nav class="rss-d-tabs" role="tablist">
-				<button class="rss-d-tab active" role="tab" aria-selected="true"  data-tab="basic"><?php esc_html_e( 'Basic', 'rss-display' ); ?></button>
-				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="display"><?php esc_html_e( 'Display', 'rss-display' ); ?></button>
-				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="preview"><?php esc_html_e( 'Preview', 'rss-display' ); ?></button>
-				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="status"><?php esc_html_e( 'Feed Status', 'rss-display' ); ?></button>
-				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="usage"><?php esc_html_e( 'Usage', 'rss-display' ); ?></button>
-				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="about"><?php esc_html_e( 'About', 'rss-display' ); ?></button>
+				<button class="rss-d-tab active" role="tab" aria-selected="true"  data-tab="basic"><?php esc_html_e( 'Basic', 'gridify-image-cards-for-rss' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="display"><?php esc_html_e( 'Display', 'gridify-image-cards-for-rss' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="preview"><?php esc_html_e( 'Preview', 'gridify-image-cards-for-rss' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="status"><?php esc_html_e( 'Feed Status', 'gridify-image-cards-for-rss' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="usage"><?php esc_html_e( 'Usage', 'gridify-image-cards-for-rss' ); ?></button>
+				<button class="rss-d-tab"        role="tab" aria-selected="false" data-tab="about"><?php esc_html_e( 'About', 'gridify-image-cards-for-rss' ); ?></button>
 			</nav>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="rss-d-settings-form">
@@ -368,31 +368,31 @@ class RSS_D_Admin {
 					<table class="form-table" role="presentation">
 						<tr>
 							<th scope="row">
-								<label for="rss_d_feeds"><?php esc_html_e( 'RSS Feed URLs', 'rss-display' ); ?></label>
+								<label for="rss_d_feeds"><?php esc_html_e( 'RSS Feed URLs', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<textarea id="rss_d_feeds" name="<?php echo esc_attr( $option ); ?>[feeds]" rows="6" class="large-text code" placeholder="https://example.com/feed&#10;https://example.org/feed"><?php echo esc_textarea( $settings['feeds'] ); ?></textarea>
-								<p class="description"><?php esc_html_e( 'Enter one feed URL per line.', 'rss-display' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Enter one feed URL per line.', 'gridify-image-cards-for-rss' ); ?></p>
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_cache_ttl"><?php esc_html_e( 'Cache Duration', 'rss-display' ); ?></label>
+								<label for="rss_d_cache_ttl"><?php esc_html_e( 'Cache Duration', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<select id="rss_d_cache_ttl" name="<?php echo esc_attr( $option ); ?>[cache_ttl]">
-									<option value="43200"  <?php selected( $settings['cache_ttl'], 43200 ); ?>><?php esc_html_e( '12 hours', 'rss-display' ); ?></option>
-									<option value="86400"  <?php selected( $settings['cache_ttl'], 86400 ); ?>><?php esc_html_e( '1 day', 'rss-display' ); ?></option>
-									<option value="604800" <?php selected( $settings['cache_ttl'], 604800 ); ?>><?php esc_html_e( '1 week', 'rss-display' ); ?></option>
-									<option value="2592000"<?php selected( $settings['cache_ttl'], 2592000 ); ?>><?php esc_html_e( '1 month', 'rss-display' ); ?></option>
+									<option value="43200"  <?php selected( $settings['cache_ttl'], 43200 ); ?>><?php esc_html_e( '12 hours', 'gridify-image-cards-for-rss' ); ?></option>
+									<option value="86400"  <?php selected( $settings['cache_ttl'], 86400 ); ?>><?php esc_html_e( '1 day', 'gridify-image-cards-for-rss' ); ?></option>
+									<option value="604800" <?php selected( $settings['cache_ttl'], 604800 ); ?>><?php esc_html_e( '1 week', 'gridify-image-cards-for-rss' ); ?></option>
+									<option value="2592000"<?php selected( $settings['cache_ttl'], 2592000 ); ?>><?php esc_html_e( '1 month', 'gridify-image-cards-for-rss' ); ?></option>
 								</select>
-								<p class="description"><?php esc_html_e( 'How often RSS feeds are re-fetched. OGP image cache is fixed at 1 month.', 'rss-display' ); ?></p>
+								<p class="description"><?php esc_html_e( 'How often RSS feeds are re-fetched. OGP image cache is fixed at 1 month.', 'gridify-image-cards-for-rss' ); ?></p>
 							</td>
 						</tr>
 
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Default Image', 'rss-display' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Default Image', 'gridify-image-cards-for-rss' ); ?></th>
 							<td>
 								<div class="rss-d-default-image">
 									<input type="hidden" id="rss_d_default_image_id" name="<?php echo esc_attr( $option ); ?>[default_image_id]" value="<?php echo esc_attr( $settings['default_image_id'] ); ?>" />
@@ -402,24 +402,24 @@ class RSS_D_Admin {
 										<?php endif; ?>
 									</div>
 									<p>
-										<button type="button" class="button" id="rss_d_select_image"><?php esc_html_e( 'Select from Media Library', 'rss-display' ); ?></button>
-										<button type="button" class="button" id="rss_d_clear_image"><?php esc_html_e( 'Remove', 'rss-display' ); ?></button>
+										<button type="button" class="button" id="rss_d_select_image"><?php esc_html_e( 'Select from Media Library', 'gridify-image-cards-for-rss' ); ?></button>
+										<button type="button" class="button" id="rss_d_clear_image"><?php esc_html_e( 'Remove', 'gridify-image-cards-for-rss' ); ?></button>
 									</p>
 									<p>
-										<label for="rss_d_default_image_url"><?php esc_html_e( 'Or specify a URL directly:', 'rss-display' ); ?></label><br />
+										<label for="rss_d_default_image_url"><?php esc_html_e( 'Or specify a URL directly:', 'gridify-image-cards-for-rss' ); ?></label><br />
 										<input type="url" id="rss_d_default_image_url" name="<?php echo esc_attr( $option ); ?>[default_image_url]" value="<?php echo esc_attr( $settings['default_image_url'] ); ?>" class="regular-text" placeholder="https://example.com/default.png" />
 									</p>
-									<p class="description"><?php esc_html_e( 'Media Library selection takes priority. If neither is set, the bundled placeholder image is used.', 'rss-display' ); ?></p>
+									<p class="description"><?php esc_html_e( 'Media Library selection takes priority. If neither is set, the bundled placeholder image is used.', 'gridify-image-cards-for-rss' ); ?></p>
 								</div>
 							</td>
 						</tr>
 
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Link Target', 'rss-display' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Link Target', 'gridify-image-cards-for-rss' ); ?></th>
 							<td>
 								<label>
 									<input type="checkbox" name="<?php echo esc_attr( $option ); ?>[link_new_tab]" value="1" <?php checked( ! empty( $settings['link_new_tab'] ) ); ?> />
-									<?php esc_html_e( 'Open links in a new tab', 'rss-display' ); ?>
+									<?php esc_html_e( 'Open links in a new tab', 'gridify-image-cards-for-rss' ); ?>
 								</label>
 							</td>
 						</tr>
@@ -432,13 +432,13 @@ class RSS_D_Admin {
 				<!-- ========== Display tab ========== -->
 				<div class="rss-d-tab-panel" data-panel="display">
 
-					<p class="description" style="margin:1em 0;"><?php esc_html_e( 'These are the default values used when no shortcode attribute overrides them.', 'rss-display' ); ?></p>
+					<p class="description" style="margin:1em 0;"><?php esc_html_e( 'These are the default values used when no shortcode attribute overrides them.', 'gridify-image-cards-for-rss' ); ?></p>
 
 					<table class="form-table" role="presentation">
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_type"><?php esc_html_e( 'Display Type', 'rss-display' ); ?></label>
+								<label for="rss_d_type"><?php esc_html_e( 'Display Type', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<select id="rss_d_type" name="<?php echo esc_attr( $option ); ?>[type]">
@@ -451,7 +451,7 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_columns"><?php esc_html_e( 'Columns', 'rss-display' ); ?></label>
+								<label for="rss_d_columns"><?php esc_html_e( 'Columns', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<select id="rss_d_columns" name="<?php echo esc_attr( $option ); ?>[columns]">
@@ -464,7 +464,7 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_count"><?php esc_html_e( 'Item Count', 'rss-display' ); ?></label>
+								<label for="rss_d_count"><?php esc_html_e( 'Item Count', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<input type="number" id="rss_d_count" name="<?php echo esc_attr( $option ); ?>[count]" value="<?php echo esc_attr( $settings['count'] ); ?>" min="1" max="100" class="small-text" />
@@ -473,19 +473,19 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_orderby"><?php esc_html_e( 'Order By', 'rss-display' ); ?></label>
+								<label for="rss_d_orderby"><?php esc_html_e( 'Order By', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<select id="rss_d_orderby" name="<?php echo esc_attr( $option ); ?>[orderby]">
-									<option value="date"   <?php selected( $settings['orderby'], 'date' ); ?>><?php esc_html_e( 'Date (newest first)', 'rss-display' ); ?></option>
-									<option value="random" <?php selected( $settings['orderby'], 'random' ); ?>><?php esc_html_e( 'Random', 'rss-display' ); ?></option>
+									<option value="date"   <?php selected( $settings['orderby'], 'date' ); ?>><?php esc_html_e( 'Date (newest first)', 'gridify-image-cards-for-rss' ); ?></option>
+									<option value="random" <?php selected( $settings['orderby'], 'random' ); ?>><?php esc_html_e( 'Random', 'gridify-image-cards-for-rss' ); ?></option>
 								</select>
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_title_lines"><?php esc_html_e( 'Title Max Lines', 'rss-display' ); ?></label>
+								<label for="rss_d_title_lines"><?php esc_html_e( 'Title Max Lines', 'gridify-image-cards-for-rss' ); ?></label>
 							</th>
 							<td>
 								<select id="rss_d_title_lines" name="<?php echo esc_attr( $option ); ?>[title_lines]">
@@ -497,20 +497,20 @@ class RSS_D_Admin {
 						</tr>
 
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Display Options', 'rss-display' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Display Options', 'gridify-image-cards-for-rss' ); ?></th>
 							<td>
 								<fieldset>
 									<label style="display:block;margin-bottom:6px;">
 										<input type="checkbox" name="<?php echo esc_attr( $option ); ?>[show_date]" value="1" <?php checked( ! empty( $settings['show_date'] ) ); ?> />
-										<?php esc_html_e( 'Show date', 'rss-display' ); ?>
+										<?php esc_html_e( 'Show date', 'gridify-image-cards-for-rss' ); ?>
 									</label>
 									<label style="display:block;margin-bottom:6px;">
 										<input type="checkbox" name="<?php echo esc_attr( $option ); ?>[show_site]" value="1" <?php checked( ! empty( $settings['show_site'] ) ); ?> />
-										<?php esc_html_e( 'Show site name', 'rss-display' ); ?>
+										<?php esc_html_e( 'Show site name', 'gridify-image-cards-for-rss' ); ?>
 									</label>
 									<label style="display:block;">
 										<input type="checkbox" name="<?php echo esc_attr( $option ); ?>[show_desc]" value="1" <?php checked( ! empty( $settings['show_desc'] ) ); ?> />
-										<?php esc_html_e( 'Show description', 'rss-display' ); ?>
+										<?php esc_html_e( 'Show description', 'gridify-image-cards-for-rss' ); ?>
 									</label>
 								</fieldset>
 							</td>
@@ -540,7 +540,7 @@ class RSS_D_Admin {
 						</div>
 
 						<!-- Type selector -->
-						<label><?php esc_html_e( 'Type:', 'rss-display' ); ?>
+						<label><?php esc_html_e( 'Type:', 'gridify-image-cards-for-rss' ); ?>
 							<select id="rss-d-preview-type">
 								<?php foreach ( $types as $val => $label ) : ?>
 									<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
@@ -549,7 +549,7 @@ class RSS_D_Admin {
 						</label>
 
 						<!-- Columns selector -->
-						<label><?php esc_html_e( 'Columns:', 'rss-display' ); ?>
+						<label><?php esc_html_e( 'Columns:', 'gridify-image-cards-for-rss' ); ?>
 							<select id="rss-d-preview-columns">
 								<?php foreach ( array( 2, 3, 4 ) as $c ) : ?>
 									<option value="<?php echo esc_attr( $c ); ?>"><?php echo esc_html( $c ); ?></option>
@@ -558,52 +558,52 @@ class RSS_D_Admin {
 						</label>
 
 						<!-- Count selector -->
-						<label><?php esc_html_e( 'Count:', 'rss-display' ); ?>
+						<label><?php esc_html_e( 'Count:', 'gridify-image-cards-for-rss' ); ?>
 							<input type="number" id="rss-d-preview-count" value="6" min="1" max="100" style="width:60px;" />
 						</label>
 
-						<button type="button" id="rss-d-preview-btn" class="button button-primary"><?php esc_html_e( 'Refresh Preview', 'rss-display' ); ?></button>
+						<button type="button" id="rss-d-preview-btn" class="button button-primary"><?php esc_html_e( 'Refresh Preview', 'gridify-image-cards-for-rss' ); ?></button>
 					</div>
 
 					<!-- オプション行 -->
 					<div class="rss-d-preview-options">
-						<label title="<?php esc_attr_e( 'タブレット2列・スマホ1列に自動調整', 'rss-display' ); ?>">
+						<label title="<?php esc_attr_e( 'タブレット2列・スマホ1列に自動調整', 'gridify-image-cards-for-rss' ); ?>">
 							<input type="checkbox" id="rss-d-preview-responsive" checked />
-							<?php esc_html_e( 'レスポンシブ', 'rss-display' ); ?>
+							<?php esc_html_e( 'レスポンシブ', 'gridify-image-cards-for-rss' ); ?>
 						</label>
 						<label>
 							<input type="checkbox" id="rss-d-preview-new-tab" />
-							<?php esc_html_e( '新規タブ', 'rss-display' ); ?>
+							<?php esc_html_e( '新規タブ', 'gridify-image-cards-for-rss' ); ?>
 						</label>
 						<label>
 							<input type="checkbox" id="rss-d-preview-show-desc" />
-							<?php esc_html_e( '説明', 'rss-display' ); ?>
+							<?php esc_html_e( '説明', 'gridify-image-cards-for-rss' ); ?>
 						</label>
 						<label>
 							<input type="checkbox" id="rss-d-preview-show-date" />
-							<?php esc_html_e( '日付', 'rss-display' ); ?>
+							<?php esc_html_e( '日付', 'gridify-image-cards-for-rss' ); ?>
 						</label>
 						<label>
 							<input type="checkbox" id="rss-d-preview-show-site" />
-							<?php esc_html_e( 'サイト名', 'rss-display' ); ?>
+							<?php esc_html_e( 'サイト名', 'gridify-image-cards-for-rss' ); ?>
 						</label>
 						<label>
 							<input type="checkbox" id="rss-d-preview-bold-title" />
-							<?php esc_html_e( '太字タイトル', 'rss-display' ); ?>
+							<?php esc_html_e( '太字タイトル', 'gridify-image-cards-for-rss' ); ?>
 						</label>
-						<label title="<?php esc_attr_e( '表示タイトル行数（0=無制限）', 'rss-display' ); ?>"><?php esc_html_e( 'タイトル行数:', 'rss-display' ); ?>
+						<label title="<?php esc_attr_e( '表示タイトル行数（0=無制限）', 'gridify-image-cards-for-rss' ); ?>"><?php esc_html_e( 'タイトル行数:', 'gridify-image-cards-for-rss' ); ?>
 							<input type="number" id="rss-d-preview-title-lines" value="2" min="0" max="10" style="width:46px;" />
 						</label>
 					</div>
 
 					<div id="rss-d-preview-shortcode" style="display:none;margin:8px 0;padding:6px 12px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:3px;display:none;align-items:center;gap:8px;">
 						<code id="rss-d-preview-shortcode-text" style="flex:1;font-size:13px;word-break:break-all;background:none;padding:0;"></code>
-						<button type="button" id="rss-d-preview-shortcode-copy" class="button button-small"><?php esc_html_e( 'Copy', 'rss-display' ); ?></button>
+						<button type="button" id="rss-d-preview-shortcode-copy" class="button button-small"><?php esc_html_e( 'Copy', 'gridify-image-cards-for-rss' ); ?></button>
 					</div>
 
 					<div class="rss-d-preview-frame-wrap">
 						<div class="rss-d-preview-frame" id="rss-d-preview-frame">
-							<p class="rss-d-preview-placeholder"><?php esc_html_e( 'Click "Refresh Preview" to see a live preview.', 'rss-display' ); ?></p>
+							<p class="rss-d-preview-placeholder"><?php esc_html_e( 'Click "Refresh Preview" to see a live preview.', 'gridify-image-cards-for-rss' ); ?></p>
 						</div>
 					</div>
 
@@ -617,20 +617,20 @@ class RSS_D_Admin {
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:1em 0;">
 					<input type="hidden" name="action" value="rss_d_refresh" />
 					<?php wp_nonce_field( 'rss_d_refresh' ); ?>
-					<?php submit_button( __( 'Refresh Now (clear RSS cache)', 'rss-display' ), 'secondary', 'submit', false ); ?>
-					<span class="description"><?php esc_html_e( 'OGP image cache is not cleared.', 'rss-display' ); ?></span>
+					<?php submit_button( __( 'Refresh Now (clear RSS cache)', 'gridify-image-cards-for-rss' ), 'secondary', 'submit', false ); ?>
+					<span class="description"><?php esc_html_e( 'OGP image cache is not cleared.', 'gridify-image-cards-for-rss' ); ?></span>
 				</form>
 
 				<?php if ( empty( $feeds ) ) : ?>
-					<p><?php esc_html_e( 'No feeds registered yet.', 'rss-display' ); ?></p>
+					<p><?php esc_html_e( 'No feeds registered yet.', 'gridify-image-cards-for-rss' ); ?></p>
 				<?php else : ?>
 					<table class="widefat striped rss-d-status-table">
 						<thead>
 							<tr>
-								<th><?php esc_html_e( 'Feed URL', 'rss-display' ); ?></th>
-								<th><?php esc_html_e( 'Last Fetched', 'rss-display' ); ?></th>
-								<th><?php esc_html_e( 'Item Count', 'rss-display' ); ?></th>
-								<th><?php esc_html_e( 'Status', 'rss-display' ); ?></th>
+								<th><?php esc_html_e( 'Feed URL', 'gridify-image-cards-for-rss' ); ?></th>
+								<th><?php esc_html_e( 'Last Fetched', 'gridify-image-cards-for-rss' ); ?></th>
+								<th><?php esc_html_e( 'Item Count', 'gridify-image-cards-for-rss' ); ?></th>
+								<th><?php esc_html_e( 'Status', 'gridify-image-cards-for-rss' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -639,15 +639,15 @@ class RSS_D_Admin {
 							foreach ( $feeds as $feed_url ) :
 								$status = $this->feed_manager->get_feed_status( $feed_url );
 								if ( ! $status['cached'] ) {
-									$fetched_label = esc_html__( 'Not fetched', 'rss-display' );
+									$fetched_label = esc_html__( 'Not fetched', 'gridify-image-cards-for-rss' );
 									$count_label   = '&mdash;';
-									$state_label   = esc_html__( 'Not fetched', 'rss-display' );
+									$state_label   = esc_html__( 'Not fetched', 'gridify-image-cards-for-rss' );
 								} else {
 									$fetched_label = esc_html( date_i18n( $datetime_format, $status['fetched'] ) );
 									$count_label   = esc_html( (string) $status['count'] );
 									$state_label   = $status['error']
-										? esc_html__( 'Error (showing stale cache)', 'rss-display' )
-										: esc_html__( 'OK', 'rss-display' );
+										? esc_html__( 'Error (showing stale cache)', 'gridify-image-cards-for-rss' )
+										: esc_html__( 'OK', 'gridify-image-cards-for-rss' );
 								}
 								?>
 								<tr>
@@ -667,27 +667,27 @@ class RSS_D_Admin {
 			<div class="rss-d-tab-panel" data-panel="usage">
 
 				<!-- Parameter reference -->
-				<h2><?php esc_html_e( 'Parameter Reference', 'rss-display' ); ?></h2>
+				<h2><?php esc_html_e( 'Parameter Reference', 'gridify-image-cards-for-rss' ); ?></h2>
 				<table class="widefat striped" style="max-width:800px;">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Parameter', 'rss-display' ); ?></th>
-							<th><?php esc_html_e( 'Default', 'rss-display' ); ?></th>
-							<th><?php esc_html_e( 'Description', 'rss-display' ); ?></th>
+							<th><?php esc_html_e( 'Parameter', 'gridify-image-cards-for-rss' ); ?></th>
+							<th><?php esc_html_e( 'Default', 'gridify-image-cards-for-rss' ); ?></th>
+							<th><?php esc_html_e( 'Description', 'gridify-image-cards-for-rss' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr><td><code>feed</code></td><td>—</td><td><?php esc_html_e( 'Feed URL(s), comma-separated', 'rss-display' ); ?></td></tr>
-						<tr><td><code>type</code></td><td><code>grid</code></td><td><?php esc_html_e( 'Display type', 'rss-display' ); ?></td></tr>
-						<tr><td><code>columns</code></td><td><code>3</code></td><td><?php esc_html_e( 'Number of columns (2/3/4)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>count</code></td><td><code>6</code></td><td><?php esc_html_e( 'Number of items to display', 'rss-display' ); ?></td></tr>
-						<tr><td><code>orderby</code></td><td><code>date</code></td><td><?php esc_html_e( 'Sort order (date/random)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>target</code></td><td>—</td><td><?php esc_html_e( 'Link target (_blank/_self)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>date</code></td><td><code>1</code></td><td><?php esc_html_e( 'Show date (1/0)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>site</code></td><td><code>0</code></td><td><?php esc_html_e( 'Show site name (1/0)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>desc</code></td><td><code>0</code></td><td><?php esc_html_e( 'Show description (1/0)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>bold</code></td><td><code>0</code></td><td><?php esc_html_e( 'Bold title (1/0)', 'rss-display' ); ?></td></tr>
-						<tr><td><code>img</code></td><td>—</td><td><?php esc_html_e( 'Override default image URL', 'rss-display' ); ?></td></tr>
+						<tr><td><code>feed</code></td><td>—</td><td><?php esc_html_e( 'Feed URL(s), comma-separated', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>type</code></td><td><code>grid</code></td><td><?php esc_html_e( 'Display type', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>columns</code></td><td><code>3</code></td><td><?php esc_html_e( 'Number of columns (2/3/4)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>count</code></td><td><code>6</code></td><td><?php esc_html_e( 'Number of items to display', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>orderby</code></td><td><code>date</code></td><td><?php esc_html_e( 'Sort order (date/random)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>target</code></td><td>—</td><td><?php esc_html_e( 'Link target (_blank/_self)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>date</code></td><td><code>1</code></td><td><?php esc_html_e( 'Show date (1/0)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>site</code></td><td><code>0</code></td><td><?php esc_html_e( 'Show site name (1/0)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>desc</code></td><td><code>0</code></td><td><?php esc_html_e( 'Show description (1/0)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>bold</code></td><td><code>0</code></td><td><?php esc_html_e( 'Bold title (1/0)', 'gridify-image-cards-for-rss' ); ?></td></tr>
+						<tr><td><code>img</code></td><td>—</td><td><?php esc_html_e( 'Override default image URL', 'gridify-image-cards-for-rss' ); ?></td></tr>
 					</tbody>
 				</table>
 
@@ -699,43 +699,43 @@ class RSS_D_Admin {
 				<div class="rss-d-about-wrap">
 
 					<div class="rss-d-about-header">
-						<h2>RSS Display <span class="rss-d-about-version">v<?php echo esc_html( RSS_D_VERSION ); ?></span></h2>
-						<p><?php esc_html_e( '複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。', 'rss-display' ); ?></p>
+						<h2>Gridify Image Cards for RSS <span class="rss-d-about-version">v<?php echo esc_html( RSS_D_VERSION ); ?></span></h2>
+						<p><?php esc_html_e( '複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。', 'gridify-image-cards-for-rss' ); ?></p>
 					</div>
 
 					<div class="rss-d-about-grid">
 
 						<div class="rss-d-about-card">
-							<h3><?php esc_html_e( '主な機能', 'rss-display' ); ?></h3>
+							<h3><?php esc_html_e( '主な機能', 'gridify-image-cards-for-rss' ); ?></h3>
 							<ul>
-								<li><?php esc_html_e( '8種類のレイアウト（grid / list / carousel など）', 'rss-display' ); ?></li>
-								<li><?php esc_html_e( '複数フィードの集約・重複排除', 'rss-display' ); ?></li>
-								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ', 'rss-display' ); ?></li>
-								<li><?php esc_html_e( 'レスポンシブ対応（PC/タブレット/スマホ）', 'rss-display' ); ?></li>
-								<li><?php esc_html_e( '外部サービス依存なし（WordPress組み込み機能のみ）', 'rss-display' ); ?></li>
+								<li><?php esc_html_e( '8種類のレイアウト（grid / list / carousel など）', 'gridify-image-cards-for-rss' ); ?></li>
+								<li><?php esc_html_e( '複数フィードの集約・重複排除', 'gridify-image-cards-for-rss' ); ?></li>
+								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ', 'gridify-image-cards-for-rss' ); ?></li>
+								<li><?php esc_html_e( 'レスポンシブ対応（PC/タブレット/スマホ）', 'gridify-image-cards-for-rss' ); ?></li>
+								<li><?php esc_html_e( '外部サービス依存なし（WordPress組み込み機能のみ）', 'gridify-image-cards-for-rss' ); ?></li>
 							</ul>
 						</div>
 
 						<div class="rss-d-about-card">
-							<h3><?php esc_html_e( '基本情報', 'rss-display' ); ?></h3>
+							<h3><?php esc_html_e( '基本情報', 'gridify-image-cards-for-rss' ); ?></h3>
 							<table class="rss-d-about-table">
-								<tr><th><?php esc_html_e( 'バージョン', 'rss-display' ); ?></th><td><?php echo esc_html( RSS_D_VERSION ); ?></td></tr>
-								<tr><th><?php esc_html_e( '必要環境', 'rss-display' ); ?></th><td>PHP 7.4+ / WordPress 6.0+</td></tr>
-								<tr><th><?php esc_html_e( 'ライセンス', 'rss-display' ); ?></th><td>GPL-2.0-or-later</td></tr>
+								<tr><th><?php esc_html_e( 'バージョン', 'gridify-image-cards-for-rss' ); ?></th><td><?php echo esc_html( RSS_D_VERSION ); ?></td></tr>
+								<tr><th><?php esc_html_e( '必要環境', 'gridify-image-cards-for-rss' ); ?></th><td>PHP 7.4+ / WordPress 6.0+</td></tr>
+								<tr><th><?php esc_html_e( 'ライセンス', 'gridify-image-cards-for-rss' ); ?></th><td>GPL-2.0-or-later</td></tr>
 								<tr>
-									<th><?php esc_html_e( 'ウェブサイト', 'rss-display' ); ?></th>
+									<th><?php esc_html_e( 'ウェブサイト', 'gridify-image-cards-for-rss' ); ?></th>
 									<td><a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer">rss-display.pages.dev</a></td>
 								</tr>
 							</table>
 						</div>
 
 						<div class="rss-d-about-card rss-d-about-card--full">
-							<h3><?php esc_html_e( 'サポート・お問い合わせ', 'rss-display' ); ?></h3>
+							<h3><?php esc_html_e( 'サポート・お問い合わせ', 'gridify-image-cards-for-rss' ); ?></h3>
 							<p>
-								<?php esc_html_e( 'ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。', 'rss-display' ); ?>
+								<?php esc_html_e( 'ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。', 'gridify-image-cards-for-rss' ); ?>
 							</p>
 							<a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer" class="button button-primary">
-								<?php esc_html_e( '公式サイトを開く', 'rss-display' ); ?>
+								<?php esc_html_e( '公式サイトを開く', 'gridify-image-cards-for-rss' ); ?>
 							</a>
 						</div>
 

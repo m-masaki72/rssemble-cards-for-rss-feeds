@@ -168,7 +168,7 @@ ${css}
         <path d="M4 5C11.732 5 18 11.268 18 19" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
-    <div class="badge-title">RSS Display</div>
+    <div class="badge-title">Gridify Image Cards</div>
     <div class="badge-sub">Multiple feeds.<br>Beautiful cards.</div>
   </div>
 </div>
@@ -206,11 +206,12 @@ body {
   height: 80px;
 }
 .label {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
   color: #fff;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-align: center;
 }
 .label-sub {
   font-size: 11px;
@@ -229,7 +230,7 @@ body {
     <path d="M12 20C36.853 20 57 40.147 57 65" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
     <path d="M12 4C44.033 4 70 30.133 70 62" stroke="rgba(255,255,255,0.45)" stroke-width="7" stroke-linecap="round" fill="none"/>
   </svg>
-  <div class="label">RSS Display</div>
+  <div class="label">Gridify Image<br>Cards for RSS</div>
   <div class="label-sub">WordPress Plugin</div>
 </div>
 </body>
