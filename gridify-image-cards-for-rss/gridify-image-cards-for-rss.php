@@ -12,7 +12,7 @@
  * Text Domain:       gridify-image-cards-for-rss
  * Domain Path:       /languages
  *
- * @package RSS_Display
+ * @package Gridify_Image_Cards_For_RSS
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -88,8 +88,6 @@ final class RSS_Display {
 	 * コンストラクタ。各コンポーネントを初期化する。
 	 */
 	private function __construct() {
-		load_plugin_textdomain( 'gridify-image-cards-for-rss', false, dirname( plugin_basename( RSS_D_FILE ) ) . '/languages' );
-
 		$this->ogp_fetcher  = new RSS_D_OGP_Fetcher();
 		$this->feed_manager = new RSS_D_Feed_Manager();
 		$this->shortcode    = new RSS_D_Shortcode( $this->feed_manager, $this->ogp_fetcher );

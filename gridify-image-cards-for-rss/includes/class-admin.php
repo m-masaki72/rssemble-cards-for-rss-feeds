@@ -2,7 +2,7 @@
 /**
  * Admin settings page (Settings → Gridify Image Cards).
  *
- * @package RSS_Display
+ * @package Gridify_Image_Cards_For_RSS
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

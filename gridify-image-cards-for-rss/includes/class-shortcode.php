@@ -2,7 +2,7 @@
 /**
  * Handles the [rss_display] shortcode and generates display HTML.
  *
- * @package RSS_Display
+ * @package Gridify_Image_Cards_For_RSS
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
