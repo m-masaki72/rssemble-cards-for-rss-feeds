@@ -76,6 +76,10 @@ class RSS_Display {
 		);
 	}
 
+	public static function allowed_types() {
+		return array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
+	}
+
 	public static function parse_feeds( $raw ) {
 		$feeds = array();
 		foreach ( preg_split( '/\r\n|\r|\n/', (string) $raw ) as $line ) {
@@ -88,7 +92,6 @@ class RSS_Display {
 	}
 }
 
-require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/freemius.php';
 require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-feed-manager.php';
 require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-ogp-fetcher.php';
 require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-shortcode.php';

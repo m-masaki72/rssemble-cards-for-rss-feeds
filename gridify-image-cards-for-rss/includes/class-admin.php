@@ -143,7 +143,7 @@ class RSS_D_Admin {
 
 		// Display options.
 		$out['show_desc'] = ! empty( $input['show_desc'] ) ? 1 : 0;
-		$out['show_date'] = isset( $input['show_date'] ) ? ( '0' === (string) $input['show_date'] ? 0 : 1 ) : 1;
+		$out['show_date'] = ! empty( $input['show_date'] ) ? 1 : 0;
 		$out['show_site'] = ! empty( $input['show_site'] ) ? 1 : 0;
 
 		return $out;

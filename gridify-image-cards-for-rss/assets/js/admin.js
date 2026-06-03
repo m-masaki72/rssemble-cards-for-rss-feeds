@@ -124,11 +124,11 @@
 					// ショートコード表示（デフォルト値と同じ場合は省略）。
 					var sc = '[rss_display type="' + type + '" columns="' + columns + '" count="' + count + '"';
 					if ( '0' === responsive )  { sc += ' responsive="0"'; }
-					if ( '1' === newTab )      { sc += ' new_tab="1"'; }
-					if ( '1' === showDesc )    { sc += ' show_desc="1"'; }
-					if ( '1' === showDate )    { sc += ' show_date="1"'; }
-					if ( '1' === showSite )    { sc += ' show_site="1"'; }
-					if ( '1' === boldTitle )   { sc += ' bold_title="1"'; }
+					if ( '1' === newTab )      { sc += ' target="_blank"'; }
+					if ( '1' === showDesc )    { sc += ' desc="1"'; }
+					if ( '0' === showDate )    { sc += ' date="0"'; }
+					if ( '1' === showSite )    { sc += ' site="1"'; }
+					if ( '1' === boldTitle )   { sc += ' bold="1"'; }
 					if ( '2' !== titleLines )  { sc += ' title_lines="' + titleLines + '"'; }
 					sc += ']';
 					$previewShortcodeText.text( sc );

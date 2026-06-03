@@ -109,10 +109,12 @@ class RSS_D_OGP_Fetcher {
 					CURLOPT_SSL_VERIFYHOST   => $ssl_verify ? 2 : 0,
 					CURLOPT_USERAGENT        => $user_agent,
 					CURLOPT_HTTPHEADER       => array( 'Accept: text/html,application/xhtml+xml' ),
+					CURLOPT_PROTOCOLS        => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+					CURLOPT_REDIR_PROTOCOLS  => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 					// Abort after 128 KB — enough to capture the <head>.
 					CURLOPT_BUFFERSIZE       => 131072,
 					CURLOPT_NOPROGRESS       => false,
-					CURLOPT_PROGRESSFUNCTION => static function ( $ch, $dl_total, $dl_now ) {
+					CURLOPT_PROGRESSFUNCTION => static function ( $resource, $dl_total, $dl_now, $ul_total, $ul_now ) {
 						return $dl_now > 131072 ? 1 : 0;
 					},
 				)
@@ -175,7 +177,7 @@ class RSS_D_OGP_Fetcher {
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 3,
 				'sslverify'   => (bool) apply_filters( 'https_ssl_verify', true ),
-				'user-agent'  => 'WordPress/RSS-Display',
+				'user-agent'  => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ),
 				'headers'     => array(
 					'Accept' => 'text/html,application/xhtml+xml',
 				),

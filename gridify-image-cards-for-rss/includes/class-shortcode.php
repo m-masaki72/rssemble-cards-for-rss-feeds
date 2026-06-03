@@ -146,7 +146,7 @@ class RSS_D_Shortcode {
 		$type = in_array( $atts['type'], RSS_Display::allowed_types(), true ) ? $atts['type'] : 'grid';
 
 		$title_lines = '' !== $atts['title_lines'] ? (int) $atts['title_lines'] : (int) $settings['title_lines'];
-		if ( ! in_array( $title_lines, array( 1, 2, 3 ), true ) ) {
+		if ( $title_lines < 0 || $title_lines > 10 ) {
 			$title_lines = 2;
 		}
 

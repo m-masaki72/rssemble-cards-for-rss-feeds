@@ -263,10 +263,6 @@ $html_grid = render_sc( $sc );
 assert_contains( 'rss-d-type-grid', $html_grid, 'type 省略時は rss-d-type-grid クラスが付く' );
 assert_not_contains( 'rss-d-card-body', $html_grid, 'type=grid では .rss-d-card-body が出力されない' );
 
-// type=list はProタイプ → 無料環境ではupgrade_noticeを返す
-$html_list = render_sc( $sc, [ 'type' => 'list' ] );
-assert_contains( 'rss-d-upgrade-notice', $html_list, 'type=list（Pro）は無料環境でupgrade_noticeを返す' );
-
 // 不正な type 値はデフォルト grid になる
 $html_invalid_type = render_sc( $sc, [ 'type' => 'unknown_type' ] );
 assert_contains( 'rss-d-type-grid', $html_invalid_type, '不正な type 値は grid にフォールバック' );
@@ -281,16 +277,18 @@ assert_contains( 'target="_blank"', $html_blank, 'target=_blank のとき target
 $html_self = render_sc( $sc, [ 'target' => '_self' ] );
 assert_not_contains( 'rel="noopener noreferrer"', $html_self, 'target=_self のとき rel が付かない' );
 
-// columns — 無料は最大2列にキャップされる
-$html_col4 = render_sc( $sc, [ 'columns' => '4' ] );
-assert_contains( '--rss-d-columns:2', $html_col4, '無料環境でcolumns=4 は2列にキャップされる' );
-
 $html_col2 = render_sc( $sc, [ 'columns' => '2' ] );
 assert_contains( '--rss-d-columns:2', $html_col2, 'columns=2 が CSS変数に反映される' );
 
-// 不正な columns 値はデフォルト設定値(3)→無料キャップで2列になる
+$html_col4 = render_sc( $sc, [ 'columns' => '4' ] );
+assert_contains( '--rss-d-columns:4', $html_col4, 'columns=4 が CSS変数に反映される' );
+
+$html_col3 = render_sc( $sc, [ 'columns' => '3' ] );
+assert_contains( '--rss-d-columns:3', $html_col3, 'columns=3 が CSS変数に反映される' );
+
+// 不正な columns 値はデフォルト設定値(3)にフォールバック
 $html_col_invalid = render_sc( $sc, [ 'columns' => '99' ] );
-assert_contains( '--rss-d-columns:2', $html_col_invalid, '不正な columns 値は設定値(3)→無料キャップで2列になる' );
+assert_contains( '--rss-d-columns:3', $html_col_invalid, '不正な columns 値は設定値(3)にフォールバック' );
 
 section( 'RSS_D_Shortcode::render() — HTML構造・エッジケース' );
 
@@ -406,16 +404,7 @@ assert_contains( 'rss-d-type-text_line', $html_text_line, 'type=text_line のと
 
 section( 'RSS_D_Shortcode::render() — carousel タイプ' );
 
-// carousel はProタイプ → 無料環境ではupgrade_noticeを返す
 $sc_carousel = make_sc( [ make_item(), make_item( [ 'url' => 'https://example.com/article/2', 'title' => '記事2' ] ) ] );
-$html_carousel_free = render_sc( $sc_carousel, [ 'type' => 'carousel' ] );
-assert_contains( 'rss-d-upgrade-notice', $html_carousel_free, 'type=carousel（Pro）は無料環境でupgrade_noticeを返す' );
-
-// rss_display_fs_is_paying() を一時的にtrueにしてProとしてテスト
-// ※bootstrap環境でのProシミュレーション: rss_display_fs_is_paying を上書きする
-// PHPではfunctionの再定義ができないため、render_type 分岐はPHPUnit+runkit等が必要。
-// ここではupgrade_notice動作の確認のみ行う。
-assert_true( true, 'carousel Proテストはupgrade_notice確認のみ（runkit不要）' );
 
 // -----------------------------------------------------------------------
 // popup_grid タイプ テスト
@@ -423,10 +412,7 @@ assert_true( true, 'carousel Proテストはupgrade_notice確認のみ（runkit�
 
 section( 'RSS_D_Shortcode::render() — popup_grid タイプ' );
 
-// popup_grid はProタイプ → 無料環境ではupgrade_noticeを返す
 $sc_popup = make_sc( [ make_item() ] );
-$html_popup_free = render_sc( $sc_popup, [ 'type' => 'popup_grid' ] );
-assert_contains( 'rss-d-upgrade-notice', $html_popup_free, 'type=popup_grid（Pro）は無料環境でupgrade_noticeを返す' );
 
 // render_popup_grid の内部構造はreflection経由で直接テスト
 $ref_popup = new ReflectionMethod( RSS_D_Shortcode::class, 'render_popup_grid' );
