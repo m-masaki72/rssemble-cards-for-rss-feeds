@@ -8,7 +8,7 @@ define( 'MONTH_IN_SECONDS', 2592000 );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'RSS_D_OPTION', 'rss_d_settings' );
 define( 'RSS_D_VERSION', '1.0.0' );
-define( 'RSS_D_URL', 'http://localhost/wp-content/plugins/rss-display/' );
+define( 'RSS_D_URL', 'http://localhost/wp-content/plugins/gridify-image-cards-for-rss/' );
 
 function esc_url_raw( $url ) { return $url; }
 function esc_url( $url ) { return htmlspecialchars( $url, ENT_QUOTES ); }
@@ -88,7 +88,7 @@ class RSS_Display {
 	}
 }
 
-require_once __DIR__ . '/../rss-display/includes/freemius.php';
-require_once __DIR__ . '/../rss-display/includes/class-feed-manager.php';
-require_once __DIR__ . '/../rss-display/includes/class-ogp-fetcher.php';
-require_once __DIR__ . '/../rss-display/includes/class-shortcode.php';
+require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/freemius.php';
+require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-feed-manager.php';
+require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-ogp-fetcher.php';
+require_once __DIR__ . '/../gridify-image-cards-for-rss/includes/class-shortcode.php';

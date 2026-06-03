@@ -26,7 +26,7 @@ class RSS_D_Admin {
 	 *
 	 * @var string
 	 */
-	private $page_slug = 'rss-display';
+	private $page_slug = 'gridify-image-cards-for-rss';
 
 	/**
 	 * Constructor.
@@ -42,7 +42,7 @@ class RSS_D_Admin {
 		add_action( 'admin_post_rss_d_refresh', array( $this, 'handle_refresh' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_rss_d_preview', array( $this, 'ajax_preview' ) );
-		add_filter( 'plugin_action_links_rss-display/rss-display.php', array( $this, 'add_settings_link' ) );
+		add_filter( 'plugin_action_links_gridify-image-cards-for-rss/gridify-image-cards-for-rss.php', array( $this, 'add_settings_link' ) );
 	}
 
 	/**
@@ -162,7 +162,7 @@ class RSS_D_Admin {
 
 		wp_enqueue_media();
 		wp_enqueue_style( 'rss-d-admin', RSS_D_URL . 'assets/css/admin.css', array(), RSS_D_VERSION );
-		wp_enqueue_style( 'rss-display', RSS_D_URL . 'assets/css/rss-display.css', array(), RSS_D_VERSION );
+		wp_enqueue_style( 'gridify-image-cards-for-rss', RSS_D_URL . 'assets/css/gridify-image-cards-for-rss.css', array(), RSS_D_VERSION );
 		wp_enqueue_script( 'rss-d-admin', RSS_D_URL . 'assets/js/admin.js', array( 'jquery' ), RSS_D_VERSION, true );
 		$defaults = RSS_Display::default_settings();
 		wp_localize_script(
@@ -294,7 +294,7 @@ class RSS_D_Admin {
 		wp_send_json_success(
 			array(
 				'html'   => $html,
-				'js_url' => RSS_D_URL . 'assets/js/rss-display.js',
+				'js_url' => RSS_D_URL . 'assets/js/gridify-image-cards-for-rss.js',
 			)
 		);
 	}
@@ -724,7 +724,7 @@ class RSS_D_Admin {
 								<tr><th><?php esc_html_e( 'ライセンス', 'gridify-image-cards-for-rss' ); ?></th><td>GPL-2.0-or-later</td></tr>
 								<tr>
 									<th><?php esc_html_e( 'ウェブサイト', 'gridify-image-cards-for-rss' ); ?></th>
-									<td><a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer">rss-display.pages.dev</a></td>
+									<td><a href="https://gridify-image-cards-for-rss.pages.dev/" target="_blank" rel="noopener noreferrer">gridify-image-cards-for-rss.pages.dev</a></td>
 								</tr>
 							</table>
 						</div>
@@ -734,7 +734,7 @@ class RSS_D_Admin {
 							<p>
 								<?php esc_html_e( 'ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。', 'gridify-image-cards-for-rss' ); ?>
 							</p>
-							<a href="https://rss-display.pages.dev/" target="_blank" rel="noopener noreferrer" class="button button-primary">
+							<a href="https://gridify-image-cards-for-rss.pages.dev/" target="_blank" rel="noopener noreferrer" class="button button-primary">
 								<?php esc_html_e( '公式サイトを開く', 'gridify-image-cards-for-rss' ); ?>
 							</a>
 						</div>

@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Plugin Name:       Gridify Image Cards for RSS
- * Plugin URI:        https://rss-display.pages.dev/
+ * Plugin URI:        https://gridify-image-cards-for-rss.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
  * Version:           1.0.0
  * Requires at least: 6.0
@@ -187,8 +187,8 @@ add_action(
 	'wp_enqueue_scripts',
 	function () {
 		wp_register_script(
-			'rss-display',
-			RSS_D_URL . 'assets/js/rss-display.js',
+			'gridify-image-cards-for-rss',
+			RSS_D_URL . 'assets/js/gridify-image-cards-for-rss.js',
 			array(),
 			RSS_D_VERSION,
 			true

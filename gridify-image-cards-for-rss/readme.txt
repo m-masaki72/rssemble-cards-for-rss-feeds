@@ -30,7 +30,7 @@ Key features:
 
 == Installation ==
 
-1. Upload the `rss-display` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
+1. Upload the `gridify-image-cards-for-rss` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
 2. Activate the plugin from the **Plugins** screen.
 3. Go to **Settings > Gridify Image Cards** and configure your feed URLs.
 4. Add the shortcode to any post, page, or widget.

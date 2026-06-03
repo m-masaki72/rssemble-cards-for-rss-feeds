@@ -14,16 +14,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/m-masaki72/rss-display.git"
+    "url": "git+https://github.com/m-masaki72/gridify-image-cards-for-rss.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/m-masaki72/rss-display/issues"
+    "url": "https://github.com/m-masaki72/gridify-image-cards-for-rss/issues"
   },
-  "homepage": "https://github.com/m-masaki72/rss-display#readme",
+  "homepage": "https://github.com/m-masaki72/gridify-image-cards-for-rss#readme",
   "devDependencies": {
     "@playwright/test": "^1.60.0"
   }

@@ -7,9 +7,9 @@
 
 require_once __DIR__ . '/wp-stub.php';
 
-$plugin_dir = dirname(__DIR__) . '/rss-display/';
+$plugin_dir = dirname(__DIR__) . '/gridify-image-cards-for-rss/';
 define('RSS_D_VERSION', '1.0.0');
-define('RSS_D_FILE',    $plugin_dir . 'rss-display.php');
+define('RSS_D_FILE',    $plugin_dir . 'gridify-image-cards-for-rss.php');
 define('RSS_D_DIR',     $plugin_dir);
 define('RSS_D_URL',     '/plugin/');
 define('RSS_D_OPTION',  'rss_d_settings');
@@ -95,8 +95,8 @@ $target_attr   = $target === '_blank' ? ' target="_blank" rel="noopener noreferr
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RSS Display — Preview</title>
-<link rel="stylesheet" href="/plugin/assets/css/rss-display.css">
-<script src="/plugin/assets/js/rss-display.js" defer></script>
+<link rel="stylesheet" href="/plugin/assets/css/gridify-image-cards-for-rss.css">
+<script src="/plugin/assets/js/gridify-image-cards-for-rss.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

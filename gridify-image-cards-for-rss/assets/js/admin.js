@@ -134,7 +134,7 @@
 					$previewShortcodeText.text( sc );
 					$previewShortcode.css( 'display', 'flex' );
 
-					// rss-display.js は初回のみ取得してキャッシュ、以降はDOMに対して再初期化。
+					// gridify-image-cards-for-rss.js は初回のみ取得してキャッシュ、以降はDOMに対して再初期化。
 					if ( res.data.js_url ) {
 						if ( ! rsDisplayLoaded ) {
 							rsDisplayLoaded = true;

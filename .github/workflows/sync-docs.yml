@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'rss-display/assets/css/rss-display.css'
+      - 'gridify-image-cards-for-rss/assets/css/gridify-image-cards-for-rss.css'
 
 jobs:
   sync:
@@ -15,10 +15,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Copy plugin CSS to docs
-        run: cp rss-display/assets/css/rss-display.css docs/rss-display.css
+        run: cp gridify-image-cards-for-rss/assets/css/gridify-image-cards-for-rss.css docs/gridify-image-cards-for-rss.css
 
       - name: Commit if changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: sync docs/rss-display.css from plugin CSS"
-          file_pattern: docs/rss-display.css
+          commit_message: "chore: sync docs/gridify-image-cards-for-rss.css from plugin CSS"
+          file_pattern: docs/gridify-image-cards-for-rss.css

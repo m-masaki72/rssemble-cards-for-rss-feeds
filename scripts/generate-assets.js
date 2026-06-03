@@ -71,7 +71,7 @@ function bannerHTML(scale = 1) {
   const w = 772 * scale;
   const h = 250 * scale;
   const css = fs.readFileSync(
-    path.join(__dirname, '..', 'rss-display', 'assets', 'css', 'rss-display.css'),
+    path.join(__dirname, '..', 'gridify-image-cards-for-rss', 'assets', 'css', 'gridify-image-cards-for-rss.css'),
     'utf8'
   );
 

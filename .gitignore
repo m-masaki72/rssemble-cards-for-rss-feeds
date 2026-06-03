@@ -6,7 +6,7 @@ tests/e2e/report/
 *.log
 
 # Freemius SDK（リリースビルド時にダウンロード）
-rss-display/freemius/
+gridify-image-cards-for-rss/freemius/
 
 # PHPUnit phar（ローカル専用）
 phpunit.phar
@@ -16,10 +16,10 @@ phpunit.phar
 Thumbs.db
 
 # ビルド成果物・テスト結果
-rss-display.zip
+gridify-image-cards-for-rss.zip
 test-results/
 
 # WordPress.org directory assets（zipに含めない）
-rss-display/assets/screenshot-*.png
-rss-display/assets/banner-*.png
-rss-display/assets/icon-*.png
+gridify-image-cards-for-rss/assets/screenshot-*.png
+gridify-image-cards-for-rss/assets/banner-*.png
+gridify-image-cards-for-rss/assets/icon-*.png
