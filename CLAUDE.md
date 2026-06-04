@@ -18,7 +18,7 @@ php -S localhost:8080 preview/router.php
 
 # WordPress.org 提出用 ZIP 作成（スクリーンショット等を自動除外）
 npm run zip
-# → gridify-image-cards-for-rss.zip
+# → rssemble-cards-for-rss-feeds.zip
 
 # .pot / .po → .mo コンパイル
 node scripts/po2mo.js

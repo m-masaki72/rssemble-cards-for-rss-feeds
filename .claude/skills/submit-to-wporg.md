@@ -17,8 +17,8 @@ readme.txt の確認:
   - [ ] Plugin Name: が PHP ヘッダーと一致しているか
 
 PHP ファイルの確認:
-  - [ ] @package タグが Gridify_Image_Cards_For_RSS になっているか（全5ファイル）
-  - [ ] Text Domain が gridify-image-cards-for-rss になっているか
+  - [ ] @package タグが Rssemble_Cards_For_RSS_Feeds になっているか（全5ファイル）
+  - [ ] Text Domain が rssemble-cards-for-rss-feeds になっているか
   - [ ] Version が readme.txt の Stable tag と一致しているか
 ```
 
@@ -39,7 +39,7 @@ npm run zip
 - `assets/banner-*.png`
 - `assets/icon-*.png`
 
-出力: `gridify-image-cards-for-rss.zip`（プロジェクトルート）
+出力: `rssemble-cards-for-rss-feeds.zip`（プロジェクトルート）
 
 ### 3. アップロード
 
@@ -57,7 +57,7 @@ Thank you for the feedback. I've fixed the issues and uploaded a new version.
 [変更内容を1〜3行で端的に記載]
 
 Note: The "Text Domain mismatch" warning is expected — we have requested a slug change
-to "gridify-image-cards-for-rss" in this reply.
+to "rssemble-cards-for-rss-feeds" in this reply.
 
 Best regards,
 Masaki Mori
@@ -67,7 +67,7 @@ Masaki Mori
 
 メール本文に以下を明記する（コード変更だけでは不足）:
 
-> Please reserve the new slug: **gridify-image-cards-for-rss**
+> Please reserve the new slug: **rssemble-cards-for-rss-feeds**
 
 ## 注意事項
 

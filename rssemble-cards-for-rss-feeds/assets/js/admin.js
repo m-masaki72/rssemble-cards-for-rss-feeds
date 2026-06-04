@@ -1,5 +1,5 @@
 /**
- * Gridify Image Cards for RSS - 管理画面JS
+ * Rssemble Cards for RSS Feeds - 管理画面JS
  */
 ( function ( $ ) {
 	'use strict';
@@ -134,7 +134,7 @@
 					$previewShortcodeText.text( sc );
 					$previewShortcode.css( 'display', 'flex' );
 
-					// gridify-image-cards-for-rss.js は初回のみ取得してキャッシュ、以降はDOMに対して再初期化。
+					// rssemble-cards-for-rss-feeds.js は初回のみ取得してキャッシュ、以降はDOMに対して再初期化。
 					if ( res.data.js_url ) {
 						if ( ! rsDisplayLoaded ) {
 							rsDisplayLoaded = true;

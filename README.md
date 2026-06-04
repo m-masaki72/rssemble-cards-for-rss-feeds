@@ -1,4 +1,4 @@
-# Gridify Image Cards for RSS
+# Rssemble Cards for RSS Feeds
 
 複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし。
 
@@ -16,9 +16,9 @@
 
 ## インストール
 
-1. `gridify-image-cards-for-rss` フォルダを `/wp-content/plugins/` に配置
+1. `rssemble-cards-for-rss-feeds` フォルダを `/wp-content/plugins/` に配置
 2. WordPress管理画面でプラグインを有効化
-3. `設定 > Gridify Image Cards` でフィードURLと表示設定を入力
+3. `設定 > Rssemble Cards` でフィードURLと表示設定を入力
 
 ## ショートコード
 

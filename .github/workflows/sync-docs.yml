@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'gridify-image-cards-for-rss/assets/css/gridify-image-cards-for-rss.css'
+      - 'rssemble-cards-for-rss-feeds/assets/css/rssemble-cards-for-rss-feeds.css'
 
 jobs:
   sync:
@@ -15,10 +15,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Copy plugin CSS to docs
-        run: cp gridify-image-cards-for-rss/assets/css/gridify-image-cards-for-rss.css docs/gridify-image-cards-for-rss.css
+        run: cp rssemble-cards-for-rss-feeds/assets/css/rssemble-cards-for-rss-feeds.css docs/rssemble-cards-for-rss-feeds.css
 
       - name: Commit if changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: sync docs/gridify-image-cards-for-rss.css from plugin CSS"
-          file_pattern: docs/gridify-image-cards-for-rss.css
+          commit_message: "chore: sync docs/rssemble-cards-for-rss-feeds.css from plugin CSS"
+          file_pattern: docs/rssemble-cards-for-rss-feeds.css

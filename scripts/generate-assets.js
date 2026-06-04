@@ -71,7 +71,7 @@ function bannerHTML(scale = 1) {
   const w = 772 * scale;
   const h = 250 * scale;
   const css = fs.readFileSync(
-    path.join(__dirname, '..', 'gridify-image-cards-for-rss', 'assets', 'css', 'gridify-image-cards-for-rss.css'),
+    path.join(__dirname, '..', 'rssemble-cards-for-rss-feeds', 'assets', 'css', 'rssemble-cards-for-rss-feeds.css'),
     'utf8'
   );
 
@@ -168,7 +168,7 @@ ${css}
         <path d="M4 5C11.732 5 18 11.268 18 19" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
-    <div class="badge-title">Gridify Image Cards</div>
+    <div class="badge-title">Rssemble Cards</div>
     <div class="badge-sub">Multiple feeds.<br>Beautiful cards.</div>
   </div>
 </div>
@@ -230,7 +230,7 @@ body {
     <path d="M12 20C36.853 20 57 40.147 57 65" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
     <path d="M12 4C44.033 4 70 30.133 70 62" stroke="rgba(255,255,255,0.45)" stroke-width="7" stroke-linecap="round" fill="none"/>
   </svg>
-  <div class="label">Gridify Image<br>Cards for RSS</div>
+  <div class="label">Rssemble Cards<br>for RSS Feeds</div>
   <div class="label-sub">WordPress Plugin</div>
 </div>
 </body>

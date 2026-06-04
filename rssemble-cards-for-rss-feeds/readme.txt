@@ -1,4 +1,4 @@
-=== Gridify Image Cards for RSS ===
+=== Rssemble Cards for RSS Feeds ===
 Contributors: masakimori
 Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
@@ -13,7 +13,7 @@ Display multiple RSS feeds as OGP image card grids. No external service dependen
 
 == Description ==
 
-Gridify Image Cards for RSS fetches multiple RSS feeds and displays them as image card grids using OGP images. It runs entirely on WordPress built-in features (SimplePie, transients, DOMDocument) — no external services required.
+Rssemble Cards for RSS Feeds fetches multiple RSS feeds and displays them as image card grids using OGP images. It runs entirely on WordPress built-in features (SimplePie, transients, DOMDocument) — no external services required.
 
 Key features:
 
@@ -30,9 +30,9 @@ Key features:
 
 == Installation ==
 
-1. Upload the `gridify-image-cards-for-rss` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
+1. Upload the `rssemble-cards-for-rss-feeds` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
 2. Activate the plugin from the **Plugins** screen.
-3. Go to **Settings > Gridify Image Cards** and configure your feed URLs.
+3. Go to **Settings > Rssemble Cards** and configure your feed URLs.
 4. Add the shortcode to any post, page, or widget.
 
 == Usage ==
@@ -71,7 +71,7 @@ If the RSS feed contains no image and the article's og:image cannot be fetched, 
 
 = How do I clear the cache immediately? =
 
-Go to **Settings > Gridify Image Cards** and click **Refresh Now**. This clears the RSS cache; OGP image cache (1-month fixed) is not affected.
+Go to **Settings > Rssemble Cards** and click **Refresh Now**. This clears the RSS cache; OGP image cache (1-month fixed) is not affected.
 
 = Does it use WP-Cron? =
 

@@ -2,7 +2,7 @@
 /**
  * Fetches, parses, caches, and deduplicates RSS feed items.
  *
- * @package Gridify_Image_Cards_For_RSS
+ * @package Rssemble_Cards_For_RSS_Feeds
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

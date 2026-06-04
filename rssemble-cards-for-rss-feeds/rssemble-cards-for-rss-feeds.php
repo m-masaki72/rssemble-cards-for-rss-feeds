@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
- * Plugin Name:       Gridify Image Cards for RSS
- * Plugin URI:        https://gridify-image-cards-for-rss.pages.dev/
+ * Plugin Name:       Rssemble Cards for RSS Feeds
+ * Plugin URI:        https://rssemble-cards-for-rss-feeds.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
  * Version:           1.0.0
  * Requires at least: 6.0
@@ -9,10 +9,10 @@
  * Author:            Masaki Mori
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       gridify-image-cards-for-rss
+ * Text Domain:       rssemble-cards-for-rss-feeds
  * Domain Path:       /languages
  *
- * @package Gridify_Image_Cards_For_RSS
+ * @package Rssemble_Cards_For_RSS_Feeds
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -187,8 +187,8 @@ add_action(
 	'wp_enqueue_scripts',
 	function () {
 		wp_register_script(
-			'gridify-image-cards-for-rss',
-			RSS_D_URL . 'assets/js/gridify-image-cards-for-rss.js',
+			'rssemble-cards-for-rss-feeds',
+			RSS_D_URL . 'assets/js/rssemble-cards-for-rss-feeds.js',
 			array(),
 			RSS_D_VERSION,
 			true

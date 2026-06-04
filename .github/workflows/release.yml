@@ -15,10 +15,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create ZIP
-        run: zip -r gridify-image-cards-for-rss.zip gridify-image-cards-for-rss/
+        run: zip -r rssemble-cards-for-rss-feeds.zip rssemble-cards-for-rss-feeds/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: gridify-image-cards-for-rss.zip
+          files: rssemble-cards-for-rss-feeds.zip
           generate_release_notes: true

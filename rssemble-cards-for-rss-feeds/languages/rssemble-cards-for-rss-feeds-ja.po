@@ -1,453 +1,450 @@
+# Japanese translation for Rssemble Cards for RSS Feeds
 # Copyright (C) 2024 Masaki Mori
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gridify Image Cards for RSS 1.0.0\n"
-"Report-Msgid-Bugs-To: https://gridify-image-cards-for-rss.pages.dev/\n"
+"Project-Id-Version: Rssemble Cards for RSS Feeds 1.0.0\n"
+"Report-Msgid-Bugs-To: https://rssemble-cards-for-rss-feeds.pages.dev/\n"
 "POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: Masaki Mori\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit\n"
-"X-Domain: gridify-image-cards-for-rss\n"
+"X-Domain: rssemble-cards-for-rss-feeds\n"
 
 #: includes/class-admin.php
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #: includes/class-admin.php
-msgid "Gridify Image Cards"
-msgstr ""
+msgid "Rssemble Cards"
+msgstr "Rssemble Cards"
 
 #: includes/class-admin.php
 msgid "Select default image"
-msgstr ""
+msgstr "デフォルト画像を選択"
 
 #: includes/class-admin.php
 msgid "Use this image"
-msgstr ""
+msgstr "この画像を使用"
 
 #: includes/class-admin.php
 msgid "読み込み中…"
-msgstr ""
+msgstr "読み込み中…"
 
 #: includes/class-admin.php
 msgid "取得に失敗しました。"
-msgstr ""
+msgstr "取得に失敗しました。"
 
 #: includes/class-admin.php
 msgid "通信エラーが発生しました。"
-msgstr ""
+msgstr "通信エラーが発生しました。"
 
 #: includes/class-admin.php
 msgid "Copy"
-msgstr ""
+msgstr "コピー"
 
 #: includes/class-admin.php
 msgid "Copied!"
-msgstr ""
+msgstr "コピーしました！"
 
 #: includes/class-admin.php
 msgid "You do not have permission to do this."
-msgstr ""
+msgstr "この操作を行う権限がありません。"
 
 #: includes/class-admin.php
 msgid "No items found. Make sure feed URLs are registered in the settings."
-msgstr ""
+msgstr "記事が見つかりませんでした。設定でフィードURLが登録されているか確認してください。"
 
 #: includes/class-admin.php
 msgid "画像背景＋タイトルオーバーレイ"
-msgstr ""
+msgstr "画像背景＋タイトルオーバーレイ"
 
 #: includes/class-admin.php
 msgid "上画像・下テキストカード"
-msgstr ""
+msgstr "上画像・下テキストカード"
 
 #: includes/class-admin.php
 msgid "テキストのみカード（説明付き）"
-msgstr ""
+msgstr "テキストのみカード（説明付き）"
 
 #: includes/class-admin.php
 msgid "1行テキスト＋区切り線"
-msgstr ""
+msgstr "1行テキスト＋区切り線"
 
 #: includes/class-admin.php
 msgid "画像のみ"
-msgstr ""
+msgstr "画像のみ"
 
 #: includes/class-admin.php
 msgid "サムネイル横並び＋テキスト"
-msgstr ""
+msgstr "サムネイル横並び＋テキスト"
 
 #: includes/class-admin.php
 msgid "スライドカルーセル"
-msgstr ""
+msgstr "スライドカルーセル"
 
 #: includes/class-admin.php
 msgid "クリックでモーダル表示グリッド"
-msgstr ""
+msgstr "クリックでモーダル表示グリッド"
 
 #: includes/class-admin.php
-msgid "Gridify Image Cards for RSS Settings"
-msgstr ""
+msgid "Rssemble Cards for RSS Feeds Settings"
+msgstr "Rssemble Cards for RSS Feeds 設定"
 
 #: includes/class-admin.php
 msgid "Settings saved."
-msgstr ""
+msgstr "設定を保存しました。"
 
 #: includes/class-admin.php
 msgid "RSS cache cleared. Items will be re-fetched on next page load. OGP image cache is preserved."
-msgstr ""
+msgstr "RSSキャッシュをクリアしました。次のページ読み込み時に再取得されます。OGP画像キャッシュは保持されます。"
 
 #: includes/class-admin.php
 msgid "Basic"
-msgstr ""
+msgstr "基本設定"
 
 #: includes/class-admin.php
 msgid "Display"
-msgstr ""
+msgstr "表示設定"
 
 #: includes/class-admin.php
 msgid "Preview"
-msgstr ""
+msgstr "プレビュー"
 
 #: includes/class-admin.php
 msgid "Feed Status"
-msgstr ""
+msgstr "フィード状況"
 
 #: includes/class-admin.php
 msgid "Usage"
-msgstr ""
+msgstr "使い方"
 
 #: includes/class-admin.php
 msgid "About"
-msgstr ""
+msgstr "このプラグインについて"
 
 #: includes/class-admin.php
 msgid "RSS Feed URLs"
-msgstr ""
+msgstr "RSSフィードURL"
 
 #: includes/class-admin.php
 msgid "Enter one feed URL per line."
-msgstr ""
+msgstr "1行に1つのフィードURLを入力してください。"
 
 #: includes/class-admin.php
 msgid "Cache Duration"
-msgstr ""
+msgstr "キャッシュ期間"
 
 #: includes/class-admin.php
 msgid "12 hours"
-msgstr ""
+msgstr "12時間"
 
 #: includes/class-admin.php
 msgid "1 day"
-msgstr ""
+msgstr "1日"
 
 #: includes/class-admin.php
 msgid "1 week"
-msgstr ""
+msgstr "1週間"
 
 #: includes/class-admin.php
 msgid "1 month"
-msgstr ""
+msgstr "1ヶ月"
 
 #: includes/class-admin.php
 msgid "How often RSS feeds are re-fetched. OGP image cache is fixed at 1 month."
-msgstr ""
+msgstr "RSSフィードを再取得する頻度です。OGP画像キャッシュは固定で1ヶ月です。"
 
 #: includes/class-admin.php
 msgid "Default Image"
-msgstr ""
+msgstr "デフォルト画像"
 
 #: includes/class-admin.php
 msgid "Select from Media Library"
-msgstr ""
+msgstr "メディアライブラリから選択"
 
 #: includes/class-admin.php
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 #: includes/class-admin.php
 msgid "Or specify a URL directly:"
-msgstr ""
+msgstr "またはURLを直接指定："
 
 #: includes/class-admin.php
 msgid "Media Library selection takes priority. If neither is set, the bundled placeholder image is used."
-msgstr ""
+msgstr "メディアライブラリの選択が優先されます。どちらも未設定の場合はプラグイン付属のプレースホルダー画像が使用されます。"
 
 #: includes/class-admin.php
 msgid "Link Target"
-msgstr ""
+msgstr "リンクの開き方"
 
 #: includes/class-admin.php
 msgid "Open links in a new tab"
-msgstr ""
+msgstr "リンクを新しいタブで開く"
 
 #: includes/class-admin.php
 msgid "These are the default values used when no shortcode attribute overrides them."
-msgstr ""
+msgstr "ショートコードの属性で上書きされない場合のデフォルト値です。"
 
 #: includes/class-admin.php
 msgid "Display Type"
-msgstr ""
+msgstr "表示タイプ"
 
 #: includes/class-admin.php
 msgid "Columns"
-msgstr ""
+msgstr "カラム数"
 
 #: includes/class-admin.php
 msgid "Item Count"
-msgstr ""
+msgstr "表示件数"
 
 #: includes/class-admin.php
 msgid "Order By"
-msgstr ""
+msgstr "並び順"
 
 #: includes/class-admin.php
 msgid "Date (newest first)"
-msgstr ""
+msgstr "日付（新しい順）"
 
 #: includes/class-admin.php
 msgid "Random"
-msgstr ""
+msgstr "ランダム"
 
 #: includes/class-admin.php
 msgid "Title Max Lines"
-msgstr ""
+msgstr "タイトル最大行数"
 
 #: includes/class-admin.php
 msgid "Display Options"
-msgstr ""
+msgstr "表示オプション"
 
 #: includes/class-admin.php
 msgid "Show date"
-msgstr ""
+msgstr "日付を表示"
 
 #: includes/class-admin.php
 msgid "Show site name"
-msgstr ""
+msgstr "サイト名を表示"
 
 #: includes/class-admin.php
 msgid "Show description"
-msgstr ""
+msgstr "説明を表示"
 
 #: includes/class-admin.php
 msgid "Type:"
-msgstr ""
+msgstr "タイプ："
 
 #: includes/class-admin.php
 msgid "Columns:"
-msgstr ""
+msgstr "カラム："
 
 #: includes/class-admin.php
 msgid "Count:"
-msgstr ""
+msgstr "件数："
 
 #: includes/class-admin.php
 msgid "Refresh Preview"
-msgstr ""
+msgstr "プレビューを更新"
 
 #: includes/class-admin.php
 msgid "タブレット2列・スマホ1列に自動調整"
-msgstr ""
+msgstr "タブレット2列・スマホ1列に自動調整"
 
 #: includes/class-admin.php
 msgid "レスポンシブ"
-msgstr ""
+msgstr "レスポンシブ"
 
 #: includes/class-admin.php
 msgid "新規タブ"
-msgstr ""
+msgstr "新規タブ"
 
 #: includes/class-admin.php
 msgid "説明"
-msgstr ""
+msgstr "説明"
 
 #: includes/class-admin.php
 msgid "日付"
-msgstr ""
+msgstr "日付"
 
 #: includes/class-admin.php
 msgid "サイト名"
-msgstr ""
+msgstr "サイト名"
 
 #: includes/class-admin.php
 msgid "太字タイトル"
-msgstr ""
+msgstr "太字タイトル"
 
 #: includes/class-admin.php
 msgid "表示タイトル行数（0=無制限）"
-msgstr ""
+msgstr "表示タイトル行数（0=無制限）"
 
 #: includes/class-admin.php
 msgid "タイトル行数:"
-msgstr ""
+msgstr "タイトル行数："
 
 #: includes/class-admin.php
 msgid "Click \"Refresh Preview\" to see a live preview."
-msgstr ""
+msgstr "「プレビューを更新」をクリックするとプレビューが表示されます。"
 
 #: includes/class-admin.php
 msgid "Refresh Now (clear RSS cache)"
-msgstr ""
+msgstr "今すぐ更新（RSSキャッシュをクリア）"
 
 #: includes/class-admin.php
 msgid "OGP image cache is not cleared."
-msgstr ""
+msgstr "OGP画像キャッシュはクリアされません。"
 
 #: includes/class-admin.php
 msgid "No feeds registered yet."
-msgstr ""
+msgstr "フィードがまだ登録されていません。"
 
 #: includes/class-admin.php
 msgid "Feed URL"
-msgstr ""
+msgstr "フィードURL"
 
 #: includes/class-admin.php
 msgid "Last Fetched"
-msgstr ""
-
-#: includes/class-admin.php
-msgid "Item Count"
-msgstr ""
+msgstr "最終取得"
 
 #: includes/class-admin.php
 msgid "Status"
-msgstr ""
+msgstr "状態"
 
 #: includes/class-admin.php
 msgid "Not fetched"
-msgstr ""
+msgstr "未取得"
 
 #: includes/class-admin.php
 msgid "Error (showing stale cache)"
-msgstr ""
+msgstr "エラー（古いキャッシュを表示中）"
 
 #: includes/class-admin.php
 msgid "OK"
-msgstr ""
+msgstr "正常"
 
 #: includes/class-admin.php
 msgid "Parameter Reference"
-msgstr ""
+msgstr "パラメーター一覧"
 
 #: includes/class-admin.php
 msgid "Parameter"
-msgstr ""
+msgstr "パラメーター"
 
 #: includes/class-admin.php
 msgid "Default"
-msgstr ""
+msgstr "デフォルト"
 
 #: includes/class-admin.php
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #: includes/class-admin.php
 msgid "Feed URL(s), comma-separated"
-msgstr ""
+msgstr "フィードURL（複数はカンマ区切り）"
 
 #: includes/class-admin.php
 msgid "Display type"
-msgstr ""
+msgstr "表示タイプ"
 
 #: includes/class-admin.php
 msgid "Number of columns (2/3/4)"
-msgstr ""
+msgstr "カラム数（2/3/4）"
 
 #: includes/class-admin.php
 msgid "Number of items to display"
-msgstr ""
+msgstr "表示件数"
 
 #: includes/class-admin.php
 msgid "Sort order (date/random)"
-msgstr ""
+msgstr "並び順（date/random）"
 
 #: includes/class-admin.php
 msgid "Link target (_blank/_self)"
-msgstr ""
+msgstr "リンクターゲット（_blank/_self）"
 
 #: includes/class-admin.php
 msgid "Show date (1/0)"
-msgstr ""
+msgstr "日付を表示（1/0）"
 
 #: includes/class-admin.php
 msgid "Show site name (1/0)"
-msgstr ""
+msgstr "サイト名を表示（1/0）"
 
 #: includes/class-admin.php
 msgid "Show description (1/0)"
-msgstr ""
+msgstr "説明を表示（1/0）"
 
 #: includes/class-admin.php
 msgid "Bold title (1/0)"
-msgstr ""
+msgstr "タイトルを太字（1/0）"
 
 #: includes/class-admin.php
 msgid "Override default image URL"
-msgstr ""
+msgstr "デフォルト画像URLを上書き"
 
 #: includes/class-admin.php
 msgid "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。"
-msgstr ""
+msgstr "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。"
 
 #: includes/class-admin.php
 msgid "主な機能"
-msgstr ""
+msgstr "主な機能"
 
 #: includes/class-admin.php
 msgid "8種類のレイアウト（grid / list / carousel など）"
-msgstr ""
+msgstr "8種類のレイアウト（grid / list / carousel など）"
 
 #: includes/class-admin.php
 msgid "複数フィードの集約・重複排除"
-msgstr ""
+msgstr "複数フィードの集約・重複排除"
 
 #: includes/class-admin.php
 msgid "OGP画像の自動取得・キャッシュ"
-msgstr ""
+msgstr "OGP画像の自動取得・キャッシュ"
 
 #: includes/class-admin.php
 msgid "レスポンシブ対応（PC/タブレット/スマホ）"
-msgstr ""
+msgstr "レスポンシブ対応（PC/タブレット/スマホ）"
 
 #: includes/class-admin.php
 msgid "外部サービス依存なし（WordPress組み込み機能のみ）"
-msgstr ""
+msgstr "外部サービス依存なし（WordPress組み込み機能のみ）"
 
 #: includes/class-admin.php
 msgid "基本情報"
-msgstr ""
+msgstr "基本情報"
 
 #: includes/class-admin.php
 msgid "バージョン"
-msgstr ""
+msgstr "バージョン"
 
 #: includes/class-admin.php
 msgid "必要環境"
-msgstr ""
+msgstr "必要環境"
 
 #: includes/class-admin.php
 msgid "ライセンス"
-msgstr ""
+msgstr "ライセンス"
 
 #: includes/class-admin.php
 msgid "ウェブサイト"
-msgstr ""
+msgstr "ウェブサイト"
 
 #: includes/class-admin.php
 msgid "サポート・お問い合わせ"
-msgstr ""
+msgstr "サポート・お問い合わせ"
 
 #: includes/class-admin.php
 msgid "ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。"
-msgstr ""
+msgstr "ドキュメント・デモ・バグ報告はプラグイン公式サイトをご利用ください。"
 
 #: includes/class-admin.php
 msgid "公式サイトを開く"
-msgstr ""
+msgstr "公式サイトを開く"

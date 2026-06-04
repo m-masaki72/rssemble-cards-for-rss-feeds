@@ -2,7 +2,7 @@
 /**
  * Handles the [rss_display] shortcode and generates display HTML.
  *
- * @package Gridify_Image_Cards_For_RSS
+ * @package Rssemble_Cards_For_RSS_Feeds
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -48,7 +48,7 @@ class RSS_D_Shortcode {
 	 * @return void
 	 */
 	public function maybe_register_style() {
-		wp_register_style( 'gridify-image-cards-for-rss', RSS_D_URL . 'assets/css/gridify-image-cards-for-rss.css', array(), RSS_D_VERSION );
+		wp_register_style( 'rssemble-cards-for-rss-feeds', RSS_D_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSS_D_VERSION );
 	}
 
 	/**
@@ -130,11 +130,11 @@ class RSS_D_Shortcode {
 			return '';
 		}
 
-		if ( ! wp_style_is( 'gridify-image-cards-for-rss', 'registered' ) ) {
-			wp_register_style( 'gridify-image-cards-for-rss', RSS_D_URL . 'assets/css/gridify-image-cards-for-rss.css', array(), RSS_D_VERSION );
+		if ( ! wp_style_is( 'rssemble-cards-for-rss-feeds', 'registered' ) ) {
+			wp_register_style( 'rssemble-cards-for-rss-feeds', RSS_D_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSS_D_VERSION );
 		}
-		wp_enqueue_style( 'gridify-image-cards-for-rss' );
-		wp_enqueue_script( 'gridify-image-cards-for-rss' );
+		wp_enqueue_style( 'rssemble-cards-for-rss-feeds' );
+		wp_enqueue_script( 'rssemble-cards-for-rss-feeds' );
 
 		$default_image = '' !== $atts['img'] ? esc_url_raw( $atts['img'] ) : $this->get_default_image_url( $settings );
 		$show_desc     = ( '1' === (string) $atts['desc'] );

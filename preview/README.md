@@ -79,12 +79,12 @@ php -S localhost:8081 preview/router.php
 **確認箇所** (`preview/index.php`):
 
 ```php
-$plugin_dir = dirname(__DIR__) . '/gridify-image-cards-for-rss/';   // ← ディレクトリ名
+$plugin_dir = dirname(__DIR__) . '/rssemble-cards-for-rss-feeds/';   // ← ディレクトリ名
 define('RSS_D_VERSION', '1.0.0');                    // ← 定数プレフィックス
-define('RSS_D_FILE',    $plugin_dir . 'gridify-image-cards-for-rss.php');
+define('RSS_D_FILE',    $plugin_dir . 'rssemble-cards-for-rss-feeds.php');
 ```
 
-プラグインを `gridify-image-cards-for-rss/` 以外の名前にリネームした場合はここを更新する。
+プラグインを `rssemble-cards-for-rss-feeds/` 以外の名前にリネームした場合はここを更新する。
 
 ---
 

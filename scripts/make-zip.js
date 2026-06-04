@@ -1,5 +1,5 @@
 /**
- * Create gridify-image-cards-for-rss.zip excluding WordPress.org directory assets.
+ * Create rssemble-cards-for-rss-feeds.zip excluding WordPress.org directory assets.
  * Usage: node scripts/make-zip.js
  */
 const fs   = require('fs');
@@ -7,8 +7,8 @@ const path = require('path');
 const zlib = require('zlib');
 
 const ROOT = path.join(__dirname, '..');
-const SRC  = path.join(ROOT, 'gridify-image-cards-for-rss');
-const OUT  = path.join(ROOT, 'gridify-image-cards-for-rss.zip');
+const SRC  = path.join(ROOT, 'rssemble-cards-for-rss-feeds');
+const OUT  = path.join(ROOT, 'rssemble-cards-for-rss-feeds.zip');
 
 const EXCLUDE = new Set([
   'assets/screenshot-1.png',
@@ -51,7 +51,7 @@ function makeZip(srcDir, outPath, exclude) {
     const useDeflate = compressed.length < data.length;
     const body       = useDeflate ? compressed : data;
 
-    const nameBytes = Buffer.from('gridify-image-cards-for-rss/' + rel, 'utf8');
+    const nameBytes = Buffer.from('rssemble-cards-for-rss-feeds/' + rel, 'utf8');
     const crc32     = crc(data);
     const now       = new Date();
     const dosDate   = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
@@ -125,4 +125,4 @@ function crc(buf) {
 
 makeZip(SRC, OUT, EXCLUDE);
 const kb = Math.round(fs.statSync(OUT).size / 1024);
-console.log(`Done: gridify-image-cards-for-rss.zip (${kb} KB)`);
+console.log(`Done: rssemble-cards-for-rss-feeds.zip (${kb} KB)`);

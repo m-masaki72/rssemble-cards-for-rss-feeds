@@ -1,5 +1,5 @@
 /**
- * Gridify Image Cards for RSS - フロントエンドJS（カルーセル・モーダル）
+ * Rssemble Cards for RSS Feeds - フロントエンドJS（カルーセル・モーダル）
  */
 ( function () {
 	'use strict';

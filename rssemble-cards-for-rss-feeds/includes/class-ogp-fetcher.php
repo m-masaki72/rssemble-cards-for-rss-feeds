@@ -6,7 +6,7 @@
  * but respects WP_HTTP_Proxy settings, https_ssl_verify filter, and the bundled
  * CA certificate. Environments without curl_multi fall back to wp_remote_get.
  *
- * @package Gridify_Image_Cards_For_RSS
+ * @package Rssemble_Cards_For_RSS_Feeds
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
