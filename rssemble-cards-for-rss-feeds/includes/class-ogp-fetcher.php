@@ -16,10 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Fetches and caches OGP image URLs from article pages.
  */
-class RSS_D_OGP_Fetcher {
+class RSSECAFO_OGP_Fetcher {
 
 	/** Transient key prefix. */
-	const CACHE_PREFIX = 'rss_d_ogp_';
+	const CACHE_PREFIX = 'rssecafo_ogp_';
 
 	/** OGP cache duration (fixed 1 month). */
 	const CACHE_TTL = MONTH_IN_SECONDS;

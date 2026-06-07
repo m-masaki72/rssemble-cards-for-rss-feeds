@@ -6,9 +6,9 @@
 define( 'ABSPATH', '/fake/wp/' );
 define( 'MONTH_IN_SECONDS', 2592000 );
 define( 'DAY_IN_SECONDS', 86400 );
-define( 'RSS_D_OPTION', 'rss_d_settings' );
-define( 'RSS_D_VERSION', '1.0.0' );
-define( 'RSS_D_URL', 'http://localhost/wp-content/plugins/rssemble-cards-for-rss-feeds/' );
+define( 'RSSECAFO_OPTION', 'rssecafo_settings' );
+define( 'RSSECAFO_VERSION', '1.0.0' );
+define( 'RSSECAFO_URL', 'http://localhost/wp-content/plugins/rssemble-cards-for-rss-feeds/' );
 
 function esc_url_raw( $url ) { return $url; }
 function esc_url( $url ) { return htmlspecialchars( $url, ENT_QUOTES ); }
@@ -57,7 +57,7 @@ class WP_Error {
 	public function __construct( $code = '', $msg = '' ) {}
 }
 
-class RSS_Display {
+class RSSECAFO_Plugin {
 	public static function get_settings() {
 		return array(
 			'feeds'             => '',

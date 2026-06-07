@@ -12,33 +12,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers and renders the [rss_display] shortcode.
  */
-class RSS_D_Shortcode {
+class RSSECAFO_Shortcode {
 
 	/**
 	 * Feed manager instance.
 	 *
-	 * @var RSS_D_Feed_Manager
+	 * @var RSSECAFO_Feed_Manager
 	 */
 	private $feed_manager;
 
 	/**
 	 * OGP fetcher instance.
 	 *
-	 * @var RSS_D_OGP_Fetcher
+	 * @var RSSECAFO_OGP_Fetcher
 	 */
 	private $ogp_fetcher;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param RSS_D_Feed_Manager $feed_manager Feed manager instance.
-	 * @param RSS_D_OGP_Fetcher  $ogp_fetcher  OGP fetcher instance.
+	 * @param RSSECAFO_Feed_Manager $feed_manager Feed manager instance.
+	 * @param RSSECAFO_OGP_Fetcher  $ogp_fetcher  OGP fetcher instance.
 	 */
 	public function __construct( $feed_manager, $ogp_fetcher ) {
 		$this->feed_manager = $feed_manager;
 		$this->ogp_fetcher  = $ogp_fetcher;
 
-		add_shortcode( 'rss_display', array( $this, 'render' ) );
+		add_shortcode( 'rssecafo', array( $this, 'render' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_register_style' ) );
 	}
 
@@ -48,7 +48,7 @@ class RSS_D_Shortcode {
 	 * @return void
 	 */
 	public function maybe_register_style() {
-		wp_register_style( 'rssemble-cards-for-rss-feeds', RSS_D_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSS_D_VERSION );
+		wp_register_style( 'rssemble-cards-for-rss-feeds', RSSECAFO_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSSECAFO_VERSION );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class RSS_D_Shortcode {
 	 * @return string
 	 */
 	public function render( $atts ) {
-		$settings = RSS_Display::get_settings();
+		$settings = RSSECAFO_Plugin::get_settings();
 
 		$atts = shortcode_atts(
 			array(
@@ -77,7 +77,7 @@ class RSS_D_Shortcode {
 				'title_lines' => '',
 			),
 			$atts,
-			'rss_display'
+			'rssecafo'
 		);
 
 		// Columns: only 2/3/4 are valid.
@@ -111,7 +111,7 @@ class RSS_D_Shortcode {
 				)
 			);
 		} else {
-			$feeds = RSS_Display::parse_feeds( $settings['feeds'] );
+			$feeds = RSSECAFO_Plugin::parse_feeds( $settings['feeds'] );
 		}
 
 		if ( empty( $feeds ) ) {
@@ -131,7 +131,7 @@ class RSS_D_Shortcode {
 		}
 
 		if ( ! wp_style_is( 'rssemble-cards-for-rss-feeds', 'registered' ) ) {
-			wp_register_style( 'rssemble-cards-for-rss-feeds', RSS_D_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSS_D_VERSION );
+			wp_register_style( 'rssemble-cards-for-rss-feeds', RSSECAFO_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSSECAFO_VERSION );
 		}
 		wp_enqueue_style( 'rssemble-cards-for-rss-feeds' );
 		wp_enqueue_script( 'rssemble-cards-for-rss-feeds' );
@@ -143,7 +143,7 @@ class RSS_D_Shortcode {
 		$bold_title    = ( '1' === (string) $atts['bold'] );
 		$responsive    = ( '1' === (string) $atts['responsive'] );
 
-		$type = in_array( $atts['type'], RSS_Display::allowed_types(), true ) ? $atts['type'] : 'grid';
+		$type = in_array( $atts['type'], RSSECAFO_Plugin::allowed_types(), true ) ? $atts['type'] : 'grid';
 
 		$title_lines = '' !== $atts['title_lines'] ? (int) $atts['title_lines'] : (int) $settings['title_lines'];
 		if ( $title_lines < 0 || $title_lines > 10 ) {
@@ -480,6 +480,6 @@ class RSS_D_Shortcode {
 			return $settings['default_image_url'];
 		}
 
-		return RSS_D_URL . 'assets/img/placeholder.png';
+		return RSSECAFO_URL . 'assets/img/placeholder.png';
 	}
 }

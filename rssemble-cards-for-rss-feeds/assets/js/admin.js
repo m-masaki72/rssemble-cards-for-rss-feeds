@@ -9,11 +9,11 @@
 		// ---- メディアライブラリ ----
 
 		var frame;
-		var $idInput  = $( '#rss_d_default_image_id' );
+		var $idInput  = $( '#rssecafo_default_image_id' );
 		var $preview  = $( '.rss-d-image-preview' );
-		var $urlInput = $( '#rss_d_default_image_url' );
+		var $urlInput = $( '#rssecafo_default_image_url' );
 
-		$( '#rss_d_select_image' ).on( 'click', function ( e ) {
+		$( '#rssecafo_select_image' ).on( 'click', function ( e ) {
 			e.preventDefault();
 			if ( frame ) { frame.open(); return; }
 
@@ -35,7 +35,7 @@
 			frame.open();
 		} );
 
-		$( '#rss_d_clear_image' ).on( 'click', function ( e ) {
+		$( '#rssecafo_clear_image' ).on( 'click', function ( e ) {
 			e.preventDefault();
 			$idInput.val( '' );
 			$preview.empty();
@@ -100,7 +100,7 @@
 			$.post(
 				rssDAdmin.ajaxUrl,
 				{
-					action       : 'rss_d_preview',
+					action       : 'rssecafo_preview',
 					_ajax_nonce  : rssDAdmin.nonce,
 					type         : type,
 					columns      : columns,
@@ -122,7 +122,7 @@
 					$frame.html( res.data.html );
 
 					// ショートコード表示（デフォルト値と同じ場合は省略）。
-					var sc = '[rss_display type="' + type + '" columns="' + columns + '" count="' + count + '"';
+					var sc = '[rssecafo type="' + type + '" columns="' + columns + '" count="' + count + '"';
 					if ( '0' === responsive )  { sc += ' responsive="0"'; }
 					if ( '1' === newTab )      { sc += ' target="_blank"'; }
 					if ( '1' === showDesc )    { sc += ' desc="1"'; }

@@ -19,7 +19,7 @@ function plugin_basename($file) { return basename(dirname($file)) . '/' . basena
 // オプション（スタブ設定を返す）
 function get_option($key, $default = false) {
     if ($key === 'rss_gc_settings') return false;
-    if ($key === 'rss_d_settings')  return false; // default_settings() に委ねる
+    if ($key === 'rssecafo_settings')  return false; // default_settings() に委ねる
     if ($key === 'date_format')     return 'Y/m/d';
     if ($key === 'time_format')     return 'H:i';
     return $default;

@@ -12,12 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Manages the admin settings page (Settings → Rssemble Cards).
  */
-class RSS_D_Admin {
+class RSSECAFO_Admin {
 
 	/**
 	 * Feed manager instance.
 	 *
-	 * @var RSS_D_Feed_Manager
+	 * @var RSSECAFO_Feed_Manager
 	 */
 	private $feed_manager;
 
@@ -31,17 +31,17 @@ class RSS_D_Admin {
 	/**
 	 * Constructor.
 	 *
-	 * @param RSS_D_Feed_Manager $feed_manager Feed manager instance.
+	 * @param RSSECAFO_Feed_Manager $feed_manager Feed manager instance.
 	 */
 	public function __construct( $feed_manager ) {
 		$this->feed_manager = $feed_manager;
 
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'admin_post_rss_d_save', array( $this, 'handle_save' ) );
-		add_action( 'admin_post_rss_d_refresh', array( $this, 'handle_refresh' ) );
+		add_action( 'admin_post_rssecafo_save', array( $this, 'handle_save' ) );
+		add_action( 'admin_post_rssecafo_refresh', array( $this, 'handle_refresh' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'wp_ajax_rss_d_preview', array( $this, 'ajax_preview' ) );
+		add_action( 'wp_ajax_rssecafo_preview', array( $this, 'ajax_preview' ) );
 		add_filter( 'plugin_action_links_rssemble-cards-for-rss-feeds/rssemble-cards-for-rss-feeds.php', array( $this, 'add_settings_link' ) );
 	}
 
@@ -79,12 +79,12 @@ class RSS_D_Admin {
 	 */
 	public function register_settings() {
 		register_setting(
-			'rss_d_group',
-			RSS_D_OPTION,
+			'rssecafo_group',
+			RSSECAFO_OPTION,
 			array(
 				'type'              => 'array',
 				'sanitize_callback' => array( $this, 'sanitize' ),
-				'default'           => RSS_Display::default_settings(),
+				'default'           => RSSECAFO_Plugin::default_settings(),
 			)
 		);
 	}
@@ -96,7 +96,7 @@ class RSS_D_Admin {
 	 * @return array
 	 */
 	public function sanitize( $input ) {
-		$defaults = RSS_Display::default_settings();
+		$defaults = RSSECAFO_Plugin::default_settings();
 		$out      = array();
 
 		if ( ! is_array( $input ) ) {
@@ -105,7 +105,7 @@ class RSS_D_Admin {
 
 		// Feed URLs (one per line).
 		$feeds_raw   = isset( $input['feeds'] ) ? (string) $input['feeds'] : '';
-		$clean_lines = array_map( 'esc_url_raw', RSS_Display::parse_feeds( $feeds_raw ) );
+		$clean_lines = array_map( 'esc_url_raw', RSSECAFO_Plugin::parse_feeds( $feeds_raw ) );
 		$clean_lines = array_filter( $clean_lines );
 		$out['feeds'] = implode( "\n", $clean_lines );
 
@@ -135,7 +135,7 @@ class RSS_D_Admin {
 
 		// Display type.
 		$type        = isset( $input['type'] ) ? (string) $input['type'] : $defaults['type'];
-		$out['type'] = in_array( $type, RSS_Display::allowed_types(), true ) ? $type : $defaults['type'];
+		$out['type'] = in_array( $type, RSSECAFO_Plugin::allowed_types(), true ) ? $type : $defaults['type'];
 
 		// Sort order.
 		$orderby        = isset( $input['orderby'] ) ? (string) $input['orderby'] : $defaults['orderby'];
@@ -161,10 +161,10 @@ class RSS_D_Admin {
 		}
 
 		wp_enqueue_media();
-		wp_enqueue_style( 'rss-d-admin', RSS_D_URL . 'assets/css/admin.css', array(), RSS_D_VERSION );
-		wp_enqueue_style( 'rssemble-cards-for-rss-feeds', RSS_D_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSS_D_VERSION );
-		wp_enqueue_script( 'rss-d-admin', RSS_D_URL . 'assets/js/admin.js', array( 'jquery' ), RSS_D_VERSION, true );
-		$defaults = RSS_Display::default_settings();
+		wp_enqueue_style( 'rss-d-admin', RSSECAFO_URL . 'assets/css/admin.css', array(), RSSECAFO_VERSION );
+		wp_enqueue_style( 'rssemble-cards-for-rss-feeds', RSSECAFO_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSSECAFO_VERSION );
+		wp_enqueue_script( 'rss-d-admin', RSSECAFO_URL . 'assets/js/admin.js', array( 'jquery' ), RSSECAFO_VERSION, true );
+		$defaults = RSSECAFO_Plugin::default_settings();
 		wp_localize_script(
 			'rss-d-admin',
 			'rssDAdmin',
@@ -172,7 +172,7 @@ class RSS_D_Admin {
 				'chooseTitle'    => __( 'Select default image', 'rssemble-cards-for-rss-feeds' ),
 				'chooseButton'   => __( 'Use this image', 'rssemble-cards-for-rss-feeds' ),
 				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
-				'nonce'          => wp_create_nonce( 'rss_d_preview' ),
+				'nonce'          => wp_create_nonce( 'rssecafo_preview' ),
 				'defaultType'    => $defaults['type'],
 				'defaultColumns' => (string) $defaults['columns'],
 				'defaultCount'   => (string) $defaults['count'],
@@ -195,19 +195,19 @@ class RSS_D_Admin {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'rssemble-cards-for-rss-feeds' ) );
 		}
 
-		check_admin_referer( 'rss_d_save' );
+		check_admin_referer( 'rssecafo_save' );
 
-		$input = isset( $_POST[ RSS_D_OPTION ] ) && is_array( $_POST[ RSS_D_OPTION ] )
-			? wp_unslash( $_POST[ RSS_D_OPTION ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$input = isset( $_POST[ RSSECAFO_OPTION ] ) && is_array( $_POST[ RSSECAFO_OPTION ] )
+			? wp_unslash( $_POST[ RSSECAFO_OPTION ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			: array();
 
-		update_option( RSS_D_OPTION, $this->sanitize( $input ) );
+		update_option( RSSECAFO_OPTION, $this->sanitize( $input ) );
 
 		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'       => $this->page_slug,
-					'rss_d_saved' => '1',
+					'rssecafo_saved' => '1',
 				),
 				admin_url( 'options-general.php' )
 			)
@@ -225,17 +225,17 @@ class RSS_D_Admin {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'rssemble-cards-for-rss-feeds' ) );
 		}
 
-		check_admin_referer( 'rss_d_refresh' );
+		check_admin_referer( 'rssecafo_refresh' );
 
-		$settings = RSS_Display::get_settings();
-		$feeds    = RSS_Display::parse_feeds( $settings['feeds'] );
+		$settings = RSSECAFO_Plugin::get_settings();
+		$feeds    = RSSECAFO_Plugin::parse_feeds( $settings['feeds'] );
 		$this->feed_manager->clear_feed_cache( $feeds );
 
 		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'            => $this->page_slug,
-					'rss_d_refreshed' => '1',
+					'rssecafo_refreshed' => '1',
 				),
 				admin_url( 'options-general.php' )
 			)
@@ -249,13 +249,13 @@ class RSS_D_Admin {
 	 * @return void
 	 */
 	public function ajax_preview() {
-		check_ajax_referer( 'rss_d_preview' );
+		check_ajax_referer( 'rssecafo_preview' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'Unauthorized', 403 );
 		}
 
-		$allowed_types = RSS_Display::allowed_types();
+		$allowed_types = RSSECAFO_Plugin::allowed_types();
 		$post_type     = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
 		$type          = in_array( $post_type, $allowed_types, true ) ? $post_type : 'grid';
 		$columns     = isset( $_POST['columns'] ) ? (int) $_POST['columns'] : 3; // phpcs:ignore
@@ -294,7 +294,7 @@ class RSS_D_Admin {
 		wp_send_json_success(
 			array(
 				'html'   => $html,
-				'js_url' => RSS_D_URL . 'assets/js/rssemble-cards-for-rss-feeds.js',
+				'js_url' => RSSECAFO_URL . 'assets/js/rssemble-cards-for-rss-feeds.js',
 			)
 		);
 	}
@@ -309,8 +309,8 @@ class RSS_D_Admin {
 			return;
 		}
 
-		$settings = RSS_Display::get_settings();
-		$feeds    = RSS_Display::parse_feeds( $settings['feeds'] );
+		$settings = RSSECAFO_Plugin::get_settings();
+		$feeds    = RSSECAFO_Plugin::parse_feeds( $settings['feeds'] );
 
 		$default_preview = '';
 		if ( ! empty( $settings['default_image_id'] ) ) {
@@ -320,7 +320,7 @@ class RSS_D_Admin {
 			$default_preview = $settings['default_image_url'];
 		}
 
-		$option = RSS_D_OPTION;
+		$option = RSSECAFO_OPTION;
 
 		$types = array(
 			'grid'          => 'grid — ' . __( '画像背景＋タイトルオーバーレイ', 'rssemble-cards-for-rss-feeds' ),
@@ -336,13 +336,13 @@ class RSS_D_Admin {
 		<div class="wrap rss-d-admin">
 			<h1><?php echo esc_html__( 'Rssemble Cards for RSS Feeds Settings', 'rssemble-cards-for-rss-feeds' ); ?></h1>
 
-			<?php if ( isset( $_GET['rss_d_saved'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+			<?php if ( isset( $_GET['rssecafo_saved'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<div class="notice notice-success is-dismissible">
 					<p><?php esc_html_e( 'Settings saved.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 				</div>
 			<?php endif; ?>
 
-			<?php if ( isset( $_GET['rss_d_refreshed'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+			<?php if ( isset( $_GET['rssecafo_refreshed'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<div class="notice notice-success is-dismissible">
 					<p><?php echo esc_html__( 'RSS cache cleared. Items will be re-fetched on next page load. OGP image cache is preserved.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 				</div>
@@ -359,8 +359,8 @@ class RSS_D_Admin {
 			</nav>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="rss-d-settings-form">
-				<input type="hidden" name="action" value="rss_d_save" />
-				<?php wp_nonce_field( 'rss_d_save' ); ?>
+				<input type="hidden" name="action" value="rssecafo_save" />
+				<?php wp_nonce_field( 'rssecafo_save' ); ?>
 
 				<!-- ========== Basic tab ========== -->
 				<div class="rss-d-tab-panel active" data-panel="basic">
@@ -368,20 +368,20 @@ class RSS_D_Admin {
 					<table class="form-table" role="presentation">
 						<tr>
 							<th scope="row">
-								<label for="rss_d_feeds"><?php esc_html_e( 'RSS Feed URLs', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_feeds"><?php esc_html_e( 'RSS Feed URLs', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<textarea id="rss_d_feeds" name="<?php echo esc_attr( $option ); ?>[feeds]" rows="6" class="large-text code" placeholder="https://example.com/feed&#10;https://example.org/feed"><?php echo esc_textarea( $settings['feeds'] ); ?></textarea>
+								<textarea id="rssecafo_feeds" name="<?php echo esc_attr( $option ); ?>[feeds]" rows="6" class="large-text code" placeholder="https://example.com/feed&#10;https://example.org/feed"><?php echo esc_textarea( $settings['feeds'] ); ?></textarea>
 								<p class="description"><?php esc_html_e( 'Enter one feed URL per line.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_cache_ttl"><?php esc_html_e( 'Cache Duration', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_cache_ttl"><?php esc_html_e( 'Cache Duration', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<select id="rss_d_cache_ttl" name="<?php echo esc_attr( $option ); ?>[cache_ttl]">
+								<select id="rssecafo_cache_ttl" name="<?php echo esc_attr( $option ); ?>[cache_ttl]">
 									<option value="43200"  <?php selected( $settings['cache_ttl'], 43200 ); ?>><?php esc_html_e( '12 hours', 'rssemble-cards-for-rss-feeds' ); ?></option>
 									<option value="86400"  <?php selected( $settings['cache_ttl'], 86400 ); ?>><?php esc_html_e( '1 day', 'rssemble-cards-for-rss-feeds' ); ?></option>
 									<option value="604800" <?php selected( $settings['cache_ttl'], 604800 ); ?>><?php esc_html_e( '1 week', 'rssemble-cards-for-rss-feeds' ); ?></option>
@@ -395,19 +395,19 @@ class RSS_D_Admin {
 							<th scope="row"><?php esc_html_e( 'Default Image', 'rssemble-cards-for-rss-feeds' ); ?></th>
 							<td>
 								<div class="rss-d-default-image">
-									<input type="hidden" id="rss_d_default_image_id" name="<?php echo esc_attr( $option ); ?>[default_image_id]" value="<?php echo esc_attr( $settings['default_image_id'] ); ?>" />
+									<input type="hidden" id="rssecafo_default_image_id" name="<?php echo esc_attr( $option ); ?>[default_image_id]" value="<?php echo esc_attr( $settings['default_image_id'] ); ?>" />
 									<div class="rss-d-image-preview">
 										<?php if ( $default_preview ) : ?>
 											<img src="<?php echo esc_url( $default_preview ); ?>" alt="" />
 										<?php endif; ?>
 									</div>
 									<p>
-										<button type="button" class="button" id="rss_d_select_image"><?php esc_html_e( 'Select from Media Library', 'rssemble-cards-for-rss-feeds' ); ?></button>
-										<button type="button" class="button" id="rss_d_clear_image"><?php esc_html_e( 'Remove', 'rssemble-cards-for-rss-feeds' ); ?></button>
+										<button type="button" class="button" id="rssecafo_select_image"><?php esc_html_e( 'Select from Media Library', 'rssemble-cards-for-rss-feeds' ); ?></button>
+										<button type="button" class="button" id="rssecafo_clear_image"><?php esc_html_e( 'Remove', 'rssemble-cards-for-rss-feeds' ); ?></button>
 									</p>
 									<p>
-										<label for="rss_d_default_image_url"><?php esc_html_e( 'Or specify a URL directly:', 'rssemble-cards-for-rss-feeds' ); ?></label><br />
-										<input type="url" id="rss_d_default_image_url" name="<?php echo esc_attr( $option ); ?>[default_image_url]" value="<?php echo esc_attr( $settings['default_image_url'] ); ?>" class="regular-text" placeholder="https://example.com/default.png" />
+										<label for="rssecafo_default_image_url"><?php esc_html_e( 'Or specify a URL directly:', 'rssemble-cards-for-rss-feeds' ); ?></label><br />
+										<input type="url" id="rssecafo_default_image_url" name="<?php echo esc_attr( $option ); ?>[default_image_url]" value="<?php echo esc_attr( $settings['default_image_url'] ); ?>" class="regular-text" placeholder="https://example.com/default.png" />
 									</p>
 									<p class="description"><?php esc_html_e( 'Media Library selection takes priority. If neither is set, the bundled placeholder image is used.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 								</div>
@@ -438,10 +438,10 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_type"><?php esc_html_e( 'Display Type', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_type"><?php esc_html_e( 'Display Type', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<select id="rss_d_type" name="<?php echo esc_attr( $option ); ?>[type]">
+								<select id="rssecafo_type" name="<?php echo esc_attr( $option ); ?>[type]">
 									<?php foreach ( $types as $val => $label ) : ?>
 										<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $settings['type'], $val ); ?>><?php echo esc_html( $label ); ?></option>
 									<?php endforeach; ?>
@@ -451,10 +451,10 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_columns"><?php esc_html_e( 'Columns', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_columns"><?php esc_html_e( 'Columns', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<select id="rss_d_columns" name="<?php echo esc_attr( $option ); ?>[columns]">
+								<select id="rssecafo_columns" name="<?php echo esc_attr( $option ); ?>[columns]">
 									<?php foreach ( array( 2, 3, 4 ) as $c ) : ?>
 										<option value="<?php echo esc_attr( $c ); ?>" <?php selected( $settings['columns'], $c ); ?>><?php echo esc_html( $c ); ?></option>
 									<?php endforeach; ?>
@@ -464,19 +464,19 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_count"><?php esc_html_e( 'Item Count', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_count"><?php esc_html_e( 'Item Count', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<input type="number" id="rss_d_count" name="<?php echo esc_attr( $option ); ?>[count]" value="<?php echo esc_attr( $settings['count'] ); ?>" min="1" max="100" class="small-text" />
+								<input type="number" id="rssecafo_count" name="<?php echo esc_attr( $option ); ?>[count]" value="<?php echo esc_attr( $settings['count'] ); ?>" min="1" max="100" class="small-text" />
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_orderby"><?php esc_html_e( 'Order By', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_orderby"><?php esc_html_e( 'Order By', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<select id="rss_d_orderby" name="<?php echo esc_attr( $option ); ?>[orderby]">
+								<select id="rssecafo_orderby" name="<?php echo esc_attr( $option ); ?>[orderby]">
 									<option value="date"   <?php selected( $settings['orderby'], 'date' ); ?>><?php esc_html_e( 'Date (newest first)', 'rssemble-cards-for-rss-feeds' ); ?></option>
 									<option value="random" <?php selected( $settings['orderby'], 'random' ); ?>><?php esc_html_e( 'Random', 'rssemble-cards-for-rss-feeds' ); ?></option>
 								</select>
@@ -485,10 +485,10 @@ class RSS_D_Admin {
 
 						<tr>
 							<th scope="row">
-								<label for="rss_d_title_lines"><?php esc_html_e( 'Title Max Lines', 'rssemble-cards-for-rss-feeds' ); ?></label>
+								<label for="rssecafo_title_lines"><?php esc_html_e( 'Title Max Lines', 'rssemble-cards-for-rss-feeds' ); ?></label>
 							</th>
 							<td>
-								<select id="rss_d_title_lines" name="<?php echo esc_attr( $option ); ?>[title_lines]">
+								<select id="rssecafo_title_lines" name="<?php echo esc_attr( $option ); ?>[title_lines]">
 									<?php foreach ( array( 1, 2, 3 ) as $l ) : ?>
 										<option value="<?php echo esc_attr( $l ); ?>" <?php selected( $settings['title_lines'], $l ); ?>><?php echo esc_html( $l ); ?></option>
 									<?php endforeach; ?>
@@ -615,8 +615,8 @@ class RSS_D_Admin {
 			<div class="rss-d-tab-panel" data-panel="status">
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:1em 0;">
-					<input type="hidden" name="action" value="rss_d_refresh" />
-					<?php wp_nonce_field( 'rss_d_refresh' ); ?>
+					<input type="hidden" name="action" value="rssecafo_refresh" />
+					<?php wp_nonce_field( 'rssecafo_refresh' ); ?>
 					<?php submit_button( __( 'Refresh Now (clear RSS cache)', 'rssemble-cards-for-rss-feeds' ), 'secondary', 'submit', false ); ?>
 					<span class="description"><?php esc_html_e( 'OGP image cache is not cleared.', 'rssemble-cards-for-rss-feeds' ); ?></span>
 				</form>
@@ -699,7 +699,7 @@ class RSS_D_Admin {
 				<div class="rss-d-about-wrap">
 
 					<div class="rss-d-about-header">
-						<h2>Rssemble Cards for RSS Feeds <span class="rss-d-about-version">v<?php echo esc_html( RSS_D_VERSION ); ?></span></h2>
+						<h2>Rssemble Cards for RSS Feeds <span class="rss-d-about-version">v<?php echo esc_html( RSSECAFO_VERSION ); ?></span></h2>
 						<p><?php esc_html_e( '複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグインです。', 'rssemble-cards-for-rss-feeds' ); ?></p>
 					</div>
 
@@ -719,7 +719,7 @@ class RSS_D_Admin {
 						<div class="rss-d-about-card">
 							<h3><?php esc_html_e( '基本情報', 'rssemble-cards-for-rss-feeds' ); ?></h3>
 							<table class="rss-d-about-table">
-								<tr><th><?php esc_html_e( 'バージョン', 'rssemble-cards-for-rss-feeds' ); ?></th><td><?php echo esc_html( RSS_D_VERSION ); ?></td></tr>
+								<tr><th><?php esc_html_e( 'バージョン', 'rssemble-cards-for-rss-feeds' ); ?></th><td><?php echo esc_html( RSSECAFO_VERSION ); ?></td></tr>
 								<tr><th><?php esc_html_e( '必要環境', 'rssemble-cards-for-rss-feeds' ); ?></th><td>PHP 7.4+ / WordPress 6.0+</td></tr>
 								<tr><th><?php esc_html_e( 'ライセンス', 'rssemble-cards-for-rss-feeds' ); ?></th><td>GPL-2.0-or-later</td></tr>
 								<tr>

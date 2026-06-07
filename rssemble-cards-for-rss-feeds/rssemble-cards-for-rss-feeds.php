@@ -19,62 +19,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'RSS_D_VERSION', '1.0.0' );
-define( 'RSS_D_FILE', __FILE__ );
-define( 'RSS_D_DIR', plugin_dir_path( __FILE__ ) );
-define( 'RSS_D_URL', plugin_dir_url( __FILE__ ) );
-define( 'RSS_D_OPTION', 'rss_d_settings' );
+define( 'RSSECAFO_VERSION', '1.0.0' );
+define( 'RSSECAFO_FILE', __FILE__ );
+define( 'RSSECAFO_DIR', plugin_dir_path( __FILE__ ) );
+define( 'RSSECAFO_URL', plugin_dir_url( __FILE__ ) );
+define( 'RSSECAFO_OPTION', 'rssecafo_settings' );
 
 
-require_once RSS_D_DIR . 'includes/class-feed-manager.php';
-require_once RSS_D_DIR . 'includes/class-ogp-fetcher.php';
-require_once RSS_D_DIR . 'includes/class-shortcode.php';
-require_once RSS_D_DIR . 'includes/class-admin.php';
+require_once RSSECAFO_DIR . 'includes/class-feed-manager.php';
+require_once RSSECAFO_DIR . 'includes/class-ogp-fetcher.php';
+require_once RSSECAFO_DIR . 'includes/class-shortcode.php';
+require_once RSSECAFO_DIR . 'includes/class-admin.php';
 
 /**
  * プラグイン本体（シングルトン）。
  */
-final class RSS_Display {
+final class RSSECAFO_Plugin {
 
 	/**
 	 * シングルトンインスタンス。
 	 *
-	 * @var RSS_Display|null
+	 * @var RSSECAFO_Plugin|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * フィードマネージャ。
 	 *
-	 * @var RSS_D_Feed_Manager
+	 * @var RSSECAFO_Feed_Manager
 	 */
 	public $feed_manager;
 
 	/**
 	 * OGP 取得クラス。
 	 *
-	 * @var RSS_D_OGP_Fetcher
+	 * @var RSSECAFO_OGP_Fetcher
 	 */
 	public $ogp_fetcher;
 
 	/**
 	 * ショートコード処理クラス。
 	 *
-	 * @var RSS_D_Shortcode
+	 * @var RSSECAFO_Shortcode
 	 */
 	public $shortcode;
 
 	/**
 	 * 管理画面クラス。
 	 *
-	 * @var RSS_D_Admin|null
+	 * @var RSSECAFO_Admin|null
 	 */
 	public $admin = null;
 
 	/**
 	 * インスタンスを取得する。
 	 *
-	 * @return RSS_Display
+	 * @return RSSECAFO_Plugin
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -88,12 +88,12 @@ final class RSS_Display {
 	 * コンストラクタ。各コンポーネントを初期化する。
 	 */
 	private function __construct() {
-		$this->ogp_fetcher  = new RSS_D_OGP_Fetcher();
-		$this->feed_manager = new RSS_D_Feed_Manager();
-		$this->shortcode    = new RSS_D_Shortcode( $this->feed_manager, $this->ogp_fetcher );
+		$this->ogp_fetcher  = new RSSECAFO_OGP_Fetcher();
+		$this->feed_manager = new RSSECAFO_Feed_Manager();
+		$this->shortcode    = new RSSECAFO_Shortcode( $this->feed_manager, $this->ogp_fetcher );
 
 		if ( is_admin() ) {
-			$this->admin = new RSS_D_Admin( $this->feed_manager );
+			$this->admin = new RSSECAFO_Admin( $this->feed_manager );
 		}
 
 	}
@@ -146,7 +146,7 @@ final class RSS_Display {
 	public static function get_settings() {
 		static $cache = null;
 		if ( null === $cache ) {
-			$saved = get_option( RSS_D_OPTION, array() );
+			$saved = get_option( RSSECAFO_OPTION, array() );
 			$cache = wp_parse_args( is_array( $saved ) ? $saved : array(), self::default_settings() );
 		}
 		return $cache;
@@ -168,19 +168,19 @@ final class RSS_Display {
 	 * @return void
 	 */
 	public static function uninstall() {
-		delete_option( RSS_D_OPTION );
+		delete_option( RSSECAFO_OPTION );
 	}
 }
 
-register_uninstall_hook( __FILE__, array( 'RSS_Display', 'uninstall' ) );
+register_uninstall_hook( __FILE__, array( 'RSSECAFO_Plugin', 'uninstall' ) );
 
 /**
  * プラグイン本体へのアクセサ。
  *
- * @return RSS_Display
+ * @return RSSECAFO_Plugin
  */
-function rss_display() { // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase, Universal.Files.SeparateFunctionsFromOO.Mixed
-	return RSS_Display::instance();
+function rssecafo_plugin() { // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase, Universal.Files.SeparateFunctionsFromOO.Mixed
+	return RSSECAFO_Plugin::instance();
 }
 
 add_action(
@@ -188,9 +188,9 @@ add_action(
 	function () {
 		wp_register_script(
 			'rssemble-cards-for-rss-feeds',
-			RSS_D_URL . 'assets/js/rssemble-cards-for-rss-feeds.js',
+			RSSECAFO_URL . 'assets/js/rssemble-cards-for-rss-feeds.js',
 			array(),
-			RSS_D_VERSION,
+			RSSECAFO_VERSION,
 			true
 		);
 	}
@@ -198,5 +198,5 @@ add_action(
 
 // Do not boot the plugin during uninstall.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	rss_display();
+	rssecafo_plugin();
 }

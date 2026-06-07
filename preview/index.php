@@ -8,14 +8,14 @@
 require_once __DIR__ . '/wp-stub.php';
 
 $plugin_dir = dirname(__DIR__) . '/rssemble-cards-for-rss-feeds/';
-define('RSS_D_VERSION', '1.0.0');
-define('RSS_D_FILE',    $plugin_dir . 'rssemble-cards-for-rss-feeds.php');
-define('RSS_D_DIR',     $plugin_dir);
-define('RSS_D_URL',     '/plugin/');
-define('RSS_D_OPTION',  'rss_d_settings');
+define('RSSECAFO_VERSION', '1.0.0');
+define('RSSECAFO_FILE',    $plugin_dir . 'rssemble-cards-for-rss-feeds.php');
+define('RSSECAFO_DIR',     $plugin_dir);
+define('RSSECAFO_URL',     '/plugin/');
+define('RSSECAFO_OPTION',  'rssecafo_settings');
 
-// RSS_Display::get_settings() / default_settings() の代替（class-feed-manager が参照するため先に定義）
-class RSS_Display {
+// RSSECAFO_Plugin::get_settings() / default_settings() の代替（class-feed-manager が参照するため先に定義）
+class RSSECAFO_Plugin {
     public static function default_settings() {
         return [
             'feeds'             => '',
@@ -63,8 +63,8 @@ if (!in_array($type, $allowed_types, true))          $type    = 'grid';
 $feed_url = filter_var(trim($feed_url), FILTER_SANITIZE_URL);
 
 // --- フィード取得 ---
-$ogp_fetcher  = new RSS_D_OGP_Fetcher();
-$feed_manager = new RSS_D_Feed_Manager($ogp_fetcher);
+$ogp_fetcher  = new RSSECAFO_OGP_Fetcher();
+$feed_manager = new RSSECAFO_Feed_Manager($ogp_fetcher);
 
 $items   = [];
 $elapsed = 0;

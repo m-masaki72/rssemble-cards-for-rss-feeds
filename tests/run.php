@@ -85,17 +85,17 @@ function make_item( array $override = [] ): array {
 }
 
 // -----------------------------------------------------------------------
-// RSS_D_Feed_Manager: deduplicate テスト
+// RSSECAFO_Feed_Manager: deduplicate テスト
 // -----------------------------------------------------------------------
 
 $ogp_fetcher_stub = new class {
 	public function get_images( array $urls ): array { return []; }
 };
-$fm        = new RSS_D_Feed_Manager( $ogp_fetcher_stub );
-$ref_dedup = new ReflectionMethod( RSS_D_Feed_Manager::class, 'deduplicate' );
+$fm        = new RSSECAFO_Feed_Manager( $ogp_fetcher_stub );
+$ref_dedup = new ReflectionMethod( RSSECAFO_Feed_Manager::class, 'deduplicate' );
 $ref_dedup->setAccessible( true );
 
-section( 'RSS_D_Feed_Manager::deduplicate()' );
+section( 'RSSECAFO_Feed_Manager::deduplicate()' );
 
 // 重複URLの集約
 $items_dup = [
@@ -128,12 +128,12 @@ assert_equals( 1, count( $result_triple ), '3件重複は1件に集約される'
 assert_equals( 300, $result_triple[0]['timestamp'], '3件重複でも最新timestampが残る' );
 
 // -----------------------------------------------------------------------
-// RSS_D_Feed_Manager: get_items ソート・件数・複数フィード結合
+// RSSECAFO_Feed_Manager: get_items ソート・件数・複数フィード結合
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Feed_Manager::get_items() ソート・件数・複数フィード' );
+section( 'RSSECAFO_Feed_Manager::get_items() ソート・件数・複数フィード' );
 
-class TestFeedManager extends RSS_D_Feed_Manager {
+class TestFeedManager extends RSSECAFO_Feed_Manager {
 	public array $fake_items = [];
 
 	public function get_feed_payload( $feed_url ): array {
@@ -175,10 +175,10 @@ $merged = $tfm2->get_items( [ 'https://feed1/', 'https://feed2/' ], 10, 'date' )
 assert_equals( 2, count( $merged ), '複数フィードの同一URLは重複排除される' );
 
 // -----------------------------------------------------------------------
-// RSS_D_Feed_Manager: desc/site フィールドの保持
+// RSSECAFO_Feed_Manager: desc/site フィールドの保持
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Feed_Manager — desc/site フィールド保持' );
+section( 'RSSECAFO_Feed_Manager — desc/site フィールド保持' );
 
 $tfm->fake_items = [
 	make_item( [ 'desc' => '説明文ですわ', 'site' => 'サイト名ですわ' ] ),
@@ -194,10 +194,10 @@ assert_true( array_key_exists( 'desc', $result_empty_desc[0] ), 'desc キーが�
 assert_true( array_key_exists( 'site', $result_empty_desc[0] ), 'site キーが常に存在する' );
 
 // -----------------------------------------------------------------------
-// RSS_D_Shortcode: render() 出力テスト
+// RSSECAFO_Shortcode: render() 出力テスト
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Shortcode::render() — 新パラメータ (desc / date / site / img / type)' );
+section( 'RSSECAFO_Shortcode::render() — 新パラメータ (desc / date / site / img / type)' );
 
 $ogp_stub = new class {
 	public function get_images( array $urls ): array {
@@ -205,22 +205,22 @@ $ogp_stub = new class {
 	}
 };
 
-class FakeFeedManager extends RSS_D_Feed_Manager {
+class FakeFeedManager extends RSSECAFO_Feed_Manager {
 	public array $items = [];
 	public function get_items( $feeds, $count, $orderby = 'date' ): array {
 		return $this->items;
 	}
 }
 
-function make_sc( array $items ): RSS_D_Shortcode {
+function make_sc( array $items ): RSSECAFO_Shortcode {
 	global $ogp_stub;
 	$fm        = new FakeFeedManager( $ogp_stub );
 	$fm->items = $items;
-	return new RSS_D_Shortcode( $fm, $ogp_stub );
+	return new RSSECAFO_Shortcode( $fm, $ogp_stub );
 }
 
 // feed を渡して early-return を回避するラッパー
-function render_sc( RSS_D_Shortcode $sc, array $atts = [] ): string {
+function render_sc( RSSECAFO_Shortcode $sc, array $atts = [] ): string {
 	return $sc->render( array_merge( [ 'feed' => 'https://dummy.feed/' ], $atts ) );
 }
 
@@ -267,7 +267,7 @@ assert_not_contains( 'rss-d-card-body', $html_grid, 'type=grid では .rss-d-car
 $html_invalid_type = render_sc( $sc, [ 'type' => 'unknown_type' ] );
 assert_contains( 'rss-d-type-grid', $html_invalid_type, '不正な type 値は grid にフォールバック' );
 
-section( 'RSS_D_Shortcode::render() — 既存パラメータ (target / columns / count)' );
+section( 'RSSECAFO_Shortcode::render() — 既存パラメータ (target / columns / count)' );
 
 // target
 $html_blank = render_sc( $sc, [ 'target' => '_blank' ] );
@@ -290,7 +290,7 @@ assert_contains( '--rss-d-columns:3', $html_col3, 'columns=3 が CSS変数に反
 $html_col_invalid = render_sc( $sc, [ 'columns' => '99' ] );
 assert_contains( '--rss-d-columns:3', $html_col_invalid, '不正な columns 値は設定値(3)にフォールバック' );
 
-section( 'RSS_D_Shortcode::render() — HTML構造・エッジケース' );
+section( 'RSSECAFO_Shortcode::render() — HTML構造・エッジケース' );
 
 // URL なしアイテム: <div> タグで出力
 $sc_nourl  = make_sc( [ make_item( [ 'url' => '' ] ) ] );
@@ -347,26 +347,26 @@ assert_true( $desc_pos > $body_pos, 'list_vertical タイプ: desc が card-body
 assert_true( $date_pos > $body_pos, 'list_vertical タイプ: date が card-body の後に出力される' );
 
 // -----------------------------------------------------------------------
-// RSS_Display::parse_feeds() テスト
+// RSSECAFO_Plugin::parse_feeds() テスト
 // -----------------------------------------------------------------------
 
-section( 'RSS_Display::parse_feeds()' );
+section( 'RSSECAFO_Plugin::parse_feeds()' );
 
-$feeds_simple = RSS_Display::parse_feeds( "https://feed1.example.com\nhttps://feed2.example.com" );
+$feeds_simple = RSSECAFO_Plugin::parse_feeds( "https://feed1.example.com\nhttps://feed2.example.com" );
 assert_equals( 2, count( $feeds_simple ), '改行区切りURLを2件パースできる' );
 assert_equals( 'https://feed1.example.com', $feeds_simple[0], '1件目のURLが正しい' );
 assert_equals( 'https://feed2.example.com', $feeds_simple[1], '2件目のURLが正しい' );
 
-$feeds_empty_lines = RSS_Display::parse_feeds( "https://feed1.example.com\n\nhttps://feed2.example.com\n" );
+$feeds_empty_lines = RSSECAFO_Plugin::parse_feeds( "https://feed1.example.com\n\nhttps://feed2.example.com\n" );
 assert_equals( 2, count( $feeds_empty_lines ), '空行は無視される' );
 
-$feeds_trim = RSS_Display::parse_feeds( "  https://feed1.example.com  \n  https://feed2.example.com  " );
+$feeds_trim = RSSECAFO_Plugin::parse_feeds( "  https://feed1.example.com  \n  https://feed2.example.com  " );
 assert_equals( 'https://feed1.example.com', $feeds_trim[0], 'URLがtrimされる（前後の空白除去）' );
 
-$feeds_crlf = RSS_Display::parse_feeds( "https://feed1.example.com\r\nhttps://feed2.example.com" );
+$feeds_crlf = RSSECAFO_Plugin::parse_feeds( "https://feed1.example.com\r\nhttps://feed2.example.com" );
 assert_equals( 2, count( $feeds_crlf ), 'CRLF区切りもパースできる' );
 
-$feeds_empty = RSS_Display::parse_feeds( '' );
+$feeds_empty = RSSECAFO_Plugin::parse_feeds( '' );
 assert_equals( 0, count( $feeds_empty ), '空文字は空配列を返す' );
 
 // -----------------------------------------------------------------------
@@ -385,7 +385,7 @@ assert_contains( 'rss-d-type-grid', $html_default_type, 'get_settings() の type
 // render_type の分岐確認（追加タイプ）
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Shortcode::render() — render_type 分岐確認' );
+section( 'RSSECAFO_Shortcode::render() — render_type 分岐確認' );
 
 $sc_types = make_sc( [ make_item() ] );
 
@@ -402,7 +402,7 @@ assert_contains( 'rss-d-type-text_line', $html_text_line, 'type=text_line のと
 // carousel タイプ テスト
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Shortcode::render() — carousel タイプ' );
+section( 'RSSECAFO_Shortcode::render() — carousel タイプ' );
 
 $sc_carousel = make_sc( [ make_item(), make_item( [ 'url' => 'https://example.com/article/2', 'title' => '記事2' ] ) ] );
 
@@ -410,12 +410,12 @@ $sc_carousel = make_sc( [ make_item(), make_item( [ 'url' => 'https://example.co
 // popup_grid タイプ テスト
 // -----------------------------------------------------------------------
 
-section( 'RSS_D_Shortcode::render() — popup_grid タイプ' );
+section( 'RSSECAFO_Shortcode::render() — popup_grid タイプ' );
 
 $sc_popup = make_sc( [ make_item() ] );
 
 // render_popup_grid の内部構造はreflection経由で直接テスト
-$ref_popup = new ReflectionMethod( RSS_D_Shortcode::class, 'render_popup_grid' );
+$ref_popup = new ReflectionMethod( RSSECAFO_Shortcode::class, 'render_popup_grid' );
 $ref_popup->setAccessible( true );
 $items_resolved = [
 	[
@@ -445,7 +445,7 @@ $html_popup_blank = ob_get_clean();
 assert_contains( 'data-newtab="1"', $html_popup_blank, 'render_popup_grid: new_tab=true のとき data-newtab="1"' );
 
 // render_carousel も同様にreflection経由でテスト
-$ref_carousel = new ReflectionMethod( RSS_D_Shortcode::class, 'render_carousel' );
+$ref_carousel = new ReflectionMethod( RSSECAFO_Shortcode::class, 'render_carousel' );
 $ref_carousel->setAccessible( true );
 ob_start();
 $ref_carousel->invoke( $sc_popup, $items_resolved, 3, 2, false, false, false, false );

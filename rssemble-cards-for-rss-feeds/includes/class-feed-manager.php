@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Manages RSS feed fetching, transient caching, and deduplication.
  */
-class RSS_D_Feed_Manager {
+class RSSECAFO_Feed_Manager {
 
 	/** Transient key prefix. */
-	const CACHE_PREFIX = 'rss_d_feed_';
+	const CACHE_PREFIX = 'rssecafo_feed_';
 
 	/**
 	 * How long to keep cached data (max 1 month).
@@ -41,7 +41,7 @@ class RSS_D_Feed_Manager {
 	private function get_ttl() {
 		static $ttl = null;
 		if ( null === $ttl ) {
-			$settings = RSS_Display::get_settings();
+			$settings = RSSECAFO_Plugin::get_settings();
 			$value    = absint( $settings['cache_ttl'] );
 			$ttl      = $value > 0 ? $value : DAY_IN_SECONDS;
 		}
