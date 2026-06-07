@@ -31,8 +31,10 @@ jobs:
 
       - name: Deploy to WordPress.org SVN
         uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          slug: rssemble-cards-for-rss-feeds
+          build-dir: ./rssemble-cards-for-rss-feeds
+          assets-dir: ./wp-assets
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SLUG: rssemble-cards-for-rss-feeds
-          PLUGIN_DIR: rssemble-cards-for-rss-feeds
