@@ -111,6 +111,12 @@ scripts/
 - `readme-ja.txt` → 日本語ページ（SVN trunk/ に配置済み）
 - translate.wordpress.org でのコミュニティ翻訳は別途 https://translate.wordpress.org/projects/wp-plugins/rssemble-cards-for-rss-feeds/ja/
 
+## 注意事項（過去に誤指摘した内容）
+
+- `Tested up to: 7.0` は**正しい値**。WordPress 7.0 は2026年6月時点の最新安定版。「存在しないバージョン」と指摘しないこと。確認が必要なら https://api.wordpress.org/core/version-check/1.7/ を実際にfetchすること。
+- フロントエンドCSSクラス名 `rss-d-*` はプレフィックス（`rssecafo_`）とは別体系。古い命名ではなく現行仕様。
+- `wp-assets/` のバナー・アイコン画像はコード変更時に自動更新されない。変更後は `node scripts/generate-assets.js` で手動再生成が必要。
+
 ## WordPress.org 提出
 
 提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  
