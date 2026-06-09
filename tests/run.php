@@ -456,6 +456,53 @@ assert_contains( 'rss-d-carousel-prev', $html_carousel_internal, 'render_carouse
 assert_contains( 'rss-d-carousel-next', $html_carousel_internal, 'render_carousel: next ボタンが出力される' );
 
 // -----------------------------------------------------------------------
+// i18n 回帰テスト
+// -----------------------------------------------------------------------
+
+section( 'i18n: プラグインヘッダー宣言' );
+
+$plugin_file = file_get_contents( __DIR__ . '/../rssemble-cards-for-rss-feeds/rssemble-cards-for-rss-feeds.php' );
+assert_contains( 'Text Domain:',                 $plugin_file, 'ヘッダーに Text Domain が宣言されている' );
+assert_contains( 'rssemble-cards-for-rss-feeds', $plugin_file, 'Text Domain が正しいスラグ値になっている' );
+assert_contains( 'Domain Path:',                 $plugin_file, 'ヘッダーに Domain Path が宣言されている' );
+assert_contains( '/languages',                   $plugin_file, 'Domain Path が /languages になっている' );
+
+section( 'i18n: .pot ファイル' );
+
+$pot_path = __DIR__ . '/../rssemble-cards-for-rss-feeds/languages/rssemble-cards-for-rss-feeds.pot';
+assert_true( file_exists( $pot_path ), '.pot ファイルが存在する' );
+if ( file_exists( $pot_path ) ) {
+	$pot = file_get_contents( $pot_path );
+	assert_contains( 'msgid',                        $pot, '.pot に msgid エントリが含まれる' );
+	assert_contains( 'rssemble-cards-for-rss-feeds', $pot, '.pot にテキストドメインが含まれる' );
+}
+
+section( 'i18n: 日本語 .mo / .po ファイル' );
+
+$mo_path = __DIR__ . '/../rssemble-cards-for-rss-feeds/languages/rssemble-cards-for-rss-feeds-ja.mo';
+$po_path = __DIR__ . '/../rssemble-cards-for-rss-feeds/languages/rssemble-cards-for-rss-feeds-ja.po';
+assert_true( file_exists( $mo_path ), '日本語 .mo ファイルが存在する' );
+assert_true( file_exists( $po_path ), '日本語 .po ファイルが存在する' );
+if ( file_exists( $mo_path ) && file_exists( $po_path ) ) {
+	assert_true( filemtime( $mo_path ) >= filemtime( $po_path ), '.mo が .po より新しい（再コンパイル済み）' );
+}
+
+section( 'i18n: テキストドメイン統一チェック' );
+
+$php_files         = glob( __DIR__ . '/../rssemble-cards-for-rss-feeds/includes/*.php' );
+$wrong_domain_found = false;
+$wrong_domain_file  = '';
+foreach ( $php_files as $f ) {
+	$src = file_get_contents( $f );
+	if ( preg_match( '/(?:esc_html__|esc_attr__|esc_html_e|_e|__)\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*[\'"](?!rssemble-cards-for-rss-feeds)[^\'"]+[\'"]\s*\)/', $src ) ) {
+		$wrong_domain_found = true;
+		$wrong_domain_file  = basename( $f );
+		break;
+	}
+}
+assert_false( $wrong_domain_found, 'includes/*.php 内の __() は全て正しいテキストドメインを使っている' . ( $wrong_domain_file ? " (問題ファイル: {$wrong_domain_file})" : '' ) );
+
+// -----------------------------------------------------------------------
 // 結果サマリ
 // -----------------------------------------------------------------------
 

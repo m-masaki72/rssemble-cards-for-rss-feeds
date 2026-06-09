@@ -3,9 +3,32 @@
  * Usage: node scripts/po2mo.js <input.po> <output.mo>
  */
 const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
 
 const poPath = process.argv[2];
 const moPath = process.argv[3];
+
+// 引数なし: languages/ 配下の .po を全て変換
+if (!poPath) {
+  const langDir = path.join(__dirname, '../rssemble-cards-for-rss-feeds/languages');
+  const files = fs.readdirSync(langDir).filter(f => f.endsWith('.po'));
+  if (files.length === 0) { console.log('No .po files found.'); process.exit(0); }
+  let exitCode = 0;
+  for (const f of files) {
+    const src = path.join(langDir, f);
+    const dst = src.replace(/\.po$/, '.mo');
+    const result = spawnSync(process.execPath, [__filename, src, dst], { stdio: 'inherit' });
+    if (result.status !== 0) { exitCode = 1; }
+  }
+  process.exit(exitCode);
+}
+
+if (!moPath) {
+  console.error('Usage: node po2mo.js <input.po> <output.mo>');
+  process.exit(1);
+}
+
 const po = fs.readFileSync(poPath, 'utf8');
 
 const entries = [];

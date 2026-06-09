@@ -1,5 +1,5 @@
 {
-  "name": "rss-grid-card",
+  "name": "rssemble-cards-for-rss-feeds",
   "version": "1.0.0",
   "description": "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし。",
   "main": "index.js",
@@ -10,7 +10,8 @@
   "scripts": {
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "zip": "node scripts/make-zip.js"
+    "zip": "node scripts/make-zip.js",
+    "generate-assets": "node scripts/generate-assets.js"
   },
   "repository": {
     "type": "git",
