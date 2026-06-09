@@ -42,7 +42,8 @@ node scripts/generate-assets.js
 rssemble-cards-for-rss-feeds/   ← プラグイン本体（SVN trunk/ にデプロイされる）
   includes/
     class-admin.php             ← 管理画面UI・設定・フィードステータス
-    class-feed-manager.php      ← RSS取得・OGP解決・キャッシュ管理
+    class-feed-manager.php      ← RSS取得・キャッシュ管理・OGPフェッチャー呼び出し
+    class-ogp-fetcher.php       ← OGP画像URL解決（DOMDocument使用）
     class-shortcode.php         ← ショートコード処理・HTML出力
   assets/
     css/rssemble-cards-for-rss-feeds.css  ← フロントエンドCSS（クラス名: rss-d-*）
@@ -96,7 +97,7 @@ scripts/
 - 設定は `rssecafo_settings` オプションに保存。`RSSECAFO_Plugin::get_settings()` でデフォルトとマージして取得
 - トランジェントキー：RSS = `rssecafo_feed_{md5(url)}`、OGP = `rssecafo_ogp_{md5(url)}`
 - アンインストール時は設定オプションのみ削除（トランジェントは自然失効に任せる）
-- `package.json` の `name` は `rssemble-cards-for-rss-feeds`（旧 `rss-grid-card` は修正済み）
+- `package.json` の `name` は `rssemble-cards-for-rss-feeds`
 
 ## 日本語対応
 
@@ -120,7 +121,7 @@ scripts/
 ## WordPress.org 提出
 
 提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  
-提出前に `readme.txt` の `Tested up to:` を WordPress 最新安定版に更新すること。
+`Tested up to:` の値は https://api.wordpress.org/core/version-check/1.7/ で確認すること（現在は `7.0`）。
 
 ### アセット更新の手順
 
