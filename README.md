@@ -4,12 +4,17 @@
 [![WordPress: 6.0+](https://img.shields.io/badge/WordPress-6.0%2B-21759b)](https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/)
 [![PHP: 7.4+](https://img.shields.io/badge/PHP-7.4%2B-777bb4)](https://www.php.net)
 [![WordPress.org](https://img.shields.io/badge/WordPress.org-active-0073aa)](https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/)
+[![Demo](https://img.shields.io/badge/Demo-live-brightgreen)](https://rssemble-cards-for-rss-feeds.pages.dev/)
 
 A WordPress plugin that fetches multiple RSS feeds and displays them as OGP image card grids. No external service dependencies — runs entirely on WordPress built-in features (SimplePie, transients, DOMDocument).
 
 複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし（WordPress組み込みのSimplePie・トランジェント・DOMDocumentのみ使用）。
 
 ---
+
+## Demo
+
+**[Live Demo](https://rssemble-cards-for-rss-feeds.pages.dev/)** — WordPress なしで全レイアウトタイプを試せるスタンドアロンプレビューです。
 
 ## Features
 
