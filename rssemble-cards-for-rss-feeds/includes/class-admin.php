@@ -640,7 +640,7 @@ class RSSECAFO_Admin {
 								$status = $this->feed_manager->get_feed_status( $feed_url );
 								if ( ! $status['cached'] ) {
 									$fetched_label = esc_html__( 'Not fetched', 'rssemble-cards-for-rss-feeds' );
-									$count_label   = '&mdash;';
+									$count_label   = null;
 									$state_label   = esc_html__( 'Not fetched', 'rssemble-cards-for-rss-feeds' );
 								} else {
 									$fetched_label = esc_html( date_i18n( $datetime_format, $status['fetched'] ) );
@@ -652,9 +652,9 @@ class RSSECAFO_Admin {
 								?>
 								<tr>
 									<td class="rss-d-status-url"><?php echo esc_html( $feed_url ); ?></td>
-									<td><?php echo $fetched_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-									<td><?php echo $count_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-									<td><?php echo $state_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+									<td><?php echo esc_html( $fetched_label ); ?></td>
+									<td><?php echo null === $count_label ? '&mdash;' : esc_html( $count_label ); ?></td>
+									<td><?php echo esc_html( $state_label ); ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
