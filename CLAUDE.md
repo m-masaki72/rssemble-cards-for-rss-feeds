@@ -22,7 +22,6 @@ php -S localhost:8080 preview/router.php
 
 # WordPress.org 提出用 ZIP 作成（スクリーンショット等を自動除外）
 npm run zip
-# → rssemble-cards-for-rss-feeds.zip
 
 # .po → .mo コンパイル（引数なしで languages/*.po を全処理）
 node scripts/po2mo.js
@@ -51,7 +50,6 @@ rssemble-cards-for-rss-feeds/   ← プラグイン本体（SVN trunk/ にデプ
     js/rssemble-cards-for-rss-feeds.js    ← フロントエンドJS
     js/admin.js                 ← 管理画面JS
     img/placeholder.png         ← デフォルト画像
-    screenshot-1.png / screenshot-2.png   ← WordPress.org スクリーンショット
   languages/
     rssemble-cards-for-rss-feeds.pot      ← 翻訳テンプレート
     rssemble-cards-for-rss-feeds-ja.po    ← 日本語翻訳ソース
@@ -59,9 +57,7 @@ rssemble-cards-for-rss-feeds/   ← プラグイン本体（SVN trunk/ にデプ
   readme.txt                    ← WordPress.org 英語説明（必須）
   readme-ja.txt                 ← WordPress.org 日本語説明
 wp-assets/                      ← WordPress.org SVN assets/ にデプロイされる
-  banner-772x250.png
-  banner-1544x500.png
-  icon-256x256.png
+  banner-772x250.png / banner-1544x500.png / icon-256x256.png
 scripts/
   generate-assets.js            ← Playwright でバナー・アイコン画像を生成
   make-zip.js                   ← 提出用ZIP生成
@@ -80,6 +76,8 @@ scripts/
    - `BUILD_DIR: ./rssemble-cards-for-rss-feeds` → SVN `trunk/` へ
    - `ASSETS_DIR: ./wp-assets` → SVN `assets/` へ（バナー・アイコン）
    - Secrets: `SVN_USERNAME`, `SVN_PASSWORD`
+
+バナー・アイコン画像を更新した場合は `node scripts/generate-assets.js` で `wp-assets/` を再生成してからタグをpushすること。
 
 ### データフロー
 
@@ -101,16 +99,9 @@ scripts/
 
 ## 日本語対応
 
-### プラグインUI（管理画面）
-
-`languages/rssemble-cards-for-rss-feeds-ja.po` に全テキスト翻訳済み。`.mo` も生成済み。  
-変更時は `node scripts/po2mo.js` で `.mo` を再コンパイルすること。
-
-### WordPress.org ページ
-
-- `readme.txt` → 英語ページ（必須）
-- `readme-ja.txt` → 日本語ページ（SVN trunk/ に配置済み）
-- translate.wordpress.org でのコミュニティ翻訳は別途 https://translate.wordpress.org/projects/wp-plugins/rssemble-cards-for-rss-feeds/ja/
+- 管理画面UI: `languages/rssemble-cards-for-rss-feeds-ja.po` に翻訳済み。変更時は `node scripts/po2mo.js` で `.mo` を再コンパイルすること
+- WordPress.org ページ: `readme.txt`（英語）・`readme-ja.txt`（日本語）
+- コミュニティ翻訳: https://translate.wordpress.org/projects/wp-plugins/rssemble-cards-for-rss-feeds/ja/
 
 ## 注意事項（過去に誤指摘した内容）
 
@@ -122,9 +113,3 @@ scripts/
 
 提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  
 `Tested up to:` の値は https://api.wordpress.org/core/version-check/1.7/ で確認すること（現在は `7.0`）。
-
-### アセット更新の手順
-
-バナー・アイコン画像を更新する場合:
-1. `node scripts/generate-assets.js` で `wp-assets/` を再生成
-2. `git add wp-assets/ && git commit` → `git tag v... && git push --tags` でActions経由でSVNに反映
