@@ -43,6 +43,9 @@ final class RSSECAFO_Plugin {
 	 */
 	private static $instance = null;
 
+	/** @var array|null */
+	private static $settings_cache = null;
+
 	/**
 	 * フィードマネージャ。
 	 *
@@ -144,12 +147,18 @@ final class RSSECAFO_Plugin {
 	 * @return array
 	 */
 	public static function get_settings() {
-		static $cache = null;
-		if ( null === $cache ) {
-			$saved = get_option( RSSECAFO_OPTION, array() );
-			$cache = wp_parse_args( is_array( $saved ) ? $saved : array(), self::default_settings() );
+		if ( null === self::$settings_cache ) {
+			$saved                = get_option( RSSECAFO_OPTION, array() );
+			self::$settings_cache = wp_parse_args( is_array( $saved ) ? $saved : array(), self::default_settings() );
 		}
-		return $cache;
+		return self::$settings_cache;
+	}
+
+	/**
+	 * Clears the in-memory settings cache so the next get_settings() call re-reads from the DB.
+	 */
+	public static function reset_settings_cache() {
+		self::$settings_cache = null;
 	}
 
 	/**

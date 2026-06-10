@@ -258,17 +258,17 @@ class RSSECAFO_Admin {
 		$allowed_types = RSSECAFO_Plugin::allowed_types();
 		$post_type     = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
 		$type          = in_array( $post_type, $allowed_types, true ) ? $post_type : 'grid';
-		$columns     = isset( $_POST['columns'] ) ? (int) $_POST['columns'] : 3; // phpcs:ignore
+		$columns     = isset( $_POST['columns'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['columns'] ) ) : 3;
 		$columns     = in_array( $columns, array( 2, 3, 4 ), true ) ? $columns : 3;
-		$count       = isset( $_POST['count'] ) ? absint( $_POST['count'] ) : 6; // phpcs:ignore
+		$count       = isset( $_POST['count'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['count'] ) ) ) : 6;
 		$count       = min( max( 1, $count ), 100 );
-		$responsive  = isset( $_POST['responsive'] ) && '0' === $_POST['responsive'] ? '0' : '1'; // phpcs:ignore
-		$new_tab     = ! empty( $_POST['new_tab'] ) ? '1' : '0'; // phpcs:ignore
-		$show_desc   = ! empty( $_POST['show_desc'] ) ? '1' : '0'; // phpcs:ignore
-		$show_date   = ! empty( $_POST['show_date'] ) ? '1' : '0'; // phpcs:ignore
-		$show_site   = ! empty( $_POST['show_site'] ) ? '1' : '0'; // phpcs:ignore
-		$bold_title  = ! empty( $_POST['bold_title'] ) ? '1' : '0'; // phpcs:ignore
-		$title_lines = isset( $_POST['title_lines'] ) ? absint( $_POST['title_lines'] ) : 2; // phpcs:ignore
+		$responsive  = isset( $_POST['responsive'] ) && '0' === $_POST['responsive'] ? '0' : '1';
+		$new_tab     = ! empty( $_POST['new_tab'] ) ? '1' : '0';
+		$show_desc   = ! empty( $_POST['show_desc'] ) ? '1' : '0';
+		$show_date   = ! empty( $_POST['show_date'] ) ? '1' : '0';
+		$show_site   = ! empty( $_POST['show_site'] ) ? '1' : '0';
+		$bold_title  = ! empty( $_POST['bold_title'] ) ? '1' : '0';
+		$title_lines = isset( $_POST['title_lines'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['title_lines'] ) ) ) : 2;
 		$title_lines = min( $title_lines, 10 );
 
 		$html = do_shortcode(
