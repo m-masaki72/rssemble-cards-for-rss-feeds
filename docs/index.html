@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rssemble Cards for RSS Feeds — WordPress プラグイン</title>
-<meta name="description" content="複数のRSSフィードをOGP画像付きカードグリッドで表示するWordPressプラグイン。外部サービス不要・レスポンシブ対応・8種のレイアウト。">
+<meta name="description" content="複数のRSSフィードをOGP画像付きカードグリッドで表示するWordPressプラグイン。外部サービス不要・レスポンシブ対応・8種のレイアウト。インストールからショートコード設定まで丁寧に解説。">
 <link rel="stylesheet" href="rssemble-cards-for-rss-feeds.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; }
@@ -36,17 +36,19 @@ a:hover { text-decoration: underline; }
 /* ---- ヘッダー ---- */
 .site-header {
   padding: 14px 24px;
-  background: rgba(26,26,46,.85);
+  background: rgba(26,26,46,.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--c-border);
-  position: sticky; top: 0; z-index: 100;
+  position: sticky; top: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
-.site-logo { font-size: 17px; font-weight: 700; color: var(--c-accent); letter-spacing: -.01em; }
+.site-logo { font-size: 17px; font-weight: 700; color: var(--c-accent); letter-spacing: -.01em; white-space: nowrap; }
 .site-logo span { color: var(--c-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
-.header-links { display: flex; gap: 20px; font-size: 13px; }
-.header-links a { color: var(--c-muted); }
+.header-links { display: flex; gap: 16px; font-size: 13px; flex-wrap: wrap; }
+.header-links a { color: var(--c-muted); white-space: nowrap; }
 .header-links a:hover { color: var(--c-text); text-decoration: none; }
+.header-links .github-link { color: var(--c-accent2); border: 1px solid rgba(137,180,250,.3); border-radius: 6px; padding: 3px 10px; }
+.header-links .github-link:hover { background: rgba(137,180,250,.1); text-decoration: none; }
 
 /* ---- ヒーロー ---- */
 .hero {
@@ -62,7 +64,7 @@ a:hover { text-decoration: underline; }
 }
 .hero h1 {
   margin: 0 0 16px;
-  font-size: clamp(32px, 6vw, 56px);
+  font-size: clamp(28px, 5vw, 52px);
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.15;
@@ -81,58 +83,190 @@ a:hover { text-decoration: underline; }
 }
 .btn:hover { opacity: .85; text-decoration: none; }
 .btn-primary { background: var(--c-accent); color: #1a1a2e; }
-.btn-secondary {
-  background: transparent; color: var(--c-text);
-  border: 1px solid var(--c-border);
-}
+.btn-secondary { background: transparent; color: var(--c-text); border: 1px solid var(--c-border); }
 
 /* ---- セクション共通 ---- */
 .section { padding: 64px 24px; max-width: 1080px; margin: 0 auto; }
-.section-title {
-  text-align: center; font-size: 26px; font-weight: 700;
-  margin: 0 0 8px; color: #fff;
-}
-.section-sub { text-align: center; color: var(--c-muted); margin: 0 0 48px; }
+.section-title { text-align: center; font-size: 26px; font-weight: 700; margin: 0 0 8px; color: #fff; }
+.section-sub { text-align: center; color: var(--c-muted); margin: 0 0 40px; }
 
 /* ---- 特徴カード ---- */
-.features { background: var(--c-surface); border-radius: var(--radius); }
-.feature-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;
-}
-.feature-card {
-  background: var(--c-surface2); border: 1px solid var(--c-border);
-  border-radius: var(--radius); padding: 24px;
-}
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.feature-card { background: var(--c-surface2); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 24px; }
 .feature-icon { font-size: 28px; margin-bottom: 12px; }
 .feature-card h3 { margin: 0 0 8px; font-size: 15px; color: #fff; }
 .feature-card p { margin: 0; font-size: 13px; color: var(--c-muted); }
 
+/* ---- ステップガイド ---- */
+.steps { display: flex; flex-direction: column; gap: 0; max-width: 760px; margin: 0 auto; }
+.step {
+  display: flex; gap: 20px; padding: 28px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--c-accent); color: #1a1a2e;
+  font-size: 18px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+}
+.step-body h3 { margin: 0 0 8px; font-size: 17px; color: #fff; }
+.step-body p { margin: 0 0 10px; font-size: 14px; color: var(--c-muted); }
+.step-body p:last-child { margin-bottom: 0; }
+.step-tip {
+  display: inline-block; padding: 2px 10px; border-radius: 4px;
+  background: rgba(166,227,161,.1); border: 1px solid rgba(166,227,161,.25);
+  color: var(--c-green); font-size: 12px; margin-bottom: 8px;
+}
+
+/* ---- コードブロック ---- */
+.code-block {
+  background: #11111b; border: 1px solid var(--c-border); border-radius: 8px;
+  padding: 16px 20px; font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px; color: #cdd6f4; overflow-x: auto; white-space: pre;
+  margin: 10px 0;
+}
+.sc-bracket { color: #89b4fa; }
+.sc-name { color: #cba6f7; }
+.sc-attr { color: #a6e3a1; }
+.sc-val { color: #fab387; }
+
 /* ---- レイアウト一覧 ---- */
-.layouts-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
-}
-.layout-chip {
-  background: var(--c-surface); border: 1px solid var(--c-border);
-  border-radius: 8px; padding: 14px 16px;
-}
+.layouts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.layout-chip { background: var(--c-surface2); border: 1px solid var(--c-border); border-radius: 8px; padding: 14px 16px; }
 .layout-chip code { font-size: 13px; color: var(--c-accent); font-family: 'SFMono-Regular', Consolas, monospace; }
 .layout-chip p { margin: 6px 0 0; font-size: 12px; color: var(--c-muted); }
 
-/* ---- ショートコード例 ---- */
-.code-block {
-  background: #11111b; border: 1px solid var(--c-border); border-radius: 8px;
-  padding: 20px 24px; font-family: 'SFMono-Regular', Consolas, monospace;
-  font-size: 14px; color: #cdd6f4; overflow-x: auto; white-space: pre;
+/* ---- パラメーター表 ---- */
+.param-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.param-table th { text-align: left; padding: 10px 12px; color: var(--c-muted); border-bottom: 2px solid var(--c-border); font-weight: 600; }
+.param-table td { padding: 10px 12px; border-bottom: 1px solid var(--c-border); vertical-align: top; }
+.param-table tr:last-child td { border-bottom: none; }
+.param-table code { color: var(--c-accent); font-family: 'SFMono-Regular', Consolas, monospace; }
+.param-table .val-list { color: var(--c-muted); font-size: 12px; }
+
+/* ---- デモエリア ---- */
+.demo-shell {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
-.code-block .sc-bracket { color: #89b4fa; }
-.code-block .sc-name { color: #cba6f7; }
-.code-block .sc-attr { color: #a6e3a1; }
-.code-block .sc-val { color: #fab387; }
+
+/* ショートコードプレビューバー */
+.sc-preview-bar {
+  background: #11111b;
+  border-bottom: 1px solid var(--c-border);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sc-preview-label { font-size: 11px; color: var(--c-muted); white-space: nowrap; text-transform: uppercase; letter-spacing: .06em; }
+.sc-preview-code {
+  flex: 1; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 13px;
+  color: var(--c-green); overflow-x: auto; white-space: nowrap;
+}
+.sc-copy-btn {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  background: rgba(166,227,161,.15); border: 1px solid rgba(166,227,161,.3);
+  color: var(--c-green); cursor: pointer; transition: background .15s; white-space: nowrap;
+}
+.sc-copy-btn:hover { background: rgba(166,227,161,.25); }
+.sc-copy-btn.copied { background: rgba(166,227,161,.3); color: #a6e3a1; }
+
+/* コントロール＋プレビュー 2ペイン */
+.demo-body { display: flex; min-height: 400px; }
+
+.ctrl-panel {
+  width: 220px; flex-shrink: 0;
+  border-right: 1px solid var(--c-border);
+  padding: 16px; overflow-y: auto;
+}
+.ctrl-section { margin-bottom: 20px; }
+.ctrl-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-muted); margin: 0 0 10px; }
+
+/* ボタングループ */
+.btn-group { display: flex; gap: 4px; }
+.btn-group button {
+  flex: 1; padding: 6px 0; border-radius: 6px; font-size: 13px; font-weight: 600;
+  background: var(--c-surface2); border: 1px solid var(--c-border); color: var(--c-muted);
+  cursor: pointer; transition: all .15s;
+}
+.btn-group button.active {
+  background: var(--c-accent); border-color: var(--c-accent); color: #1a1a2e;
+}
+.btn-group button:hover:not(.active) { border-color: var(--c-accent); color: var(--c-text); }
+
+/* typeセレクト */
+.ctrl-select {
+  width: 100%; padding: 7px 10px; background: var(--c-surface2); color: var(--c-text);
+  border: 1px solid var(--c-border); border-radius: 6px; font-size: 13px; cursor: pointer;
+}
+
+/* スライダー */
+.slider-row { display: flex; align-items: center; gap: 8px; }
+.ctrl-slider { flex: 1; accent-color: var(--c-accent); }
+.slider-val { font-size: 13px; font-weight: 700; color: var(--c-text); min-width: 20px; text-align: right; }
+
+/* トグルスイッチ */
+.toggle-list { display: flex; flex-direction: column; gap: 8px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--c-muted); }
+.toggle {
+  position: relative; width: 36px; height: 20px; flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0; background: var(--c-surface2);
+  border: 1px solid var(--c-border); border-radius: 20px; cursor: pointer; transition: .2s;
+}
+.toggle input:checked + .toggle-track { background: var(--c-accent); border-color: var(--c-accent); }
+.toggle-track::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: .2s;
+}
+.toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+
+/* プレビューペイン */
+.preview-pane {
+  flex: 1; background: #fff; overflow: auto; padding: 20px;
+  min-width: 0;
+}
+.preview-note { font-size: 11px; color: #888; margin-bottom: 16px; }
+
+/* ---- サポート ---- */
+.support-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; max-width: 760px; margin: 0 auto; }
+.support-card {
+  background: var(--c-surface2); border: 1px solid var(--c-border); border-radius: var(--radius);
+  padding: 24px; display: flex; flex-direction: column; gap: 10px;
+}
+.support-card-icon { font-size: 28px; }
+.support-card h3 { margin: 0; font-size: 15px; color: #fff; }
+.support-card p { margin: 0; font-size: 13px; color: var(--c-muted); }
+.support-card a.support-link {
+  display: inline-block; padding: 8px 16px; border-radius: 6px;
+  border: 1px solid var(--c-border); background: var(--c-surface); color: var(--c-accent2);
+  font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s;
+}
+.support-card a.support-link:hover { background: rgba(137,180,250,.1); text-decoration: none; }
+
+/* ---- 寄付 ---- */
+.donate-box {
+  max-width: 500px; margin: 0 auto;
+  background: linear-gradient(135deg, rgba(203,166,247,.1) 0%, rgba(137,180,250,.1) 100%);
+  border: 1px solid var(--c-border); border-radius: var(--radius); padding: 36px;
+  text-align: center;
+}
+.donate-box p { color: var(--c-muted); font-size: 14px; margin: 0 0 20px; }
+.donate-btn {
+  display: inline-block; padding: 12px 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--c-accent), var(--c-accent2));
+  color: #1a1a2e; font-size: 15px; font-weight: 700; text-decoration: none;
+  transition: opacity .15s;
+}
+.donate-btn:hover { opacity: .85; text-decoration: none; }
 
 /* ---- 動作環境 ---- */
-.requirements {
-  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
-}
+.requirements { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
 .req-badge {
   padding: 8px 18px; border-radius: 20px;
   background: var(--c-surface2); border: 1px solid var(--c-border);
@@ -140,33 +274,42 @@ a:hover { text-decoration: underline; }
 }
 .req-badge strong { color: var(--c-green); }
 
-/* ---- プレビューツールバー（デモ用） ---- */
-.preview-bar {
-  background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 8px 8px 0 0;
-  padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-}
-.preview-bar-title { font-size: 13px; color: var(--c-accent); font-weight: 600; }
-.field { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--c-muted); }
-.field select, .field input[type=number] {
-  padding: 4px 8px; background: var(--c-surface2); color: var(--c-text);
-  border: 1px solid var(--c-border); border-radius: 6px; font-size: 13px;
-}
-.preview-frame {
-  background: #fff; border: 1px solid var(--c-border); border-top: none;
-  border-radius: 0 0 8px 8px; padding: 20px; overflow: hidden;
-}
-.preview-note { font-size: 12px; color: var(--c-muted); margin-bottom: 16px; }
-
 /* ---- フッター ---- */
 .site-footer {
-  text-align: center; padding: 40px 24px;
   border-top: 1px solid var(--c-border);
+  padding: 40px 24px; text-align: center;
   color: var(--c-muted); font-size: 13px;
 }
-.site-footer a { color: var(--c-muted); }
+.footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-bottom: 16px; }
+.footer-links a { color: var(--c-muted); }
+.footer-sep { color: var(--c-border); }
 
-@media (max-width: 600px) {
-  .hero { padding: 56px 16px 48px; }
+/* ---- popup_grid モーダル ---- */
+#demo-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.75); align-items: center; justify-content: center;
+}
+#demo-modal-overlay.open { display: flex; }
+#demo-modal {
+  background: #fff; border-radius: 10px; max-width: 520px; width: 90%;
+  max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.5);
+}
+#demo-modal img { width: 100%; display: block; border-radius: 10px 10px 0 0; aspect-ratio: 16/9; object-fit: cover; }
+#demo-modal-body { padding: 20px; }
+#demo-modal-body h3 { margin: 0 0 8px; font-size: 16px; color: #1a1a2e; }
+#demo-modal-body p { margin: 0 0 12px; font-size: 13px; color: #555; }
+#demo-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(0,0,0,.5); border: none; border-radius: 50%; color: #fff;
+  width: 32px; height: 32px; font-size: 18px; cursor: pointer; line-height: 1;
+}
+@media (max-width: 700px) {
+  .demo-body { flex-direction: column; }
+  .ctrl-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--c-border); }
+  .site-logo span { display: none; }
+  .header-links { gap: 10px; }
+  .step { flex-direction: column; gap: 12px; }
+  .sc-preview-bar { flex-wrap: wrap; }
   .feature-grid, .layouts-grid { grid-template-columns: 1fr; }
 }
 </style>
@@ -174,23 +317,24 @@ a:hover { text-decoration: underline; }
 <body>
 
 <header class="site-header">
-  <div class="site-logo">Rssemble Cards for RSS Feeds <span>WordPress Plugin</span></div>
+  <div class="site-logo">Rssemble Cards <span>WordPress Plugin</span></div>
   <nav class="header-links">
-    <a href="#features">特徴</a>
-    <a href="#layouts">レイアウト</a>
-    <a href="#usage">使い方</a>
+    <a href="#howto">使い方</a>
     <a href="#demo">デモ</a>
+    <a href="#params">パラメーター</a>
+    <a href="#support">サポート</a>
+    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer" class="github-link">GitHub（開発者向け）</a>
   </nav>
 </header>
 
 <!-- ヒーロー -->
 <section class="hero">
   <div class="hero-badge">WordPress Plugin</div>
-  <h1>Rssemble Cards for RSS Feeds</h1>
+  <h1>Rssemble Cards<br>for RSS Feeds</h1>
   <p class="hero-sub">複数のRSSフィードをOGP画像付きカードグリッドで美しく表示。外部サービス不要・完全自己完結型。</p>
   <div class="hero-actions">
     <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">WordPress.org で入手</a>
-    <a href="#demo" class="btn btn-secondary">デモを見る</a>
+    <a href="#howto" class="btn btn-secondary">使い方を見る</a>
   </div>
 </section>
 
@@ -232,14 +376,75 @@ a:hover { text-decoration: underline; }
   </div>
 </section>
 
-<!-- レイアウト -->
+<!-- 使い方 ステップガイド -->
+<section class="section" id="howto" style="padding-top:0;">
+  <p class="section-title">使い方</p>
+  <p class="section-sub">WordPressの管理画面だけで完結。コーディング不要です。</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>プラグインをインストール・有効化</h3>
+        <p>WordPress管理画面の <strong>プラグイン → 新規追加</strong> から「Rssemble Cards」で検索し、インストール後に有効化してください。</p>
+        <p>または <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org のプラグインページ</a> からZIPをダウンロードして <strong>プラグイン → 新規追加 → ZIPをアップロード</strong> でも導入できます。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>フィードURLを登録する</h3>
+        <p>管理画面の <strong>設定 → Rssemble Cards</strong> を開き、表示したいRSSフィードのURLを<strong>1行1件</strong>で入力して保存します。複数サイトを並べて登録できます。</p>
+        <p style="color:var(--c-muted);font-size:13px;">※ ショートコードの <code style="color:var(--c-accent)">feed=</code> 属性で指定する場合はカンマ区切りになります（管理画面での改行区切りとは別形式です）。</p>
+        <p><strong>RSSフィードURLの調べ方：</strong></p>
+        <ul style="margin:0 0 8px;padding-left:20px;font-size:13px;color:var(--c-muted);">
+          <li>WordPressサイト → サイトURLの末尾に <code style="color:var(--c-accent)">/feed/</code> を付ける（例: <code style="color:var(--c-accent)">https://example.com/feed/</code>）</li>
+          <li>note → <code style="color:var(--c-accent)">https://note.com/ユーザー名/rss</code></li>
+          <li>Zenn → <code style="color:var(--c-accent)">https://zenn.dev/ユーザー名/feed</code></li>
+          <li>Qiita → <code style="color:var(--c-accent)">https://qiita.com/ユーザー名/feed</code></li>
+          <li>YouTube チャンネル → チャンネルページの「フィード」または <code style="color:var(--c-accent)">https://www.youtube.com/feeds/videos.xml?channel_id=チャンネルID</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>ショートコードを投稿・固定ページに貼り付ける</h3>
+        <span class="step-tip">ブロックエディタ（Gutenberg）の場合</span>
+        <p>「ショートコード」ブロックを追加して、以下を貼り付けるだけです。</p>
+        <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span><span class="sc-bracket">]</span></div>
+        <span class="step-tip">クラシックエディタの場合</span>
+        <p>テキストモードでショートコードをそのまま記述してください。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>パラメーターでカスタマイズする</h3>
+        <p>下のデモでパラメーターを試してコピーしたショートコードをそのまま貼り付けるだけで、見た目を自由に変えられます。</p>
+        <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span>
+  <span class="sc-attr">type</span>=<span class="sc-val">"carousel"</span>
+  <span class="sc-attr">columns</span>=<span class="sc-val">"3"</span>
+  <span class="sc-attr">count</span>=<span class="sc-val">"9"</span>
+  <span class="sc-attr">date</span>=<span class="sc-val">"1"</span>
+  <span class="sc-attr">site</span>=<span class="sc-val">"1"</span><span class="sc-bracket">]</span></div>
+        <p style="font-size:13px;">特定フィードだけ表示したい場合は、設定済みフィードを上書きして指定できます：</p>
+        <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span>
+  <span class="sc-attr">feed</span>=<span class="sc-val">"https://example.com/feed/"</span>
+  <span class="sc-attr">type</span>=<span class="sc-val">"list_vertical"</span><span class="sc-bracket">]</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- レイアウト一覧 -->
 <section class="section" id="layouts" style="padding-top:0;">
-  <p class="section-title">レイアウト一覧</p>
-  <p class="section-sub">ショートコードの <code style="color:var(--c-accent)">type</code> 属性で切り替え。</p>
+  <p class="section-title">8種のレイアウト</p>
+  <p class="section-sub"><code style="color:var(--c-accent)">type</code> パラメーターで切り替え。デモで実際の見た目を確認できます。</p>
   <div class="layouts-grid">
     <div class="layout-chip"><code>grid</code><p>画像背景＋タイトルオーバーレイ</p></div>
     <div class="layout-chip"><code>list_vertical</code><p>上画像・下テキストカード</p></div>
-    <div class="layout-chip"><code>list</code><p>サムネイル横並び＋テキスト</p></div>
+    <div class="layout-chip"><code>list</code><p>サムネイル左・テキスト右</p></div>
     <div class="layout-chip"><code>text</code><p>テキストのみカード（説明付き）</p></div>
     <div class="layout-chip"><code>text_line</code><p>1行テキスト＋区切り線</p></div>
     <div class="layout-chip"><code>image_only</code><p>画像のみ</p></div>
@@ -248,139 +453,276 @@ a:hover { text-decoration: underline; }
   </div>
 </section>
 
-<!-- 使い方 -->
-<section class="section" id="usage" style="padding-top:0;">
-  <p class="section-title">使い方</p>
-  <p class="section-sub">投稿・固定ページのエディタにショートコードを貼り付けるだけ。</p>
-
-  <p style="color:var(--c-muted);font-size:14px;margin-bottom:12px;">基本:</p>
-  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span><span class="sc-bracket">]</span></div>
-
-  <p style="color:var(--c-muted);font-size:14px;margin:24px 0 12px;">カスタマイズ例:</p>
-  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span>
-  <span class="sc-attr">type</span>=<span class="sc-val">"carousel"</span>
-  <span class="sc-attr">columns</span>=<span class="sc-val">"3"</span>
-  <span class="sc-attr">count</span>=<span class="sc-val">"9"</span>
-  <span class="sc-attr">show_date</span>=<span class="sc-val">"1"</span>
-  <span class="sc-attr">show_site</span>=<span class="sc-val">"1"</span>
-  <span class="sc-attr">responsive</span>=<span class="sc-val">"1"</span><span class="sc-bracket">]</span></div>
-
-  <p style="color:var(--c-muted);font-size:14px;margin:24px 0 12px;">特定フィードだけ表示（設定済みフィードを上書き）:</p>
-  <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rss_display</span>
-  <span class="sc-attr">feed</span>=<span class="sc-val">"https://example.com/feed/"</span>
-  <span class="sc-attr">type</span>=<span class="sc-val">"list_vertical"</span><span class="sc-bracket">]</span></div>
-
-  <details style="margin-top:28px;">
-    <summary style="cursor:pointer;font-size:14px;color:var(--c-accent2);list-style:none;">全パラメーター一覧を見る ▾</summary>
-    <table style="width:100%;max-width:760px;margin-top:16px;border-collapse:collapse;font-size:13px;">
-      <thead>
-        <tr style="border-bottom:1px solid var(--c-border);">
-          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">属性</th>
-          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">デフォルト</th>
-          <th style="text-align:left;padding:8px 10px;color:var(--c-muted);">説明</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">feed</code></td><td style="padding:8px 10px;color:var(--c-muted);">—</td><td style="padding:8px 10px;color:var(--c-muted);">フィードURL（複数はカンマ区切り）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">type</code></td><td style="padding:8px 10px;color:var(--c-muted);">grid</td><td style="padding:8px 10px;color:var(--c-muted);">表示タイプ</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">columns</code></td><td style="padding:8px 10px;color:var(--c-muted);">3</td><td style="padding:8px 10px;color:var(--c-muted);">列数（2 / 3 / 4）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">count</code></td><td style="padding:8px 10px;color:var(--c-muted);">6</td><td style="padding:8px 10px;color:var(--c-muted);">表示件数</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">responsive</code></td><td style="padding:8px 10px;color:var(--c-muted);">1</td><td style="padding:8px 10px;color:var(--c-muted);">レスポンシブ（1/0）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">new_tab</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">新規タブで開く（1/0）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_desc</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">説明文表示（1/0）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_date</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">日付表示（1/0）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">show_site</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">サイト名表示（1/0）</td></tr>
-        <tr style="border-bottom:1px solid var(--c-border);"><td style="padding:8px 10px;"><code style="color:var(--c-accent)">bold_title</code></td><td style="padding:8px 10px;color:var(--c-muted);">0</td><td style="padding:8px 10px;color:var(--c-muted);">タイトル太字（1/0）</td></tr>
-        <tr><td style="padding:8px 10px;"><code style="color:var(--c-accent)">title_lines</code></td><td style="padding:8px 10px;color:var(--c-muted);">2</td><td style="padding:8px 10px;color:var(--c-muted);">タイトル表示行数（0=無制限）</td></tr>
-      </tbody>
-    </table>
-  </details>
-</section>
-
 <!-- デモ -->
 <section class="section" id="demo" style="padding-top:0;">
-  <p class="section-title">レイアウトデモ</p>
-  <p class="section-sub">ダミーデータによる表示確認。</p>
+  <p class="section-title">インタラクティブデモ</p>
+  <p class="section-sub">パラメーターを変えてショートコードをその場でコピー。ダミーデータによる表示確認です。</p>
 
-  <div class="preview-bar">
-    <span class="preview-bar-title">▶ プレビュー</span>
-    <div class="field"><label>列数</label>
-      <select id="ctrl-columns">
-        <option value="2">2列</option>
-        <option value="3" selected>3列</option>
-        <option value="4">4列</option>
-      </select>
+  <div class="demo-shell">
+    <!-- ショートコードプレビューバー -->
+    <div class="sc-preview-bar">
+      <span class="sc-preview-label">ショートコード</span>
+      <div class="sc-preview-code" id="sc-output"></div>
+      <button class="sc-copy-btn" id="sc-copy-btn" onclick="copyShortcode()">コピー</button>
     </div>
-    <div class="field"><label>件数</label>
-      <input type="number" id="ctrl-count" value="6" min="1" max="12" style="width:56px">
+
+    <div class="demo-body">
+      <!-- コントロールパネル -->
+      <div class="ctrl-panel">
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">レイアウト</div>
+          <select class="ctrl-select" id="ctrl-type" onchange="buildDemo()">
+            <option value="grid">grid</option>
+            <option value="list_vertical">list_vertical</option>
+            <option value="list">list</option>
+            <option value="text">text</option>
+            <option value="text_line">text_line</option>
+            <option value="image_only">image_only</option>
+            <option value="carousel">carousel</option>
+            <option value="popup_grid">popup_grid</option>
+          </select>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">列数</div>
+          <div class="btn-group" id="ctrl-columns-group">
+            <button onclick="setColumns(2)">2</button>
+            <button onclick="setColumns(3)" class="active">3</button>
+            <button onclick="setColumns(4)">4</button>
+          </div>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">件数</div>
+          <div class="slider-row">
+            <input type="range" class="ctrl-slider" id="ctrl-count" min="1" max="12" value="10" oninput="buildDemo()">
+            <span class="slider-val" id="ctrl-count-val">10</span>
+          </div>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">タイトル行数</div>
+          <div class="btn-group" id="ctrl-lines-group">
+            <button onclick="setLines(1)">1</button>
+            <button onclick="setLines(2)" class="active">2</button>
+            <button onclick="setLines(3)">3</button>
+            <button onclick="setLines(0)">∞</button>
+          </div>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">メタ情報</div>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <span>説明文</span>
+              <label class="toggle"><input type="checkbox" id="ctrl-desc" onchange="buildDemo()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>日付</span>
+              <label class="toggle"><input type="checkbox" id="ctrl-date" checked onchange="buildDemo()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>サイト名</span>
+              <label class="toggle"><input type="checkbox" id="ctrl-site" onchange="buildDemo()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>タイトル太字</span>
+              <label class="toggle"><input type="checkbox" id="ctrl-bold" onchange="buildDemo()"><span class="toggle-track"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title">その他</div>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <span>レスポンシブ</span>
+              <label class="toggle"><input type="checkbox" id="ctrl-responsive" checked onchange="buildDemo()"><span class="toggle-track"></span></label>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <div class="ctrl-section-title" style="margin-bottom:6px;">順序</div>
+            <select class="ctrl-select" id="ctrl-orderby" onchange="buildDemo()">
+              <option value="date">日付順</option>
+              <option value="random">ランダム</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- プレビューペイン -->
+      <div class="preview-pane">
+        <p class="preview-note">※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。</p>
+        <div id="demo-preview"></div>
+      </div>
     </div>
-    <div class="field"><label>タイトル行数</label>
-      <select id="ctrl-lines">
-        <option value="1">1行</option>
-        <option value="2" selected>2行</option>
-        <option value="3">3行</option>
-      </select>
-    </div>
-    <div class="field"><label>説明文 <input type="checkbox" id="ctrl-desc"></label></div>
-    <div class="field"><label>日付 <input type="checkbox" id="ctrl-date" checked></label></div>
-    <div class="field"><label>サイト名 <input type="checkbox" id="ctrl-site"></label></div>
   </div>
+</section>
 
-  <div class="preview-frame">
-    <p class="preview-note">※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。</p>
+<!-- パラメーター一覧 -->
+<section class="section" id="params" style="padding-top:0;">
+  <p class="section-title">全パラメーター一覧</p>
+  <p class="section-sub">ショートコード <code style="color:var(--c-accent)">[rssecafo]</code> で使用できるすべての属性。</p>
 
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">grid</p>
-      <div id="grid-grid" class="rss-d-grid rss-d-type-grid rss-d-responsive"></div>
-    </div>
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">list_vertical</p>
-      <div id="grid-list_vertical" class="rss-d-grid rss-d-type-list_vertical rss-d-responsive"></div>
-    </div>
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">list</p>
-      <div id="grid-list" class="rss-d-grid rss-d-type-list rss-d-responsive"></div>
-    </div>
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">text</p>
-      <div id="grid-text" class="rss-d-grid rss-d-type-text rss-d-responsive"></div>
-    </div>
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">text_line</p>
-      <div id="grid-text_line" class="rss-d-grid rss-d-type-text_line rss-d-responsive"></div>
-    </div>
-    <div>
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999;margin:0 0 10px;">image_only</p>
-      <div id="grid-image_only" class="rss-d-grid rss-d-type-image_only rss-d-responsive"></div>
-    </div>
+  <div style="overflow-x:auto;">
+  <table class="param-table">
+    <thead>
+      <tr>
+        <th>属性</th>
+        <th>デフォルト</th>
+        <th>説明・使用例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>feed</code></td>
+        <td style="color:var(--c-muted);">（設定画面のURL）</td>
+        <td>表示するフィードURLを直接指定。複数はカンマ区切り。省略すると管理画面の設定が使われます。<br><span class="val-list">例: <code>feed="https://example.com/feed/"</code></span></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td style="color:var(--c-muted);">grid</td>
+        <td>表示レイアウト。<br><span class="val-list">grid / list_vertical / list / text / text_line / image_only / carousel / popup_grid</span></td>
+      </tr>
+      <tr>
+        <td><code>columns</code></td>
+        <td style="color:var(--c-muted);">3</td>
+        <td>列数。<br><span class="val-list">2 / 3 / 4</span></td>
+      </tr>
+      <tr>
+        <td><code>count</code></td>
+        <td style="color:var(--c-muted);">10</td>
+        <td>表示件数（正の整数）。省略すると管理画面の設定値（初期値10）が使われます。</td>
+      </tr>
+      <tr>
+        <td><code>orderby</code></td>
+        <td style="color:var(--c-muted);">date</td>
+        <td>並び順。<br><span class="val-list">date（新着順） / random（ランダム）</span></td>
+      </tr>
+      <tr>
+        <td><code>target</code></td>
+        <td style="color:var(--c-muted);">（設定画面の値）</td>
+        <td>リンクの開き方。<br><span class="val-list">_self（同タブ） / _blank（新規タブ）</span></td>
+      </tr>
+      <tr>
+        <td><code>desc</code></td>
+        <td style="color:var(--c-muted);">0</td>
+        <td>説明文を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+      </tr>
+      <tr>
+        <td><code>date</code></td>
+        <td style="color:var(--c-muted);">1</td>
+        <td>投稿日付を表示する。省略するとデフォルトで表示。非表示にしたい場合は明示的に <code>date="0"</code> と指定。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+      </tr>
+      <tr>
+        <td><code>site</code></td>
+        <td style="color:var(--c-muted);">0</td>
+        <td>サイト名を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+      </tr>
+      <tr>
+        <td><code>bold</code></td>
+        <td style="color:var(--c-muted);">0</td>
+        <td>タイトルを太字にする。<br><span class="val-list">1（太字） / 0（通常）</span></td>
+      </tr>
+      <tr>
+        <td><code>responsive</code></td>
+        <td style="color:var(--c-muted);">1</td>
+        <td>レスポンシブ対応。0にするとPC・スマホで同じ列数になります。<br><span class="val-list">1（有効） / 0（固定）</span></td>
+      </tr>
+      <tr>
+        <td><code>title_lines</code></td>
+        <td style="color:var(--c-muted);">2</td>
+        <td>タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span></td>
+      </tr>
+      <tr>
+        <td><code>img</code></td>
+        <td style="color:var(--c-muted);">（設定画面の値）</td>
+        <td>記事に画像がない場合のフォールバック画像URL。省略すると管理画面で設定したデフォルト画像が使われます。<br><span class="val-list">例: <code>img="https://example.com/no-image.png"</code></span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- キャッシュについて -->
+<section class="section" style="padding-top:0;">
+  <p class="section-title">キャッシュについて</p>
+  <p class="section-sub">フィードが更新されても即反映されない場合はキャッシュが原因です。</p>
+  <div style="max-width:760px;margin:0 auto;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--radius);padding:28px;">
+    <p style="margin:0 0 12px;font-size:14px;">このプラグインはWordPressのトランジェントキャッシュを利用しています。</p>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:13px;color:var(--c-muted);line-height:2;">
+      <li><strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ</li>
+      <li><strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ</li>
+      <li>フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します</li>
+    </ul>
+    <p style="margin:0;font-size:13px;color:var(--c-muted);">
+      <strong style="color:var(--c-text);">すぐに反映させたい場合</strong>：管理画面の <strong>設定 → Rssemble Cards → フィードステータス</strong> から各フィードのキャッシュを手動でクリアできます。または <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a> などのプラグインでトランジェントを一括削除することもできます。
+    </p>
   </div>
 </section>
 
 <!-- 動作環境 -->
 <section class="section" style="padding-top:0;text-align:center;">
   <p class="section-title">動作環境</p>
-  <div class="requirements" style="margin-top:24px;">
+  <div class="requirements">
     <span class="req-badge">PHP <strong>7.4+</strong></span>
     <span class="req-badge">WordPress <strong>6.0+</strong></span>
     <span class="req-badge">ライセンス <strong>GPL-2.0-or-later</strong></span>
   </div>
 </section>
 
-<!-- サポート -->
-<section class="section" id="support" style="padding-top:0;text-align:center;">
-  <p class="section-title">サポート</p>
-  <p class="section-sub">バグ報告・機能要望・質問はお気軽にどうぞ。</p>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:8px;">
-    <a href="mailto:m.masaki7272@gmail.com"
-       style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--radius);color:var(--c-accent2);text-decoration:none;font-weight:600;">
-      m.masaki7272@gmail.com
-    </a>
+<!-- サポート・問い合わせ -->
+<section class="section" id="support" style="padding-top:0;">
+  <p class="section-title">サポート・問い合わせ</p>
+  <p class="section-sub">お気軽にどうぞ。用途に合わせてご利用ください。</p>
+  <div class="support-cards">
+    <div class="support-card">
+      <div class="support-card-icon">📧</div>
+      <h3>メールで問い合わせ</h3>
+      <p>設定方法のご相談や、個別のご質問はメールで受け付けています。</p>
+      <a href="mailto:m.masaki7272@gmail.com" class="support-link">m.masaki7272@gmail.com</a>
+    </div>
+    <div class="support-card">
+      <div class="support-card-icon">🐛</div>
+      <h3>GitHub Issues（開発者向け）</h3>
+      <p>バグ報告・機能要望はGitHub Issuesが便利です。再現手順を添えて投稿してください。</p>
+      <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds/issues" target="_blank" rel="noopener noreferrer" class="support-link">Issue を作成する →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 寄付 -->
+<section class="section" style="padding-top:0;">
+  <p class="section-title">このプラグインが役に立ったら</p>
+  <div class="donate-box">
+    <p>開発・維持のモチベーションになります。<br>少額でも大歓迎です、ありがとうございます！</p>
+    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer" class="donate-btn">☕ 投げ銭で応援する（OFUSE）</a>
   </div>
 </section>
 
 <footer class="site-footer">
-  <p>Rssemble Cards for RSS Feeds — <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org</a></p>
+  <div class="footer-links">
+    <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org</a>
+    <span class="footer-sep">|</span>
+    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer">GitHub（開発者向け）</a>
+    <span class="footer-sep">|</span>
+    <a href="mailto:m.masaki7272@gmail.com">お問い合わせ</a>
+    <span class="footer-sep">|</span>
+    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer">投げ銭</a>
+  </div>
+  <p style="margin:0;">Rssemble Cards for RSS Feeds — GPL-2.0-or-later</p>
 </footer>
+
+<!-- popup_grid 用モーダル -->
+<div id="demo-modal-overlay" onclick="closeDemoModal(event)">
+  <div id="demo-modal" style="position:relative;">
+    <button id="demo-modal-close" onclick="document.getElementById('demo-modal-overlay').classList.remove('open')">✕</button>
+    <img id="demo-modal-img" src="" alt="">
+    <div id="demo-modal-body">
+      <h3 id="demo-modal-title"></h3>
+      <p id="demo-modal-desc"></p>
+      <a id="demo-modal-link" href="#" target="_blank" rel="noopener noreferrer"
+         style="display:inline-block;padding:8px 18px;background:#1a1a2e;color:#cba6f7;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;">
+        記事を読む →
+      </a>
+    </div>
+  </div>
+</div>
 
 <script>
 const ITEMS = [
@@ -395,75 +737,218 @@ const ITEMS = [
   { title: "Cloudflare Workers + D1 でサーバーレスAPIを作る", url: "#", date: "2026/05/22", image: "https://picsum.photos/seed/cf9/640/360", site: "note", desc: "CloudflareのEdge環境でD1データベースを使ったAPIを実装する手順。" },
   { title: "Docker Compose で開発環境を完全再現する — マルチサービス構成", url: "#", date: "2026/05/21", image: "https://picsum.photos/seed/dk10/640/360", site: "Zenn", desc: "複数のサービスをDocker Composeで管理し、チーム全員が同じ環境を使えるように設定する方法。" },
   { title: "Vite 6 プラグイン開発入門 — ビルドパイプラインを自由にカスタマイズ", url: "#", date: "2026/05/20", image: "https://picsum.photos/seed/vt11/640/360", site: "Qiita", desc: "Vite 6のプラグインAPIを使って独自のビルド変換処理を実装する入門ガイド。" },
-  { title: "画像なしフォールバックサンプル", url: "#", date: "2026/05/19", image: "", site: "Zenn", desc: "画像が存在しない場合のフォールバック表示を確認するためのサンプルアイテム。" },
+  { title: "画像なしフォールバックサンプル（og:imageなし記事の表示例）", url: "#", date: "2026/05/19", image: "", site: "Zenn", desc: "画像が存在しない場合のフォールバック表示を確認するためのサンプルアイテム。" },
 ];
 
-const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%231a1a2e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23555' font-size='18' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%23e8e8ec'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='18' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+let currentColumns = 3;
+let currentLines = 2;
 
 function e(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function renderCardGrid(item, type, showDate, showSite, showDesc) {
+function setColumns(n) {
+  currentColumns = n;
+  document.querySelectorAll('#ctrl-columns-group button').forEach((b, i) => {
+    b.classList.toggle('active', [2,3,4][i] === n);
+  });
+  buildDemo();
+}
+
+function setLines(n) {
+  currentLines = n;
+  document.querySelectorAll('#ctrl-lines-group button').forEach((b, i) => {
+    b.classList.toggle('active', [1,2,3,0][i] === n);
+  });
+  buildDemo();
+}
+
+function getParams() {
+  return {
+    type:       document.getElementById('ctrl-type').value,
+    columns:    currentColumns,
+    count:      +document.getElementById('ctrl-count').value,
+    lines:      currentLines,
+    showDesc:   document.getElementById('ctrl-desc').checked,
+    showDate:   document.getElementById('ctrl-date').checked,
+    showSite:   document.getElementById('ctrl-site').checked,
+    bold:       document.getElementById('ctrl-bold').checked,
+    responsive: document.getElementById('ctrl-responsive').checked,
+    orderby:    document.getElementById('ctrl-orderby').value,
+  };
+}
+
+function buildShortcode(p) {
+  const parts = ['[rssecafo'];
+  if (p.type !== 'grid')      parts.push(`type="${p.type}"`);
+  if (p.columns !== 3)        parts.push(`columns="${p.columns}"`);
+  if (p.count !== 10)         parts.push(`count="${p.count}"`);
+  if (p.orderby !== 'date')   parts.push(`orderby="${p.orderby}"`);
+  if (p.showDesc)              parts.push('desc="1"');
+  if (!p.showDate)             parts.push('date="0"');
+  if (p.showSite)              parts.push('site="1"');
+  if (p.bold)                  parts.push('bold="1"');
+  if (!p.responsive)           parts.push('responsive="0"');
+  if (p.lines !== 2)           parts.push(`title_lines="${p.lines}"`);
+  return parts.join(' ') + ']';
+}
+
+function cardGrid(item, type, p) {
   const img = item.image || PLACEHOLDER;
-  const dateHtml = showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
-  const siteHtml = showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
-  const titleHtml = `<h3 class="rss-d-title">${e(item.title)}</h3>`;
-  const descHtml = showDesc ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
+  const dateH = p.showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
+  const siteH = p.showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
+  const descH = p.showDesc ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
+  const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
   const inner = type === 'image_only'
     ? `<img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>`
-    : `<img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>${dateHtml}${siteHtml}${titleHtml}${descHtml}`;
+    : `<img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>${dateH}${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}`;
   return `<a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
 }
 
-function renderCardList(item, showDate, showSite, showDesc) {
+function cardList(item, p) {
   const img = item.image || PLACEHOLDER;
-  const siteHtml = showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
-  const titleHtml = `<h3 class="rss-d-title">${e(item.title)}</h3>`;
-  const descHtml = showDesc ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
-  const dateHtml = showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
-  return `<a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><div class="rss-d-card-body">${siteHtml}${titleHtml}${descHtml}${dateHtml}</div></a>`;
+  const siteH = p.showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
+  const dateH = p.showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
+  const descH = p.showDesc ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
+  const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
+  return `<a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><div class="rss-d-card-body">${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}${dateH}</div></a>`;
 }
 
-function renderCardText(item, type, showDate, showSite, showDesc) {
-  const siteHtml = showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
-  const titleHtml = `<h3 class="rss-d-title">${e(item.title)}</h3>`;
-  const descHtml = (type === 'text' && showDesc) ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
-  const dateHtml = showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
-  return `<a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><div class="rss-d-card-body">${siteHtml}${titleHtml}${descHtml}${dateHtml}</div></a>`;
+function cardText(item, type, p) {
+  const siteH = p.showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
+  const dateH = p.showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
+  const descH = (type === 'text' && p.showDesc) ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
+  const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
+  return `<a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><div class="rss-d-card-body">${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}${dateH}</div></a>`;
 }
 
-function buildAll() {
-  const columns  = +document.getElementById('ctrl-columns').value;
-  const count    = +document.getElementById('ctrl-count').value;
-  const lines    = +document.getElementById('ctrl-lines').value;
-  const showDesc = document.getElementById('ctrl-desc').checked;
-  const showDate = document.getElementById('ctrl-date').checked;
-  const showSite = document.getElementById('ctrl-site').checked;
+function cardPopup(item, idx, p) {
+  const img = item.image || PLACEHOLDER;
+  const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
+  return `<button class="rss-d-card" style="border:none;cursor:pointer;text-align:left;padding:0;background:none;" onclick="openDemoModal(${idx})"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span><h3 class="${titleCls}">${e(item.title)}</h3></button>`;
+}
 
-  const items = ITEMS.slice(0, count);
-  const style = `--rss-d-columns:${columns};--rss-d-title-lines:${lines};`;
+function openDemoModal(idx) {
+  const item = ITEMS[idx];
+  document.getElementById('demo-modal-img').src = item.image || PLACEHOLDER;
+  document.getElementById('demo-modal-img').alt = item.title;
+  document.getElementById('demo-modal-title').textContent = item.title;
+  document.getElementById('demo-modal-desc').textContent = item.desc;
+  document.getElementById('demo-modal-link').href = item.url;
+  document.getElementById('demo-modal-overlay').classList.add('open');
+}
 
-  const configs = [
-    { id: 'grid-grid',          type: 'grid',         render: i => renderCardGrid(i, 'grid', showDate, showSite, showDesc) },
-    { id: 'grid-list_vertical', type: 'list_vertical',render: i => renderCardList(i, showDate, showSite, showDesc) },
-    { id: 'grid-list',          type: 'list',         render: i => renderCardList(i, showDate, showSite, showDesc) },
-    { id: 'grid-text',          type: 'text',         render: i => renderCardText(i, 'text', showDate, showSite, showDesc) },
-    { id: 'grid-text_line',     type: 'text_line',    render: i => renderCardText(i, 'text_line', showDate, showSite, showDesc) },
-    { id: 'grid-image_only',    type: 'image_only',   render: i => renderCardGrid(i, 'image_only', showDate, showSite, showDesc) },
-  ];
-
-  for (const { id, render } of configs) {
-    const el = document.getElementById(id);
-    el.setAttribute('style', style);
-    el.innerHTML = items.map(render).join('');
+function closeDemoModal(ev) {
+  if (ev.target === document.getElementById('demo-modal-overlay')) {
+    document.getElementById('demo-modal-overlay').classList.remove('open');
   }
 }
 
-['ctrl-columns','ctrl-count','ctrl-lines','ctrl-desc','ctrl-date','ctrl-site']
-  .forEach(id => document.getElementById(id).addEventListener('change', buildAll));
+function buildCarousel(items, p) {
+  const uid = 'demo-carousel-' + Date.now();
+  const responsiveCls = p.responsive ? ' rss-d-responsive' : '';
+  const cards = items.map(item => {
+    const img = item.image || PLACEHOLDER;
+    const dateH = p.showDate ? `<span class="rss-d-date">${e(item.date)}</span>` : '';
+    const siteH = p.showSite ? `<span class="rss-d-site">${e(item.site)}</span>` : '';
+    const descH = p.showDesc ? `<p class="rss-d-desc">${e(item.desc)}</p>` : '';
+    const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
+    return `<div class="rss-d-carousel-card"><a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>${dateH}${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}</a></div>`;
+  }).join('');
+  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};`;
+  const html = `<div class="rss-d-carousel-wrap rss-d-type-carousel${responsiveCls}" id="${uid}" style="${style}">
+  <button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="前へ" data-target="${uid}" onclick="demoCarouselNav('${uid}',-1)">&#10094;</button>
+  <div class="rss-d-carousel-viewport">
+    <div class="rss-d-carousel-track" id="${uid}-track">${cards}</div>
+  </div>
+  <button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="次へ" data-target="${uid}" onclick="demoCarouselNav('${uid}',1)">&#10095;</button>
+</div>`;
+  setTimeout(() => demoCarouselInit(uid), 0);
+  return html;
+}
 
-buildAll();
+let _carouselIdx = {};
+function demoCarouselInit(uid) {
+  _carouselIdx[uid] = 0;
+  demoCarouselRender(uid);
+}
+function demoCarouselNav(uid, dir) {
+  const wrap = document.getElementById(uid);
+  if (!wrap) return;
+  const cols = parseInt(getComputedStyle(wrap).getPropertyValue('--rss-d-columns')) || 3;
+  const track = document.getElementById(uid + '-track');
+  const total = track ? track.children.length : 0;
+  const maxIdx = Math.max(0, total - cols);
+  _carouselIdx[uid] = Math.min(maxIdx, Math.max(0, (_carouselIdx[uid] || 0) + dir));
+  demoCarouselRender(uid);
+}
+function demoCarouselRender(uid) {
+  const wrap = document.getElementById(uid);
+  if (!wrap) return;
+  const cols = parseInt(getComputedStyle(wrap).getPropertyValue('--rss-d-columns')) || 3;
+  const track = document.getElementById(uid + '-track');
+  const idx = _carouselIdx[uid] || 0;
+  if (track) track.style.transform = `translateX(calc(-${idx} * (100% / ${cols})))`;
+  const total = track ? track.children.length : 0;
+  const prevBtn = wrap.querySelector('.rss-d-carousel-prev');
+  const nextBtn = wrap.querySelector('.rss-d-carousel-next');
+  if (prevBtn) prevBtn.disabled = idx === 0;
+  if (nextBtn) nextBtn.disabled = idx >= total - cols;
+}
+
+function buildDemo() {
+  const p = getParams();
+  document.getElementById('ctrl-count-val').textContent = p.count;
+  document.getElementById('sc-output').textContent = buildShortcode(p);
+
+  const items = p.orderby === 'random'
+    ? [...ITEMS].sort(() => Math.random() - .5).slice(0, p.count)
+    : ITEMS.slice(0, p.count);
+
+  const gridCls = ['rss-d-grid', `rss-d-type-${p.type}`, p.responsive ? 'rss-d-responsive' : ''].filter(Boolean).join(' ');
+  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};`;
+
+  let html = '';
+  if (p.type === 'carousel') {
+    html = buildCarousel(items, p);
+  } else if (p.type === 'popup_grid') {
+    const cards = items.map((item, idx) => cardPopup(item, idx, p)).join('');
+    html = `<div class="${gridCls}" style="${style}">${cards}</div>`;
+  } else if (p.type === 'grid' || p.type === 'image_only') {
+    const cards = items.map(item => cardGrid(item, p.type, p)).join('');
+    html = `<div class="${gridCls}" style="${style}">${cards}</div>`;
+  } else if (p.type === 'list_vertical' || p.type === 'list') {
+    const cards = items.map(item => cardList(item, p)).join('');
+    html = `<div class="${gridCls}" style="${style}">${cards}</div>`;
+  } else {
+    const cards = items.map(item => cardText(item, p.type, p)).join('');
+    html = `<div class="${gridCls}" style="${style}">${cards}</div>`;
+  }
+
+  document.getElementById('demo-preview').innerHTML = html;
+}
+
+function copyShortcode() {
+  const sc = document.getElementById('sc-output').textContent;
+  navigator.clipboard.writeText(sc).then(() => {
+    const btn = document.getElementById('sc-copy-btn');
+    btn.textContent = 'コピーしました！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = sc; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('sc-copy-btn');
+    btn.textContent = 'コピーしました！'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+buildDemo();
 </script>
 </body>
 </html>
