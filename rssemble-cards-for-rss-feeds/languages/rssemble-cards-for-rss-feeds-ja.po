@@ -448,3 +448,59 @@ msgstr "ドキュメント・デモ・バグ報告はプラグイン公式サイ
 #: includes/class-admin.php
 msgid "公式サイトを開く"
 msgstr "公式サイトを開く"
+
+#: includes/class-admin.php
+msgid "The URLs registered here become the default feeds."
+msgstr "ここに登録したURLがデフォルトのフィードになります"
+
+#: includes/class-admin.php
+msgid "These feeds are used on every page where [rssecafo] is placed."
+msgstr "ショートコード [rssecafo] を貼ったすべてのページで、このリストのフィードが使われます。"
+
+#: includes/class-admin.php
+msgid "To display different feeds on a specific page, override with the %s shortcode attribute (comma-separated for multiple)."
+msgstr "特定のページだけ別のフィードを表示したい場合は、ショートコードの %s 属性で上書き指定できます（カンマ区切りで複数可）。"
+
+#: includes/class-admin.php
+msgid "Two Ways to Use"
+msgstr "2つの使い方"
+
+#: includes/class-admin.php
+msgid "Admin Panel Registration (Basic tab)"
+msgstr "管理画面登録（Basicタブ）"
+
+#: includes/class-admin.php
+msgid "Shortcode feed= attribute"
+msgstr "ショートコード feed= 属性"
+
+#: includes/class-admin.php
+msgid "Set site-wide default feeds"
+msgstr "サイト共通のデフォルトフィードを設定"
+
+#: includes/class-admin.php
+msgid "Display different feeds on a specific page"
+msgstr "特定ページだけ別のフィードを表示したい場合"
+
+#: includes/class-admin.php
+msgid "One URL per line (newline-separated)"
+msgstr "1行1件のURL（改行区切り）"
+
+#: includes/class-admin.php
+msgid "Comma-separated, multiple URLs supported"
+msgstr "カンマ区切りで複数指定可"
+
+#: includes/class-admin.php
+msgid "<code>%s</code> alone is enough"
+msgstr "<code>%s</code> だけで表示できます"
+
+#: includes/class-admin.php
+msgid "Feed fetch status visible in Feed Status tab"
+msgstr "Feed Statusタブでフィードの取得状態を確認できます"
+
+#: includes/class-admin.php
+msgid "Works with unregistered URLs (not shown in Feed Status)"
+msgstr "管理画面未登録のURLも表示可能（Feed Statusには表示されません）"
+
+#: includes/class-admin.php
+msgid "When both are specified, the shortcode feed= attribute takes priority. If feed= is omitted, the URLs from the Basic tab are used."
+msgstr "両方が指定された場合はショートコードの feed= 属性が優先されます。feed= を省略した場合は Basicタブの登録URLが使われます。"

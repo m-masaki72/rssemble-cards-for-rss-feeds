@@ -373,6 +373,23 @@ class RSSECAFO_Admin {
 							<td>
 								<textarea id="rssecafo_feeds" name="<?php echo esc_attr( $option ); ?>[feeds]" rows="6" class="large-text code" placeholder="https://example.com/feed&#10;https://example.org/feed"><?php echo esc_textarea( $settings['feeds'] ); ?></textarea>
 								<p class="description"><?php esc_html_e( 'Enter one feed URL per line.', 'rssemble-cards-for-rss-feeds' ); ?></p>
+								<div style="margin-top:10px;padding:10px 14px;background:#f6f7f7;border-left:4px solid #72aee6;border-radius:0 4px 4px 0;">
+									<p style="margin:0 0 6px;font-weight:600;font-size:13px;">
+										<?php esc_html_e( 'The URLs registered here become the default feeds.', 'rssemble-cards-for-rss-feeds' ); ?>
+									</p>
+									<p style="margin:0 0 4px;font-size:12px;color:#50575e;">
+										<?php esc_html_e( 'These feeds are used on every page where [rssecafo] is placed.', 'rssemble-cards-for-rss-feeds' ); ?>
+									</p>
+									<p style="margin:0;font-size:12px;color:#50575e;">
+										<?php
+										echo wp_kses_post( sprintf(
+											/* translators: %s: shortcode feed attribute example */
+											__( 'To display different feeds on a specific page, override with the %s shortcode attribute (comma-separated for multiple).', 'rssemble-cards-for-rss-feeds' ),
+											'<code>feed="URL"</code>'
+										) );
+										?>
+									</p>
+								</div>
 							</td>
 						</tr>
 
@@ -665,6 +682,38 @@ class RSSECAFO_Admin {
 
 			<!-- ========== Usage tab ========== -->
 			<div class="rss-d-tab-panel" data-panel="usage">
+
+				<!-- Feed method comparison -->
+				<h2><?php esc_html_e( 'Two Ways to Use', 'rssemble-cards-for-rss-feeds' ); ?></h2>
+				<table class="widefat" style="max-width:800px;margin-bottom:24px;">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Admin Panel Registration (Basic tab)', 'rssemble-cards-for-rss-feeds' ); ?></th>
+							<th><?php esc_html_e( 'Shortcode feed= attribute', 'rssemble-cards-for-rss-feeds' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><?php esc_html_e( 'Set site-wide default feeds', 'rssemble-cards-for-rss-feeds' ); ?></td>
+							<td><?php esc_html_e( 'Display different feeds on a specific page', 'rssemble-cards-for-rss-feeds' ); ?></td>
+						</tr>
+						<tr>
+							<td><?php esc_html_e( 'One URL per line (newline-separated)', 'rssemble-cards-for-rss-feeds' ); ?></td>
+							<td><?php esc_html_e( 'Comma-separated, multiple URLs supported', 'rssemble-cards-for-rss-feeds' ); ?></td>
+						</tr>
+						<tr>
+							<td><?php echo wp_kses_post( sprintf( /* translators: %s: shortcode tag */ __( '<code>%s</code> alone is enough', 'rssemble-cards-for-rss-feeds' ), '[rssecafo]' ) ); ?></td>
+							<td><code>[rssecafo feed="https://example.com/feed/"]</code></td>
+						</tr>
+						<tr>
+							<td><?php esc_html_e( 'Feed fetch status visible in Feed Status tab', 'rssemble-cards-for-rss-feeds' ); ?></td>
+							<td><?php esc_html_e( 'Works with unregistered URLs (not shown in Feed Status)', 'rssemble-cards-for-rss-feeds' ); ?></td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="max-width:800px;margin-bottom:24px;font-size:13px;color:#50575e;background:#f6f7f7;padding:10px 14px;border-left:4px solid #72aee6;border-radius:0 4px 4px 0;">
+					<?php esc_html_e( 'When both are specified, the shortcode feed= attribute takes priority. If feed= is omitted, the URLs from the Basic tab are used.', 'rssemble-cards-for-rss-feeds' ); ?>
+				</p>
 
 				<!-- Parameter reference -->
 				<h2><?php esc_html_e( 'Parameter Reference', 'rssemble-cards-for-rss-feeds' ); ?></h2>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rssemble Cards for RSS Feeds — WordPress プラグイン</title>
+<title>Rssemble Cards for RSS Feeds — WordPress Plugin</title>
 <meta name="description" content="複数のRSSフィードをOGP画像付きカードグリッドで表示するWordPressプラグイン。外部サービス不要・レスポンシブ対応・8種のレイアウト。インストールからショートコード設定まで丁寧に解説。">
 <link rel="stylesheet" href="rssemble-cards-for-rss-feeds.css">
 <style>
@@ -44,11 +44,25 @@ a:hover { text-decoration: underline; }
 }
 .site-logo { font-size: 17px; font-weight: 700; color: var(--c-accent); letter-spacing: -.01em; white-space: nowrap; }
 .site-logo span { color: var(--c-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
-.header-links { display: flex; gap: 16px; font-size: 13px; flex-wrap: wrap; }
+.header-links { display: flex; gap: 16px; font-size: 13px; flex-wrap: wrap; align-items: center; }
 .header-links a { color: var(--c-muted); white-space: nowrap; }
 .header-links a:hover { color: var(--c-text); text-decoration: none; }
 .header-links .github-link { color: var(--c-accent2); border: 1px solid rgba(137,180,250,.3); border-radius: 6px; padding: 3px 10px; }
 .header-links .github-link:hover { background: rgba(137,180,250,.1); text-decoration: none; }
+
+/* 言語切替ボタン */
+.lang-switch {
+  display: flex; gap: 2px;
+  background: var(--c-surface2); border: 1px solid var(--c-border); border-radius: 6px;
+  padding: 2px; flex-shrink: 0;
+}
+.lang-btn {
+  padding: 3px 10px; border-radius: 4px; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; background: transparent; color: var(--c-muted);
+  transition: all .15s;
+}
+.lang-btn.active { background: var(--c-accent); color: #1a1a2e; }
+.lang-btn:hover:not(.active) { color: var(--c-text); }
 
 /* ---- ヒーロー ---- */
 .hero {
@@ -284,6 +298,20 @@ a:hover { text-decoration: underline; }
 .footer-links a { color: var(--c-muted); }
 .footer-sep { color: var(--c-border); }
 
+/* ---- 機械翻訳バナー ---- */
+.machine-translation-notice {
+  background: rgba(137,180,250,.08);
+  border: 1px solid rgba(137,180,250,.25);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--c-muted);
+  text-align: center;
+  max-width: 1080px;
+  margin: 12px auto 0;
+}
+.machine-translation-notice[hidden] { display: none; }
+
 /* ---- popup_grid モーダル ---- */
 #demo-modal-overlay {
   display: none; position: fixed; inset: 0; z-index: 1000;
@@ -319,116 +347,125 @@ a:hover { text-decoration: underline; }
 <header class="site-header">
   <div class="site-logo">Rssemble Cards <span>WordPress Plugin</span></div>
   <nav class="header-links">
-    <a href="#howto">使い方</a>
-    <a href="#demo">デモ</a>
-    <a href="#params">パラメーター</a>
-    <a href="#support">サポート</a>
-    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer" class="github-link">GitHub（開発者向け）</a>
+    <a href="#howto" data-i18n="nav_howto">使い方</a>
+    <a href="#demo" data-i18n="nav_demo">デモ</a>
+    <a href="#params" data-i18n="nav_params">パラメーター</a>
+    <a href="#support" data-i18n="nav_support">サポート</a>
+    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer" class="github-link" data-i18n="nav_github">GitHub（開発者向け）</a>
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('ja')">JA</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
   </nav>
 </header>
+
+<!-- 機械翻訳バナー（英語時のみ表示） -->
+<div class="machine-translation-notice" id="machine-translation-notice" hidden>
+  ⚠️ The English content on this page has been machine-translated and may not be perfectly accurate.
+</div>
 
 <!-- ヒーロー -->
 <section class="hero">
   <div class="hero-badge">WordPress Plugin</div>
   <h1>Rssemble Cards<br>for RSS Feeds</h1>
-  <p class="hero-sub">複数のRSSフィードをOGP画像付きカードグリッドで美しく表示。外部サービス不要・完全自己完結型。</p>
+  <p class="hero-sub" data-i18n="hero_sub">複数のRSSフィードをOGP画像付きカードグリッドで美しく表示。外部サービス不要・完全自己完結型。</p>
   <div class="hero-actions">
-    <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">WordPress.org で入手</a>
-    <a href="#howto" class="btn btn-secondary">使い方を見る</a>
+    <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-i18n="hero_btn_wp">WordPress.org で入手</a>
+    <a href="#howto" class="btn btn-secondary" data-i18n="hero_btn_howto">使い方を見る</a>
   </div>
 </section>
 
 <!-- 特徴 -->
 <section class="section" id="features">
-  <p class="section-title">特徴</p>
-  <p class="section-sub">WordPressの組み込み機能だけで動作。外部APIへの依存はゼロ。</p>
+  <p class="section-title" data-i18n="features_title">特徴</p>
+  <p class="section-sub" data-i18n="features_sub">WordPressの組み込み機能だけで動作。外部APIへの依存はゼロ。</p>
   <div class="feature-grid">
     <div class="feature-card">
       <div class="feature-icon">🗂️</div>
-      <h3>8種のレイアウト</h3>
-      <p>グリッド・リスト・カルーセル・モーダルなど、用途に合わせて選択できます。</p>
+      <h3 data-i18n="feat1_h">8種のレイアウト</h3>
+      <p data-i18n="feat1_p">グリッド・リスト・カルーセル・モーダルなど、用途に合わせて選択できます。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🖼️</div>
-      <h3>OGP画像の自動取得</h3>
-      <p>RSSに画像がなくてもog:imageを取得・キャッシュして表示します。</p>
+      <h3 data-i18n="feat2_h">OGP画像の自動取得</h3>
+      <p data-i18n="feat2_p">RSSに画像がなくてもog:imageを取得・キャッシュして表示します。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📱</div>
-      <h3>レスポンシブ対応</h3>
-      <p>PC・タブレット・スマホで列数を自動調整。<code>responsive="0"</code>で固定も可能。</p>
+      <h3 data-i18n="feat3_h">レスポンシブ対応</h3>
+      <p data-i18n="feat3_p">PC・タブレット・スマホで列数を自動調整。<code>responsive="0"</code>で固定も可能。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚡</div>
-      <h3>トランジェントキャッシュ</h3>
-      <p>RSSはユーザー設定TTL、OGP画像は1ヶ月キャッシュで高速表示。</p>
+      <h3 data-i18n="feat4_h">トランジェントキャッシュ</h3>
+      <p data-i18n="feat4_p">RSSはユーザー設定TTL、OGP画像は1ヶ月キャッシュで高速表示。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔗</div>
-      <h3>マルチフィード対応</h3>
-      <p>複数フィードを集約して日付順にソート。重複記事を自動排除。</p>
+      <h3 data-i18n="feat5_h">マルチフィード対応</h3>
+      <p data-i18n="feat5_p">複数フィードを集約して日付順にソート。重複記事を自動排除。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔒</div>
-      <h3>外部サービス不要</h3>
-      <p>SimplePie・DOMDocument・WordPressトランジェントのみ使用。</p>
+      <h3 data-i18n="feat6_h">外部サービス不要</h3>
+      <p data-i18n="feat6_p">SimplePie・DOMDocument・WordPressトランジェントのみ使用。</p>
     </div>
   </div>
 </section>
 
 <!-- 使い方 ステップガイド -->
 <section class="section" id="howto" style="padding-top:0;">
-  <p class="section-title">使い方</p>
-  <p class="section-sub">WordPressの管理画面だけで完結。コーディング不要です。</p>
+  <p class="section-title" data-i18n="howto_title">使い方</p>
+  <p class="section-sub" data-i18n="howto_sub">WordPressの管理画面だけで完結。コーディング不要です。</p>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <h3>プラグインをインストール・有効化</h3>
-        <p>WordPress管理画面の <strong>プラグイン → 新規追加</strong> から「Rssemble Cards」で検索し、インストール後に有効化してください。</p>
-        <p>または <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org のプラグインページ</a> からZIPをダウンロードして <strong>プラグイン → 新規追加 → ZIPをアップロード</strong> でも導入できます。</p>
+        <h3 data-i18n="step1_h">プラグインをインストール・有効化</h3>
+        <p data-i18n="step1_p1">WordPress管理画面の <strong data-i18n="step1_p1_strong">プラグイン → 新規追加</strong> から「Rssemble Cards」で検索し、インストール後に有効化してください。</p>
+        <p data-i18n="step1_p2">または <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer" data-i18n="step1_p2_link">WordPress.org のプラグインページ</a> からZIPをダウンロードして <strong data-i18n="step1_p2_strong">プラグイン → 新規追加 → ZIPをアップロード</strong> でも導入できます。</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <h3>フィードURLを登録する</h3>
-        <p>管理画面の <strong>設定 → Rssemble Cards</strong> を開き、表示したいRSSフィードのURLを<strong>1行1件</strong>で入力して保存します。複数サイトを並べて登録できます。</p>
-        <p style="color:var(--c-muted);font-size:13px;">※ ショートコードの <code style="color:var(--c-accent)">feed=</code> 属性で指定する場合はカンマ区切りになります（管理画面での改行区切りとは別形式です）。</p>
-        <p><strong>RSSフィードURLの調べ方：</strong></p>
+        <h3 data-i18n="step2_h">フィードURLを登録する</h3>
+        <p data-i18n="step2_p1">管理画面の <strong data-i18n="step2_p1_strong">設定 → Rssemble Cards</strong> を開き、表示したいRSSフィードのURLを<strong data-i18n="step2_p1_strong2">1行1件</strong>で入力して保存します。複数サイトを並べて登録できます。</p>
+        <p style="font-size:13px;" data-i18n="step2_note">💡 <strong>ここで登録したURLが、ショートコードを置くすべてのページの「デフォルトフィード」になります。</strong>特定のページだけ別のフィードを表示したい場合は、ショートコードの <code style="color:var(--c-accent)">feed=</code> 属性で上書き指定できます（カンマ区切りで複数可）。<br><span style="font-size:12px;color:var(--c-muted)">管理画面: 改行区切り1行1件 ／ feed=属性: カンマ区切り</span></p>
+        <p data-i18n="step2_p2"><strong>RSSフィードURLの調べ方：</strong></p>
         <ul style="margin:0 0 8px;padding-left:20px;font-size:13px;color:var(--c-muted);">
-          <li>WordPressサイト → サイトURLの末尾に <code style="color:var(--c-accent)">/feed/</code> を付ける（例: <code style="color:var(--c-accent)">https://example.com/feed/</code>）</li>
-          <li>note → <code style="color:var(--c-accent)">https://note.com/ユーザー名/rss</code></li>
-          <li>Zenn → <code style="color:var(--c-accent)">https://zenn.dev/ユーザー名/feed</code></li>
-          <li>Qiita → <code style="color:var(--c-accent)">https://qiita.com/ユーザー名/feed</code></li>
-          <li>YouTube チャンネル → チャンネルページの「フィード」または <code style="color:var(--c-accent)">https://www.youtube.com/feeds/videos.xml?channel_id=チャンネルID</code></li>
+          <li data-i18n="step2_li1">WordPressサイト → サイトURLの末尾に <code style="color:var(--c-accent)">/feed/</code> を付ける（例: <code style="color:var(--c-accent)">https://example.com/feed/</code>）</li>
+          <li data-i18n="step2_li2">note → <code style="color:var(--c-accent)">https://note.com/ユーザー名/rss</code></li>
+          <li data-i18n="step2_li3">Zenn → <code style="color:var(--c-accent)">https://zenn.dev/ユーザー名/feed</code></li>
+          <li data-i18n="step2_li4">Qiita → <code style="color:var(--c-accent)">https://qiita.com/ユーザー名/feed</code></li>
+          <li data-i18n="step2_li5">YouTube チャンネル → チャンネルページの「フィード」または <code style="color:var(--c-accent)">https://www.youtube.com/feeds/videos.xml?channel_id=チャンネルID</code></li>
         </ul>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <h3>ショートコードを投稿・固定ページに貼り付ける</h3>
-        <span class="step-tip">ブロックエディタ（Gutenberg）の場合</span>
-        <p>「ショートコード」ブロックを追加して、以下を貼り付けるだけです。</p>
+        <h3 data-i18n="step3_h">ショートコードを投稿・固定ページに貼り付ける</h3>
+        <span class="step-tip" data-i18n="step3_tip1">ブロックエディタ（Gutenberg）の場合</span>
+        <p data-i18n="step3_p1">「ショートコード」ブロックを追加して、以下を貼り付けるだけです。</p>
         <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span><span class="sc-bracket">]</span></div>
-        <span class="step-tip">クラシックエディタの場合</span>
-        <p>テキストモードでショートコードをそのまま記述してください。</p>
+        <span class="step-tip" data-i18n="step3_tip2">クラシックエディタの場合</span>
+        <p data-i18n="step3_p2">テキストモードでショートコードをそのまま記述してください。</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <h3>パラメーターでカスタマイズする</h3>
-        <p>下のデモでパラメーターを試してコピーしたショートコードをそのまま貼り付けるだけで、見た目を自由に変えられます。</p>
+        <h3 data-i18n="step4_h">パラメーターでカスタマイズする</h3>
+        <p data-i18n="step4_p1">下のデモでパラメーターを試してコピーしたショートコードをそのまま貼り付けるだけで、見た目を自由に変えられます。</p>
         <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span>
   <span class="sc-attr">type</span>=<span class="sc-val">"carousel"</span>
   <span class="sc-attr">columns</span>=<span class="sc-val">"3"</span>
   <span class="sc-attr">count</span>=<span class="sc-val">"9"</span>
   <span class="sc-attr">date</span>=<span class="sc-val">"1"</span>
   <span class="sc-attr">site</span>=<span class="sc-val">"1"</span><span class="sc-bracket">]</span></div>
-        <p style="font-size:13px;">特定フィードだけ表示したい場合は、設定済みフィードを上書きして指定できます：</p>
+        <p style="font-size:13px;" data-i18n="step4_p2"><strong>Step 2 の設定を上書き</strong>して、そのページだけ別のフィードを表示することもできます。<code>feed=</code> 属性に指定したURLが優先されます：</p>
         <div class="code-block"><span class="sc-bracket">[</span><span class="sc-name">rssecafo</span>
   <span class="sc-attr">feed</span>=<span class="sc-val">"https://example.com/feed/"</span>
   <span class="sc-attr">type</span>=<span class="sc-val">"list_vertical"</span><span class="sc-bracket">]</span></div>
@@ -439,38 +476,38 @@ a:hover { text-decoration: underline; }
 
 <!-- レイアウト一覧 -->
 <section class="section" id="layouts" style="padding-top:0;">
-  <p class="section-title">8種のレイアウト</p>
-  <p class="section-sub"><code style="color:var(--c-accent)">type</code> パラメーターで切り替え。デモで実際の見た目を確認できます。</p>
+  <p class="section-title" data-i18n="layouts_title">8種のレイアウト</p>
+  <p class="section-sub" data-i18n="layouts_sub"><code style="color:var(--c-accent)">type</code> パラメーターで切り替え。デモで実際の見た目を確認できます。</p>
   <div class="layouts-grid">
-    <div class="layout-chip"><code>grid</code><p>画像背景＋タイトルオーバーレイ</p></div>
-    <div class="layout-chip"><code>list_vertical</code><p>上画像・下テキストカード</p></div>
-    <div class="layout-chip"><code>list</code><p>サムネイル左・テキスト右</p></div>
-    <div class="layout-chip"><code>text</code><p>テキストのみカード（説明付き）</p></div>
-    <div class="layout-chip"><code>text_line</code><p>1行テキスト＋区切り線</p></div>
-    <div class="layout-chip"><code>image_only</code><p>画像のみ</p></div>
-    <div class="layout-chip"><code>carousel</code><p>スライドカルーセル</p></div>
-    <div class="layout-chip"><code>popup_grid</code><p>クリックでモーダル表示</p></div>
+    <div class="layout-chip"><code>grid</code><p data-i18n="layout_grid">画像背景＋タイトルオーバーレイ</p></div>
+    <div class="layout-chip"><code>list_vertical</code><p data-i18n="layout_list_vertical">上画像・下テキストカード</p></div>
+    <div class="layout-chip"><code>list</code><p data-i18n="layout_list">サムネイル左・テキスト右</p></div>
+    <div class="layout-chip"><code>text</code><p data-i18n="layout_text">テキストのみカード（説明付き）</p></div>
+    <div class="layout-chip"><code>text_line</code><p data-i18n="layout_text_line">1行テキスト＋区切り線</p></div>
+    <div class="layout-chip"><code>image_only</code><p data-i18n="layout_image_only">画像のみ</p></div>
+    <div class="layout-chip"><code>carousel</code><p data-i18n="layout_carousel">スライドカルーセル</p></div>
+    <div class="layout-chip"><code>popup_grid</code><p data-i18n="layout_popup_grid">クリックでモーダル表示</p></div>
   </div>
 </section>
 
 <!-- デモ -->
 <section class="section" id="demo" style="padding-top:0;">
-  <p class="section-title">インタラクティブデモ</p>
-  <p class="section-sub">パラメーターを変えてショートコードをその場でコピー。ダミーデータによる表示確認です。</p>
+  <p class="section-title" data-i18n="demo_title">インタラクティブデモ</p>
+  <p class="section-sub" data-i18n="demo_sub">パラメーターを変えてショートコードをその場でコピー。ダミーデータによる表示確認です。</p>
 
   <div class="demo-shell">
     <!-- ショートコードプレビューバー -->
     <div class="sc-preview-bar">
-      <span class="sc-preview-label">ショートコード</span>
+      <span class="sc-preview-label" data-i18n="demo_sc_label">ショートコード</span>
       <div class="sc-preview-code" id="sc-output"></div>
-      <button class="sc-copy-btn" id="sc-copy-btn" onclick="copyShortcode()">コピー</button>
+      <button class="sc-copy-btn" id="sc-copy-btn" onclick="copyShortcode()" data-i18n="demo_copy_btn">コピー</button>
     </div>
 
     <div class="demo-body">
       <!-- コントロールパネル -->
       <div class="ctrl-panel">
         <div class="ctrl-section">
-          <div class="ctrl-section-title">レイアウト</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_layout">レイアウト</div>
           <select class="ctrl-select" id="ctrl-type" onchange="buildDemo()">
             <option value="grid">grid</option>
             <option value="list_vertical">list_vertical</option>
@@ -483,7 +520,7 @@ a:hover { text-decoration: underline; }
           </select>
         </div>
         <div class="ctrl-section">
-          <div class="ctrl-section-title">列数</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_columns">列数</div>
           <div class="btn-group" id="ctrl-columns-group">
             <button onclick="setColumns(2)">2</button>
             <button onclick="setColumns(3)" class="active">3</button>
@@ -491,14 +528,14 @@ a:hover { text-decoration: underline; }
           </div>
         </div>
         <div class="ctrl-section">
-          <div class="ctrl-section-title">件数</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_count">件数</div>
           <div class="slider-row">
             <input type="range" class="ctrl-slider" id="ctrl-count" min="1" max="12" value="10" oninput="buildDemo()">
             <span class="slider-val" id="ctrl-count-val">10</span>
           </div>
         </div>
         <div class="ctrl-section">
-          <div class="ctrl-section-title">タイトル行数</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_title_lines">タイトル行数</div>
           <div class="btn-group" id="ctrl-lines-group">
             <button onclick="setLines(1)">1</button>
             <button onclick="setLines(2)" class="active">2</button>
@@ -507,39 +544,39 @@ a:hover { text-decoration: underline; }
           </div>
         </div>
         <div class="ctrl-section">
-          <div class="ctrl-section-title">メタ情報</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_meta">メタ情報</div>
           <div class="toggle-list">
             <div class="toggle-row">
-              <span>説明文</span>
+              <span data-i18n="ctrl_desc">説明文</span>
               <label class="toggle"><input type="checkbox" id="ctrl-desc" onchange="buildDemo()"><span class="toggle-track"></span></label>
             </div>
             <div class="toggle-row">
-              <span>日付</span>
+              <span data-i18n="ctrl_date">日付</span>
               <label class="toggle"><input type="checkbox" id="ctrl-date" checked onchange="buildDemo()"><span class="toggle-track"></span></label>
             </div>
             <div class="toggle-row">
-              <span>サイト名</span>
+              <span data-i18n="ctrl_site">サイト名</span>
               <label class="toggle"><input type="checkbox" id="ctrl-site" onchange="buildDemo()"><span class="toggle-track"></span></label>
             </div>
             <div class="toggle-row">
-              <span>タイトル太字</span>
+              <span data-i18n="ctrl_bold">タイトル太字</span>
               <label class="toggle"><input type="checkbox" id="ctrl-bold" onchange="buildDemo()"><span class="toggle-track"></span></label>
             </div>
           </div>
         </div>
         <div class="ctrl-section">
-          <div class="ctrl-section-title">その他</div>
+          <div class="ctrl-section-title" data-i18n="ctrl_other">その他</div>
           <div class="toggle-list">
             <div class="toggle-row">
-              <span>レスポンシブ</span>
+              <span data-i18n="ctrl_responsive">レスポンシブ</span>
               <label class="toggle"><input type="checkbox" id="ctrl-responsive" checked onchange="buildDemo()"><span class="toggle-track"></span></label>
             </div>
           </div>
           <div style="margin-top:10px;">
-            <div class="ctrl-section-title" style="margin-bottom:6px;">順序</div>
+            <div class="ctrl-section-title" style="margin-bottom:6px;" data-i18n="ctrl_orderby">順序</div>
             <select class="ctrl-select" id="ctrl-orderby" onchange="buildDemo()">
-              <option value="date">日付順</option>
-              <option value="random">ランダム</option>
+              <option value="date" data-i18n="ctrl_orderby_date">日付順</option>
+              <option value="random" data-i18n="ctrl_orderby_random">ランダム</option>
             </select>
           </div>
         </div>
@@ -547,7 +584,7 @@ a:hover { text-decoration: underline; }
 
       <!-- プレビューペイン -->
       <div class="preview-pane">
-        <p class="preview-note">※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。</p>
+        <p class="preview-note" data-i18n="demo_preview_note">※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。</p>
         <div id="demo-preview"></div>
       </div>
     </div>
@@ -556,83 +593,83 @@ a:hover { text-decoration: underline; }
 
 <!-- パラメーター一覧 -->
 <section class="section" id="params" style="padding-top:0;">
-  <p class="section-title">全パラメーター一覧</p>
-  <p class="section-sub">ショートコード <code style="color:var(--c-accent)">[rssecafo]</code> で使用できるすべての属性。</p>
+  <p class="section-title" data-i18n="params_title">全パラメーター一覧</p>
+  <p class="section-sub" data-i18n="params_sub">ショートコード <code style="color:var(--c-accent)">[rssecafo]</code> で使用できるすべての属性。</p>
 
   <div style="overflow-x:auto;">
   <table class="param-table">
     <thead>
       <tr>
-        <th>属性</th>
-        <th>デフォルト</th>
-        <th>説明・使用例</th>
+        <th data-i18n="params_th_attr">属性</th>
+        <th data-i18n="params_th_default">デフォルト</th>
+        <th data-i18n="params_th_desc">説明・使用例</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><code>feed</code></td>
-        <td style="color:var(--c-muted);">（設定画面のURL）</td>
-        <td>表示するフィードURLを直接指定。複数はカンマ区切り。省略すると管理画面の設定が使われます。<br><span class="val-list">例: <code>feed="https://example.com/feed/"</code></span></td>
+        <td style="color:var(--c-muted);" data-i18n="param_feed_default">（設定画面のURL）</td>
+        <td data-i18n="param_feed_desc">表示するフィードURLを直接指定。複数はカンマ区切り。省略すると管理画面の設定が使われます。<br><span class="val-list">例: <code>feed="https://example.com/feed/"</code></span></td>
       </tr>
       <tr>
         <td><code>type</code></td>
         <td style="color:var(--c-muted);">grid</td>
-        <td>表示レイアウト。<br><span class="val-list">grid / list_vertical / list / text / text_line / image_only / carousel / popup_grid</span></td>
+        <td data-i18n="param_type_desc">表示レイアウト。<br><span class="val-list">grid / list_vertical / list / text / text_line / image_only / carousel / popup_grid</span></td>
       </tr>
       <tr>
         <td><code>columns</code></td>
         <td style="color:var(--c-muted);">3</td>
-        <td>列数。<br><span class="val-list">2 / 3 / 4</span></td>
+        <td data-i18n="param_columns_desc">列数。<br><span class="val-list">2 / 3 / 4</span></td>
       </tr>
       <tr>
         <td><code>count</code></td>
         <td style="color:var(--c-muted);">10</td>
-        <td>表示件数（正の整数）。省略すると管理画面の設定値（初期値10）が使われます。</td>
+        <td data-i18n="param_count_desc">表示件数（正の整数）。省略すると管理画面の設定値（初期値10）が使われます。</td>
       </tr>
       <tr>
         <td><code>orderby</code></td>
         <td style="color:var(--c-muted);">date</td>
-        <td>並び順。<br><span class="val-list">date（新着順） / random（ランダム）</span></td>
+        <td data-i18n="param_orderby_desc">並び順。<br><span class="val-list">date（新着順） / random（ランダム）</span></td>
       </tr>
       <tr>
         <td><code>target</code></td>
-        <td style="color:var(--c-muted);">（設定画面の値）</td>
-        <td>リンクの開き方。<br><span class="val-list">_self（同タブ） / _blank（新規タブ）</span></td>
+        <td style="color:var(--c-muted);" data-i18n="param_target_default">（設定画面の値）</td>
+        <td data-i18n="param_target_desc">リンクの開き方。<br><span class="val-list">_self（同タブ） / _blank（新規タブ）</span></td>
       </tr>
       <tr>
         <td><code>desc</code></td>
         <td style="color:var(--c-muted);">0</td>
-        <td>説明文を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+        <td data-i18n="param_desc_desc">説明文を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
       </tr>
       <tr>
         <td><code>date</code></td>
         <td style="color:var(--c-muted);">1</td>
-        <td>投稿日付を表示する。省略するとデフォルトで表示。非表示にしたい場合は明示的に <code>date="0"</code> と指定。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+        <td data-i18n="param_date_desc">投稿日付を表示する。省略するとデフォルトで表示。非表示にしたい場合は明示的に <code>date="0"</code> と指定。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
       </tr>
       <tr>
         <td><code>site</code></td>
         <td style="color:var(--c-muted);">0</td>
-        <td>サイト名を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
+        <td data-i18n="param_site_desc">サイト名を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span></td>
       </tr>
       <tr>
         <td><code>bold</code></td>
         <td style="color:var(--c-muted);">0</td>
-        <td>タイトルを太字にする。<br><span class="val-list">1（太字） / 0（通常）</span></td>
+        <td data-i18n="param_bold_desc">タイトルを太字にする。<br><span class="val-list">1（太字） / 0（通常）</span></td>
       </tr>
       <tr>
         <td><code>responsive</code></td>
         <td style="color:var(--c-muted);">1</td>
-        <td>レスポンシブ対応。0にするとPC・スマホで同じ列数になります。<br><span class="val-list">1（有効） / 0（固定）</span></td>
+        <td data-i18n="param_responsive_desc">レスポンシブ対応。0にするとPC・スマホで同じ列数になります。<br><span class="val-list">1（有効） / 0（固定）</span></td>
       </tr>
       <tr>
         <td><code>title_lines</code></td>
         <td style="color:var(--c-muted);">2</td>
-        <td>タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span></td>
+        <td data-i18n="param_title_lines_desc">タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span></td>
       </tr>
       <tr>
         <td><code>img</code></td>
-        <td style="color:var(--c-muted);">（設定画面の値）</td>
-        <td>記事に画像がない場合のフォールバック画像URL。省略すると管理画面で設定したデフォルト画像が使われます。<br><span class="val-list">例: <code>img="https://example.com/no-image.png"</code></span></td>
+        <td style="color:var(--c-muted);" data-i18n="param_img_default">（設定画面の値）</td>
+        <td data-i18n="param_img_desc">記事に画像がない場合のフォールバック画像URL。省略すると管理画面で設定したデフォルト画像が使われます。<br><span class="val-list">例: <code>img="https://example.com/no-image.png"</code></span></td>
       </tr>
     </tbody>
   </table>
@@ -641,16 +678,16 @@ a:hover { text-decoration: underline; }
 
 <!-- キャッシュについて -->
 <section class="section" style="padding-top:0;">
-  <p class="section-title">キャッシュについて</p>
-  <p class="section-sub">フィードが更新されても即反映されない場合はキャッシュが原因です。</p>
+  <p class="section-title" data-i18n="cache_title">キャッシュについて</p>
+  <p class="section-sub" data-i18n="cache_sub">フィードが更新されても即反映されない場合はキャッシュが原因です。</p>
   <div style="max-width:760px;margin:0 auto;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--radius);padding:28px;">
-    <p style="margin:0 0 12px;font-size:14px;">このプラグインはWordPressのトランジェントキャッシュを利用しています。</p>
+    <p style="margin:0 0 12px;font-size:14px;" data-i18n="cache_p1">このプラグインはWordPressのトランジェントキャッシュを利用しています。</p>
     <ul style="margin:0 0 16px;padding-left:20px;font-size:13px;color:var(--c-muted);line-height:2;">
-      <li><strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ</li>
-      <li><strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ</li>
-      <li>フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します</li>
+      <li data-i18n="cache_li1"><strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ</li>
+      <li data-i18n="cache_li2"><strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ</li>
+      <li data-i18n="cache_li3">フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します</li>
     </ul>
-    <p style="margin:0;font-size:13px;color:var(--c-muted);">
+    <p style="margin:0;font-size:13px;color:var(--c-muted);" data-i18n="cache_p2">
       <strong style="color:var(--c-text);">すぐに反映させたい場合</strong>：管理画面の <strong>設定 → Rssemble Cards → フィードステータス</strong> から各フィードのキャッシュを手動でクリアできます。または <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a> などのプラグインでトランジェントを一括削除することもできます。
     </p>
   </div>
@@ -658,40 +695,40 @@ a:hover { text-decoration: underline; }
 
 <!-- 動作環境 -->
 <section class="section" style="padding-top:0;text-align:center;">
-  <p class="section-title">動作環境</p>
+  <p class="section-title" data-i18n="req_title">動作環境</p>
   <div class="requirements">
     <span class="req-badge">PHP <strong>7.4+</strong></span>
     <span class="req-badge">WordPress <strong>6.0+</strong></span>
-    <span class="req-badge">ライセンス <strong>GPL-2.0-or-later</strong></span>
+    <span class="req-badge" data-i18n="req_license">ライセンス <strong>GPL-2.0-or-later</strong></span>
   </div>
 </section>
 
 <!-- サポート・問い合わせ -->
 <section class="section" id="support" style="padding-top:0;">
-  <p class="section-title">サポート・問い合わせ</p>
-  <p class="section-sub">お気軽にどうぞ。用途に合わせてご利用ください。</p>
+  <p class="section-title" data-i18n="support_title">サポート・問い合わせ</p>
+  <p class="section-sub" data-i18n="support_sub">お気軽にどうぞ。用途に合わせてご利用ください。</p>
   <div class="support-cards">
     <div class="support-card">
       <div class="support-card-icon">📧</div>
-      <h3>メールで問い合わせ</h3>
-      <p>設定方法のご相談や、個別のご質問はメールで受け付けています。</p>
+      <h3 data-i18n="support_email_h">メールで問い合わせ</h3>
+      <p data-i18n="support_email_p">設定方法のご相談や、個別のご質問はメールで受け付けています。</p>
       <a href="mailto:m.masaki7272@gmail.com" class="support-link">m.masaki7272@gmail.com</a>
     </div>
     <div class="support-card">
       <div class="support-card-icon">🐛</div>
-      <h3>GitHub Issues（開発者向け）</h3>
-      <p>バグ報告・機能要望はGitHub Issuesが便利です。再現手順を添えて投稿してください。</p>
-      <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds/issues" target="_blank" rel="noopener noreferrer" class="support-link">Issue を作成する →</a>
+      <h3 data-i18n="support_github_h">GitHub Issues（開発者向け）</h3>
+      <p data-i18n="support_github_p">バグ報告・機能要望はGitHub Issuesが便利です。再現手順を添えて投稿してください。</p>
+      <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds/issues" target="_blank" rel="noopener noreferrer" class="support-link" data-i18n="support_github_link">Issue を作成する →</a>
     </div>
   </div>
 </section>
 
 <!-- 寄付 -->
 <section class="section" style="padding-top:0;">
-  <p class="section-title">このプラグインが役に立ったら</p>
+  <p class="section-title" data-i18n="donate_title">このプラグインが役に立ったら</p>
   <div class="donate-box">
-    <p>開発・維持のモチベーションになります。<br>少額でも大歓迎です、ありがとうございます！</p>
-    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer" class="donate-btn">☕ 投げ銭で応援する（OFUSE）</a>
+    <p data-i18n="donate_p">開発・維持のモチベーションになります。<br>少額でも大歓迎です、ありがとうございます！</p>
+    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer" class="donate-btn" data-i18n="donate_btn">☕ 投げ銭で応援する（OFUSE）</a>
   </div>
 </section>
 
@@ -699,11 +736,11 @@ a:hover { text-decoration: underline; }
   <div class="footer-links">
     <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org</a>
     <span class="footer-sep">|</span>
-    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer">GitHub（開発者向け）</a>
+    <a href="https://github.com/m-masaki72/rssemble-cards-for-rss-feeds" target="_blank" rel="noopener noreferrer" data-i18n="footer_github">GitHub（開発者向け）</a>
     <span class="footer-sep">|</span>
-    <a href="mailto:m.masaki7272@gmail.com">お問い合わせ</a>
+    <a href="mailto:m.masaki7272@gmail.com" data-i18n="footer_contact">お問い合わせ</a>
     <span class="footer-sep">|</span>
-    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer">投げ銭</a>
+    <a href="https://ofuse.me/801de8c8" target="_blank" rel="noopener noreferrer" data-i18n="footer_donate">投げ銭</a>
   </div>
   <p style="margin:0;">Rssemble Cards for RSS Feeds — GPL-2.0-or-later</p>
 </footer>
@@ -717,7 +754,8 @@ a:hover { text-decoration: underline; }
       <h3 id="demo-modal-title"></h3>
       <p id="demo-modal-desc"></p>
       <a id="demo-modal-link" href="#" target="_blank" rel="noopener noreferrer"
-         style="display:inline-block;padding:8px 18px;background:#1a1a2e;color:#cba6f7;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;">
+         style="display:inline-block;padding:8px 18px;background:#1a1a2e;color:#cba6f7;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;"
+         data-i18n="modal_read_link">
         記事を読む →
       </a>
     </div>
@@ -725,6 +763,276 @@ a:hover { text-decoration: underline; }
 </div>
 
 <script>
+// ---- i18n ----
+const I18N = {
+  ja: {
+    nav_howto: '使い方',
+    nav_demo: 'デモ',
+    nav_params: 'パラメーター',
+    nav_support: 'サポート',
+    nav_github: 'GitHub（開発者向け）',
+    hero_sub: '複数のRSSフィードをOGP画像付きカードグリッドで美しく表示。外部サービス不要・完全自己完結型。',
+    hero_btn_wp: 'WordPress.org で入手',
+    hero_btn_howto: '使い方を見る',
+    features_title: '特徴',
+    features_sub: 'WordPressの組み込み機能だけで動作。外部APIへの依存はゼロ。',
+    feat1_h: '8種のレイアウト',
+    feat1_p: 'グリッド・リスト・カルーセル・モーダルなど、用途に合わせて選択できます。',
+    feat2_h: 'OGP画像の自動取得',
+    feat2_p: 'RSSに画像がなくてもog:imageを取得・キャッシュして表示します。',
+    feat3_h: 'レスポンシブ対応',
+    feat3_p: 'PC・タブレット・スマホで列数を自動調整。<code>responsive="0"</code>で固定も可能。',
+    feat4_h: 'トランジェントキャッシュ',
+    feat4_p: 'RSSはユーザー設定TTL、OGP画像は1ヶ月キャッシュで高速表示。',
+    feat5_h: 'マルチフィード対応',
+    feat5_p: '複数フィードを集約して日付順にソート。重複記事を自動排除。',
+    feat6_h: '外部サービス不要',
+    feat6_p: 'SimplePie・DOMDocument・WordPressトランジェントのみ使用。',
+    howto_title: '使い方',
+    howto_sub: 'WordPressの管理画面だけで完結。コーディング不要です。',
+    step1_h: 'プラグインをインストール・有効化',
+    step1_p1: 'WordPress管理画面の <strong>プラグイン → 新規追加</strong> から「Rssemble Cards」で検索し、インストール後に有効化してください。',
+    step1_p2: 'または <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">WordPress.org のプラグインページ</a> からZIPをダウンロードして <strong>プラグイン → 新規追加 → ZIPをアップロード</strong> でも導入できます。',
+    step2_h: 'フィードURLを登録する',
+    step2_p1: '管理画面の <strong>設定 → Rssemble Cards</strong> を開き、表示したいRSSフィードのURLを<strong>1行1件</strong>で入力して保存します。複数サイトを並べて登録できます。',
+    step2_note: '💡 <strong>ここで登録したURLが、ショートコードを置くすべてのページの「デフォルトフィード」になります。</strong>特定のページだけ別のフィードを表示したい場合は、ショートコードの <code style="color:var(--c-accent)">feed=</code> 属性で上書き指定できます（カンマ区切りで複数可）。<br><span style="font-size:12px;color:var(--c-muted)">管理画面: 改行区切り1行1件 ／ feed=属性: カンマ区切り</span>',
+    step2_p2: '<strong>RSSフィードURLの調べ方：</strong>',
+    step2_li1: 'WordPressサイト → サイトURLの末尾に <code style="color:var(--c-accent)">/feed/</code> を付ける（例: <code style="color:var(--c-accent)">https://example.com/feed/</code>）',
+    step2_li2: 'note → <code style="color:var(--c-accent)">https://note.com/ユーザー名/rss</code>',
+    step2_li3: 'Zenn → <code style="color:var(--c-accent)">https://zenn.dev/ユーザー名/feed</code>',
+    step2_li4: 'Qiita → <code style="color:var(--c-accent)">https://qiita.com/ユーザー名/feed</code>',
+    step2_li5: 'YouTube チャンネル → チャンネルページの「フィード」または <code style="color:var(--c-accent)">https://www.youtube.com/feeds/videos.xml?channel_id=チャンネルID</code>',
+    step3_h: 'ショートコードを投稿・固定ページに貼り付ける',
+    step3_tip1: 'ブロックエディタ（Gutenberg）の場合',
+    step3_p1: '「ショートコード」ブロックを追加して、以下を貼り付けるだけです。',
+    step3_tip2: 'クラシックエディタの場合',
+    step3_p2: 'テキストモードでショートコードをそのまま記述してください。',
+    step4_h: 'パラメーターでカスタマイズする',
+    step4_p1: '下のデモでパラメーターを試してコピーしたショートコードをそのまま貼り付けるだけで、見た目を自由に変えられます。',
+    step4_p2: '<strong>Step 2 の設定を上書き</strong>して、そのページだけ別のフィードを表示することもできます。<code>feed=</code> 属性に指定したURLが優先されます：',
+    layouts_title: '8種のレイアウト',
+    layouts_sub: '<code style="color:var(--c-accent)">type</code> パラメーターで切り替え。デモで実際の見た目を確認できます。',
+    layout_grid: '画像背景＋タイトルオーバーレイ',
+    layout_list_vertical: '上画像・下テキストカード',
+    layout_list: 'サムネイル左・テキスト右',
+    layout_text: 'テキストのみカード（説明付き）',
+    layout_text_line: '1行テキスト＋区切り線',
+    layout_image_only: '画像のみ',
+    layout_carousel: 'スライドカルーセル',
+    layout_popup_grid: 'クリックでモーダル表示',
+    demo_title: 'インタラクティブデモ',
+    demo_sub: 'パラメーターを変えてショートコードをその場でコピー。ダミーデータによる表示確認です。',
+    demo_sc_label: 'ショートコード',
+    demo_copy_btn: 'コピー',
+    demo_copy_done: 'コピーしました！',
+    demo_preview_note: '※ダミーデータによる表示サンプルです。実際のフィードはWordPress管理画面からご設定ください。',
+    ctrl_layout: 'レイアウト',
+    ctrl_columns: '列数',
+    ctrl_count: '件数',
+    ctrl_title_lines: 'タイトル行数',
+    ctrl_meta: 'メタ情報',
+    ctrl_desc: '説明文',
+    ctrl_date: '日付',
+    ctrl_site: 'サイト名',
+    ctrl_bold: 'タイトル太字',
+    ctrl_other: 'その他',
+    ctrl_responsive: 'レスポンシブ',
+    ctrl_orderby: '順序',
+    ctrl_orderby_date: '日付順',
+    ctrl_orderby_random: 'ランダム',
+    params_title: '全パラメーター一覧',
+    params_sub: 'ショートコード <code style="color:var(--c-accent)">[rssecafo]</code> で使用できるすべての属性。',
+    params_th_attr: '属性',
+    params_th_default: 'デフォルト',
+    params_th_desc: '説明・使用例',
+    param_feed_default: '（設定画面のURL）',
+    param_feed_desc: '表示するフィードURLをショートコード内で直接指定します。指定すると<strong>設定画面（Basicタブ）の登録URLを上書き</strong>します。複数URLはカンマ区切り。省略した場合は設定画面の登録URLが使われます。<br><span class="val-list">例（1件）: <code>feed="https://example.com/feed/"</code><br>例（複数）: <code>feed="https://a.com/feed/,https://b.com/feed/"</code></span>',
+    param_type_desc: '表示レイアウト。<br><span class="val-list">grid / list_vertical / list / text / text_line / image_only / carousel / popup_grid</span>',
+    param_columns_desc: '列数。<br><span class="val-list">2 / 3 / 4</span>',
+    param_count_desc: '表示件数（正の整数）。省略すると管理画面の設定値（初期値10）が使われます。',
+    param_orderby_desc: '並び順。<br><span class="val-list">date（新着順） / random（ランダム）</span>',
+    param_target_default: '（設定画面の値）',
+    param_target_desc: 'リンクの開き方。<br><span class="val-list">_self（同タブ） / _blank（新規タブ）</span>',
+    param_desc_desc: '説明文を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span>',
+    param_date_desc: '投稿日付を表示する。省略するとデフォルトで表示。非表示にしたい場合は明示的に <code>date="0"</code> と指定。<br><span class="val-list">1（表示） / 0（非表示）</span>',
+    param_site_desc: 'サイト名を表示する。<br><span class="val-list">1（表示） / 0（非表示）</span>',
+    param_bold_desc: 'タイトルを太字にする。<br><span class="val-list">1（太字） / 0（通常）</span>',
+    param_responsive_desc: 'レスポンシブ対応。0にするとPC・スマホで同じ列数になります。<br><span class="val-list">1（有効） / 0（固定）</span>',
+    param_title_lines_desc: 'タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span>',
+    param_img_default: '（設定画面の値）',
+    param_img_desc: '記事に画像がない場合のフォールバック画像URL。省略すると管理画面で設定したデフォルト画像が使われます。<br><span class="val-list">例: <code>img="https://example.com/no-image.png"</code></span>',
+    cache_title: 'キャッシュについて',
+    cache_sub: 'フィードが更新されても即反映されない場合はキャッシュが原因です。',
+    cache_p1: 'このプラグインはWordPressのトランジェントキャッシュを利用しています。',
+    cache_li1: '<strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ',
+    cache_li2: '<strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ',
+    cache_li3: 'フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します',
+    cache_p2: '<strong style="color:var(--c-text);">すぐに反映させたい場合</strong>：管理画面の <strong>設定 → Rssemble Cards → フィードステータス</strong> から各フィードのキャッシュを手動でクリアできます。または <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a> などのプラグインでトランジェントを一括削除することもできます。',
+    req_title: '動作環境',
+    req_license: 'ライセンス <strong>GPL-2.0-or-later</strong>',
+    support_title: 'サポート・問い合わせ',
+    support_sub: 'お気軽にどうぞ。用途に合わせてご利用ください。',
+    support_email_h: 'メールで問い合わせ',
+    support_email_p: '設定方法のご相談や、個別のご質問はメールで受け付けています。',
+    support_github_h: 'GitHub Issues（開発者向け）',
+    support_github_p: 'バグ報告・機能要望はGitHub Issuesが便利です。再現手順を添えて投稿してください。',
+    support_github_link: 'Issue を作成する →',
+    donate_title: 'このプラグインが役に立ったら',
+    donate_p: '開発・維持のモチベーションになります。<br>少額でも大歓迎です、ありがとうございます！',
+    donate_btn: '☕ 投げ銭で応援する（OFUSE）',
+    footer_github: 'GitHub（開発者向け）',
+    footer_contact: 'お問い合わせ',
+    footer_donate: '投げ銭',
+    modal_read_link: '記事を読む →',
+  },
+  en: {
+    nav_howto: 'How to Use',
+    nav_demo: 'Demo',
+    nav_params: 'Parameters',
+    nav_support: 'Support',
+    nav_github: 'GitHub (for Developers)',
+    hero_sub: 'Display multiple RSS feeds as a beautiful card grid with OGP images. No external services required — fully self-contained.',
+    hero_btn_wp: 'Get it on WordPress.org',
+    hero_btn_howto: 'See How It Works',
+    features_title: 'Features',
+    features_sub: 'Runs entirely on WordPress built-in functions. Zero external API dependencies.',
+    feat1_h: '8 Layout Types',
+    feat1_p: 'Grid, list, carousel, modal, and more — choose the layout that fits your needs.',
+    feat2_h: 'Auto OGP Image Fetch',
+    feat2_p: 'Even if an RSS item has no image, the plugin fetches and caches og:image automatically.',
+    feat3_h: 'Responsive Design',
+    feat3_p: 'Column count adjusts automatically for desktop, tablet, and mobile. Use <code>responsive="0"</code> to fix columns.',
+    feat4_h: 'Transient Cache',
+    feat4_p: 'RSS feeds are cached with a user-configurable TTL; OGP images are cached for one month.',
+    feat5_h: 'Multi-Feed Support',
+    feat5_p: 'Aggregate multiple feeds, sort by date, and remove duplicate posts automatically.',
+    feat6_h: 'No External Services',
+    feat6_p: 'Uses only SimplePie, DOMDocument, and WordPress Transients.',
+    howto_title: 'How to Use',
+    howto_sub: 'Everything is done through the WordPress admin panel. No coding required.',
+    step1_h: 'Install & Activate the Plugin',
+    step1_p1: 'Go to <strong>Plugins → Add New</strong> in your WordPress admin and search for "Rssemble Cards". Install and activate it.',
+    step1_p2: 'Or download the ZIP from <a href="https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/" target="_blank" rel="noopener noreferrer">the WordPress.org plugin page</a> and upload it via <strong>Plugins → Add New → Upload Plugin</strong>.',
+    step2_h: 'Register Feed URLs',
+    step2_p1: 'Go to <strong>Settings → Rssemble Cards</strong> and enter the RSS feed URLs you want to display, <strong>one per line</strong>. You can register multiple feeds.',
+    step2_note: '💡 <strong>The URLs you register here become the default feeds used on every page with [rssecafo].</strong> To display different feeds on a specific page, override them with the <code style="color:var(--c-accent)">feed=</code> shortcode attribute (comma-separated for multiple).<br><span style="font-size:12px;color:var(--c-muted)">Admin panel: one URL per line ／ feed= attribute: comma-separated</span>',
+    step2_p2: '<strong>How to find an RSS feed URL:</strong>',
+    step2_li1: 'WordPress site → append <code style="color:var(--c-accent)">/feed/</code> to the site URL (e.g. <code style="color:var(--c-accent)">https://example.com/feed/</code>)',
+    step2_li2: 'note → <code style="color:var(--c-accent)">https://note.com/username/rss</code>',
+    step2_li3: 'Zenn → <code style="color:var(--c-accent)">https://zenn.dev/username/feed</code>',
+    step2_li4: 'Qiita → <code style="color:var(--c-accent)">https://qiita.com/username/feed</code>',
+    step2_li5: 'YouTube channel → use the "Feed" link on the channel page, or <code style="color:var(--c-accent)">https://www.youtube.com/feeds/videos.xml?channel_id=CHANNEL_ID</code>',
+    step3_h: 'Add the Shortcode to a Post or Page',
+    step3_tip1: 'Block Editor (Gutenberg)',
+    step3_p1: 'Add a "Shortcode" block and paste the shortcode below.',
+    step3_tip2: 'Classic Editor',
+    step3_p2: 'Switch to Text mode and paste the shortcode directly.',
+    step4_h: 'Customize with Parameters',
+    step4_p1: 'Try the parameters in the demo below, copy the generated shortcode, and paste it into your post.',
+    step4_p2: 'To <strong>override the Step 2 settings</strong> and show a different feed on that page only, use the <code>feed=</code> attribute. It takes priority over the admin panel setting:',
+    layouts_title: '8 Layout Types',
+    layouts_sub: 'Switch with the <code style="color:var(--c-accent)">type</code> parameter. Preview each layout in the demo.',
+    layout_grid: 'Image background + title overlay',
+    layout_list_vertical: 'Image on top, text below',
+    layout_list: 'Thumbnail left, text right',
+    layout_text: 'Text-only card (with description)',
+    layout_text_line: 'Single-line text + divider',
+    layout_image_only: 'Image only',
+    layout_carousel: 'Sliding carousel',
+    layout_popup_grid: 'Click to open modal',
+    demo_title: 'Interactive Demo',
+    demo_sub: 'Tweak parameters and copy the shortcode instantly. Uses dummy data for preview.',
+    demo_sc_label: 'Shortcode',
+    demo_copy_btn: 'Copy',
+    demo_copy_done: 'Copied!',
+    demo_preview_note: '* This is a preview using dummy data. Configure your feeds in the WordPress admin panel.',
+    ctrl_layout: 'Layout',
+    ctrl_columns: 'Columns',
+    ctrl_count: 'Count',
+    ctrl_title_lines: 'Title Lines',
+    ctrl_meta: 'Meta',
+    ctrl_desc: 'Description',
+    ctrl_date: 'Date',
+    ctrl_site: 'Site Name',
+    ctrl_bold: 'Bold Title',
+    ctrl_other: 'Other',
+    ctrl_responsive: 'Responsive',
+    ctrl_orderby: 'Order',
+    ctrl_orderby_date: 'By Date',
+    ctrl_orderby_random: 'Random',
+    params_title: 'All Parameters',
+    params_sub: 'All attributes available for the <code style="color:var(--c-accent)">[rssecafo]</code> shortcode.',
+    params_th_attr: 'Attribute',
+    params_th_default: 'Default',
+    params_th_desc: 'Description / Example',
+    param_feed_default: '(from settings)',
+    param_feed_desc: 'Directly specify feed URLs in the shortcode. When set, this <strong>overrides the URLs registered in the admin panel (Basic tab)</strong>. Use commas for multiple URLs. Omit to fall back to the admin panel settings.<br><span class="val-list">Single: <code>feed="https://example.com/feed/"</code><br>Multiple: <code>feed="https://a.com/feed/,https://b.com/feed/"</code></span>',
+    param_type_desc: 'Display layout.<br><span class="val-list">grid / list_vertical / list / text / text_line / image_only / carousel / popup_grid</span>',
+    param_columns_desc: 'Number of columns.<br><span class="val-list">2 / 3 / 4</span>',
+    param_count_desc: 'Number of items to display (positive integer). Omit to use the admin panel setting (default: 10).',
+    param_orderby_desc: 'Sort order.<br><span class="val-list">date (newest first) / random</span>',
+    param_target_default: '(from settings)',
+    param_target_desc: 'How links open.<br><span class="val-list">_self (same tab) / _blank (new tab)</span>',
+    param_desc_desc: 'Show post description.<br><span class="val-list">1 (show) / 0 (hide)</span>',
+    param_date_desc: 'Show post date. Shown by default; set <code>date="0"</code> to hide.<br><span class="val-list">1 (show) / 0 (hide)</span>',
+    param_site_desc: 'Show site name.<br><span class="val-list">1 (show) / 0 (hide)</span>',
+    param_bold_desc: 'Make title bold.<br><span class="val-list">1 (bold) / 0 (normal)</span>',
+    param_responsive_desc: 'Responsive layout. Set to 0 to use the same column count on all screen sizes.<br><span class="val-list">1 (enabled) / 0 (fixed)</span>',
+    param_title_lines_desc: 'Max lines for title text (0 = unlimited).<br><span class="val-list">0–10</span>',
+    param_img_default: '(from settings)',
+    param_img_desc: 'Fallback image URL when a post has no image. Omit to use the default image set in the admin panel.<br><span class="val-list">e.g. <code>img="https://example.com/no-image.png"</code></span>',
+    cache_title: 'About Caching',
+    cache_sub: 'If feed updates are not reflected immediately, the cache is likely the cause.',
+    cache_p1: 'This plugin uses WordPress Transient Cache.',
+    cache_li1: '<strong style="color:var(--c-text);">RSS feeds</strong>: Cached with the TTL set in the admin panel (12h / 1 day / 1 week / 1 month)',
+    cache_li2: '<strong style="color:var(--c-text);">OGP images</strong>: Cached for 1 month after a successful fetch',
+    cache_li3: 'If a feed fetch fails, the stale cache is used as a fallback.',
+    cache_p2: '<strong style="color:var(--c-text);">To refresh immediately</strong>: Clear the cache for each feed manually from <strong>Settings → Rssemble Cards → Feed Status</strong> in the admin panel. You can also bulk-delete transients with a plugin like <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a>.',
+    req_title: 'Requirements',
+    req_license: 'License <strong>GPL-2.0-or-later</strong>',
+    support_title: 'Support & Contact',
+    support_sub: 'Feel free to reach out. Use whichever channel works best for you.',
+    support_email_h: 'Email',
+    support_email_p: 'For setup questions or individual inquiries, feel free to email.',
+    support_github_h: 'GitHub Issues (for Developers)',
+    support_github_p: 'For bug reports and feature requests, GitHub Issues is the best place. Please include steps to reproduce.',
+    support_github_link: 'Create an Issue →',
+    donate_title: 'If This Plugin Helped You',
+    donate_p: 'Your support keeps development going.<br>Any amount is welcome — thank you!',
+    donate_btn: '☕ Support on OFUSE',
+    footer_github: 'GitHub (for Developers)',
+    footer_contact: 'Contact',
+    footer_donate: 'Donate',
+    modal_read_link: 'Read Article →',
+  }
+};
+
+let currentLang = 'ja';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+
+  // ボタン状態
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+  });
+
+  // 機械翻訳バナー
+  document.getElementById('machine-translation-notice').hidden = (lang === 'ja');
+
+  // テキスト置換
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const text = I18N[lang][key];
+    if (text !== undefined) el.innerHTML = text;
+  });
+
+  // orderby セレクトの option は data-i18n で処理済みだが value は保持
+  buildDemo();
+}
+
+// ---- デモ ----
 const ITEMS = [
   { title: "TypeScriptの型システムを完全に理解する — ジェネリクスから条件型まで", url: "#", date: "2026/05/30", image: "https://picsum.photos/seed/ts1/640/360", site: "Zenn", desc: "TypeScriptの型システムについて、基本的なジェネリクスから高度な条件型まで徹底解説します。" },
   { title: "Next.js 15 App Router 実践ガイド — サーバーコンポーネントの使いどころ", url: "#", date: "2026/05/29", image: "https://picsum.photos/seed/next2/640/360", site: "Zenn", desc: "Next.js 15のApp Routerを使ったサーバーコンポーネントの実践的な使い方を解説。" },
@@ -858,12 +1166,13 @@ function buildCarousel(items, p) {
     return `<div class="rss-d-carousel-card"><a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>${dateH}${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}</a></div>`;
   }).join('');
   const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};`;
+  const t = I18N[currentLang];
   const html = `<div class="rss-d-carousel-wrap rss-d-type-carousel${responsiveCls}" id="${uid}" style="${style}">
-  <button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="前へ" data-target="${uid}" onclick="demoCarouselNav('${uid}',-1)">&#10094;</button>
+  <button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="${currentLang === 'ja' ? '前へ' : 'Prev'}" data-target="${uid}" onclick="demoCarouselNav('${uid}',-1)">&#10094;</button>
   <div class="rss-d-carousel-viewport">
     <div class="rss-d-carousel-track" id="${uid}-track">${cards}</div>
   </div>
-  <button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="次へ" data-target="${uid}" onclick="demoCarouselNav('${uid}',1)">&#10095;</button>
+  <button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="${currentLang === 'ja' ? '次へ' : 'Next'}" data-target="${uid}" onclick="demoCarouselNav('${uid}',1)">&#10095;</button>
 </div>`;
   setTimeout(() => demoCarouselInit(uid), 0);
   return html;
@@ -932,19 +1241,20 @@ function buildDemo() {
 
 function copyShortcode() {
   const sc = document.getElementById('sc-output').textContent;
+  const t = I18N[currentLang];
   navigator.clipboard.writeText(sc).then(() => {
     const btn = document.getElementById('sc-copy-btn');
-    btn.textContent = 'コピーしました！';
+    btn.textContent = t.demo_copy_done;
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(() => { btn.textContent = t.demo_copy_btn; btn.classList.remove('copied'); }, 2000);
   }).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = sc; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
     const btn = document.getElementById('sc-copy-btn');
-    btn.textContent = 'コピーしました！'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+    btn.textContent = t.demo_copy_done; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = t.demo_copy_btn; btn.classList.remove('copied'); }, 2000);
   });
 }
 
