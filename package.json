@@ -19,7 +19,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-2.0-or-later",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/m-masaki72/rssemble-cards-for-rss-feeds/issues"

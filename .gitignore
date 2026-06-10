@@ -5,8 +5,11 @@ tests/e2e/report/
 # PHP preview server log
 *.log
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Freemius SDK（リリースビルド時にダウンロード）
-gridify-image-cards-for-rss/freemius/
+rssemble-cards-for-rss-feeds/freemius/
 
 # PHPUnit phar（ローカル専用）
 phpunit.phar
@@ -16,10 +19,10 @@ phpunit.phar
 Thumbs.db
 
 # ビルド成果物・テスト結果
-gridify-image-cards-for-rss.zip
+rssemble-cards-for-rss-feeds.zip
 test-results/
 
 # WordPress.org directory assets（zipに含めない）
-gridify-image-cards-for-rss/assets/screenshot-*.png
-gridify-image-cards-for-rss/assets/banner-*.png
-gridify-image-cards-for-rss/assets/icon-*.png
+rssemble-cards-for-rss-feeds/assets/screenshot-*.png
+rssemble-cards-for-rss-feeds/assets/banner-*.png
+rssemble-cards-for-rss-feeds/assets/icon-*.png

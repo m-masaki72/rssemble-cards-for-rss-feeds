@@ -1,70 +1,94 @@
 # Rssemble Cards for RSS Feeds
 
-複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし。
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
+[![WordPress: 6.0+](https://img.shields.io/badge/WordPress-6.0%2B-21759b)](https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/)
+[![PHP: 7.4+](https://img.shields.io/badge/PHP-7.4%2B-777bb4)](https://www.php.net)
+[![WordPress.org](https://img.shields.io/badge/WordPress.org-active-0073aa)](https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/)
 
-## 特徴
+A WordPress plugin that fetches multiple RSS feeds and displays them as OGP image card grids. No external service dependencies — runs entirely on WordPress built-in features (SimplePie, transients, DOMDocument).
 
-- 複数フィードを統合表示（記事URLで重複排除、新着優先）
-- OGP画像の自動取得（RSS内画像 → og:image → デフォルト画像）
-- OGP取得は `curl_multi` による並列リクエスト（WPプロキシ設定・SSL検証に対応）
-- 8種類の表示タイプ（grid / list_vertical / carousel / popup_grid など）
-- WordPress FSEテーマのカラー変数（`--wp--preset--color--*`）に自動追従（非対応テーマは黒白ベースでフォールバック）
-- Freemiumモデル（無料3フィード・2列・4タイプ、Pro無制限）
-- 管理画面タブUI + プレビュー機能（デスクトップ/タブレット/スマホ幅切替）
-- レスポンシブ対応（PC: 設定列数 / タブレット: 2列 / スマホ: 1列）
-- トランジェントキャッシュ（Cron不使用）、取得失敗時はstaleフォールバック
+複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし（WordPress組み込みのSimplePie・トランジェント・DOMDocumentのみ使用）。
 
-## インストール
+---
 
-1. `rssemble-cards-for-rss-feeds` フォルダを `/wp-content/plugins/` に配置
-2. WordPress管理画面でプラグインを有効化
-3. `設定 > Rssemble Cards` でフィードURLと表示設定を入力
+## Features
 
-## ショートコード
+- Aggregates multiple RSS feeds with URL-based deduplication (newest date wins)
+- Automatic OGP image retrieval: RSS image → `og:image` → default image
+- Parallel OGP fetching via `curl_multi` (respects WP proxy settings and SSL verification)
+- 8 layout types: `grid` / `list` / `list_vertical` / `text` / `text_line` / `image_only` / `carousel` / `popup_grid`
+- Responsive layout (configurable columns on desktop, 2 on tablet, 1 on mobile)
+- FSE theme color variable support (`--wp--preset--color--*`) with fallback
+- Transient-based caching (no WP-Cron), configurable TTL (12h / 1d / 1w / 1mo)
+- Stale cache fallback when a feed fetch fails
+- Admin UI with live preview (desktop / tablet / mobile width switching)
+
+## Installation
+
+### From WordPress.org
+
+1. Go to **Plugins > Add New** and search for `Rssemble Cards for RSS Feeds`
+2. Install and activate
+3. Go to **Settings > Rssemble Cards** and configure your feed URLs
+
+### Manual
+
+1. Download the ZIP from [WordPress.org](https://wordpress.org/plugins/rssemble-cards-for-rss-feeds/) or [GitHub Releases](../../releases)
+2. Upload via **Plugins > Add New > Upload Plugin**
+3. Activate and configure
+
+## Usage
 
 ```
 [rss_display]
 [rss_display type="carousel" columns="3" count="10"]
-[rss_display type="popup_grid" feed="https://example.com/feed" desc="1" site="1"]
-[rss_display orderby="random" target="_self" img="https://example.com/default.jpg"]
+[rss_display feed="https://example.com/feed" desc="1" site="1"]
+[rss_display orderby="random" target="_self"]
 ```
 
-### パラメータ一覧
+### Shortcode Parameters
 
-| パラメータ | 値 | デフォルト | 説明 |
-|-----------|-----|---------|------|
-| `type` | grid / list_vertical / text / text_line / image_only / list / carousel / popup_grid | 設定値 | 表示タイプ |
-| `columns` | 2 / 3 / 4 | 設定値 | 列数 |
-| `count` | 1〜100 | 設定値 | 表示件数 |
-| `feed` | URL | 全フィード | 単一フィードを指定 |
-| `orderby` | date / random | 設定値 | ソート順 |
-| `target` | _blank / _self | 設定値 | リンクの開き方 |
-| `img` | URL | 設定値 | デフォルト画像URL |
-| `desc` | 0 / 1 | 設定値 | 説明文表示 |
-| `date` | 0 / 1 | 設定値 | 日付表示 |
-| `site` | 0 / 1 | 設定値 | サイト名表示 |
+| Parameter | Values | Default | Description |
+|-----------|--------|---------|-------------|
+| `type` | grid / list / list_vertical / text / text_line / image_only / carousel / popup_grid | admin setting | Layout type |
+| `columns` | 2 / 3 / 4 | admin setting | Number of columns |
+| `count` | 1–100 | admin setting | Number of items |
+| `feed` | URL(s) | all registered | Comma-separated feed URL(s) |
+| `orderby` | date / random | date | Sort order |
+| `target` | _blank / _self | admin setting | Link target |
+| `img` | URL | admin setting | Override default image URL |
+| `desc` | 0 / 1 | admin setting | Show description |
+| `date` | 0 / 1 | 1 | Show date |
+| `site` | 0 / 1 | 0 | Show site name |
+| `bold` | 0 / 1 | 0 | Bold title |
+| `responsive` | 0 / 1 | 1 | Responsive columns |
+| `title_lines` | 1 / 2 / 3 | admin setting | Max title lines |
 
-## 無料 / Pro
+## Development
 
-| 機能 | 無料 | Pro |
-|------|------|-----|
-| フィード数 | 3件 | 無制限 |
-| 列数 | 2列のみ | 2〜4列 |
-| 表示タイプ | grid / list_vertical / text / text_line | 全8種 |
-| ソート順 | date のみ | date / random |
-| 表示件数 | 20件まで | 100件まで |
-| キャッシュTTL | 1日固定 | 12h〜1ヶ月 |
+```bash
+# PHP unit tests (no PHPUnit required — custom runner)
+php tests/run.php
 
-## 管理画面
+# Local preview server (no WordPress required)
+php -S localhost:8080 preview/router.php
 
-- **基本設定** — フィードURL・キャッシュ時間・デフォルト画像・リンク設定
-- **表示設定** — 表示タイプ・列数・件数・ソート順・日付/サイト名/説明文のデフォルト値
-- **プレビュー** — デバイス幅切替（PC/タブレット/スマホ）、タイプ・列数・件数をAJAXでリアルタイムプレビュー
-- **フィード状態** — 各フィードの最終取得時刻・件数・エラー状態
-- **使い方** — ショートコード一覧
+# Build ZIP for submission
+npm run zip
 
-## 動作環境
+# Compile .po → .mo
+node scripts/po2mo.js
+
+# Regenerate wp-assets images (requires Playwright)
+node scripts/generate-assets.js
+```
+
+### Requirements
 
 - PHP 7.4+
 - WordPress 6.0+
-- GPLv2 or later
+- Node.js (for build scripts)
+
+## License
+
+[GNU General Public License v2.0 or later](./LICENSE)
