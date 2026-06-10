@@ -273,7 +273,7 @@ class RSSECAFO_Admin {
 
 		$html = do_shortcode(
 			sprintf(
-				'[rss_display type="%s" columns="%d" count="%d" responsive="%s" target="%s" desc="%s" date="%s" site="%s" bold="%s" title_lines="%d"]',
+				'[rssecafo type="%s" columns="%d" count="%d" responsive="%s" target="%s" desc="%s" date="%s" site="%s" bold="%s" title_lines="%d"]',
 				esc_attr( $type ),
 				$columns,
 				$count,

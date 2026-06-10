@@ -40,10 +40,10 @@ A WordPress plugin that fetches multiple RSS feeds and displays them as OGP imag
 ## Usage
 
 ```
-[rss_display]
-[rss_display type="carousel" columns="3" count="10"]
-[rss_display feed="https://example.com/feed" desc="1" site="1"]
-[rss_display orderby="random" target="_self"]
+[rssecafo]
+[rssecafo type="carousel" columns="3" count="10"]
+[rssecafo feed="https://example.com/feed" desc="1" site="1"]
+[rssecafo orderby="random" target="_self"]
 ```
 
 ### Shortcode Parameters
