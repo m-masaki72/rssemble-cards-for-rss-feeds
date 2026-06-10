@@ -322,7 +322,7 @@ class RSSECAFO_Shortcode {
 		$target_attr    = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-carousel-wrap<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-carousel-wrap rss-d-type-carousel<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
 			<button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="Previous" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
 			<div class="rss-d-carousel-viewport">
 				<div class="rss-d-carousel-track">

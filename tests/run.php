@@ -91,7 +91,7 @@ function make_item( array $override = [] ): array {
 $ogp_fetcher_stub = new class {
 	public function get_images( array $urls ): array { return []; }
 };
-$fm        = new RSSECAFO_Feed_Manager( $ogp_fetcher_stub );
+$fm        = new RSSECAFO_Feed_Manager();
 $ref_dedup = new ReflectionMethod( RSSECAFO_Feed_Manager::class, 'deduplicate' );
 $ref_dedup->setAccessible( true );
 
@@ -405,6 +405,11 @@ assert_contains( 'rss-d-type-text_line', $html_text_line, 'type=text_line のと
 section( 'RSSECAFO_Shortcode::render() — carousel タイプ' );
 
 $sc_carousel = make_sc( [ make_item(), make_item( [ 'url' => 'https://example.com/article/2', 'title' => '記事2' ] ) ] );
+$html_carousel = render_sc( $sc_carousel, [ 'type' => 'carousel' ] );
+assert_contains( 'rss-d-type-carousel', $html_carousel, 'type=carousel のとき rss-d-type-carousel クラスが出力される' );
+assert_contains( 'rss-d-carousel-wrap', $html_carousel, 'carousel: rss-d-carousel-wrap が出力される' );
+assert_contains( 'rss-d-carousel-prev', $html_carousel, 'carousel: prev ボタンが出力される' );
+assert_contains( 'rss-d-carousel-next', $html_carousel, 'carousel: next ボタンが出力される' );
 
 // -----------------------------------------------------------------------
 // popup_grid タイプ テスト
