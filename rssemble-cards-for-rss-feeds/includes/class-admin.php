@@ -759,8 +759,10 @@ class RSSECAFO_Admin {
 							<ul>
 								<li><?php esc_html_e( '8種類のレイアウト（grid / list / carousel など）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( '複数フィードの集約・重複排除', 'rssemble-cards-for-rss-feeds' ); ?></li>
-								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ', 'rssemble-cards-for-rss-feeds' ); ?></li>
+								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ（curl_multi 並行取得）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( 'レスポンシブ対応（PC/タブレット/スマホ）', 'rssemble-cards-for-rss-feeds' ); ?></li>
+								<li><?php esc_html_e( 'FSEテーマのカラー変数（--wp--preset--color--*）対応', 'rssemble-cards-for-rss-feeds' ); ?></li>
+								<li><?php esc_html_e( '管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( '外部サービス依存なし（WordPress組み込み機能のみ）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 							</ul>
 						</div>

@@ -109,6 +109,17 @@ scripts/
 - フロントエンドCSSクラス名 `rss-d-*` はプレフィックス（`rssecafo_`）とは別体系。古い命名ではなく現行仕様。
 - `wp-assets/` のバナー・アイコン画像はコード変更時に自動更新されない。変更後は `node scripts/generate-assets.js` で手動再生成が必要。
 
+## 機能追加・変更時のチェックリスト
+
+プラグインの機能を追加・変更したときは以下をすべて更新すること：
+
+1. `readme.txt` / `readme-ja.txt` — Features・Changelog セクション
+2. `includes/class-admin.php` — About タブの「主な機能」リスト（`rss-d-about-card` 内 `<ul>`）
+3. `languages/rssemble-cards-for-rss-feeds-ja.po` — 新規文字列を追記し `node scripts/po2mo.js` で `.mo` を再コンパイル
+4. `docs/index.html` — 特徴セクション・パラメーター一覧（docs は WordPress.org のランディングページ）
+
+バージョンは `rssemble-cards-for-rss-feeds.php`・`package.json`・`readme.txt`・`readme-ja.txt` の4ファイルを同時に上げること。
+
 ## WordPress.org 提出
 
 提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  

@@ -504,3 +504,15 @@ msgstr "管理画面未登録のURLも表示可能（Feed Statusには表示さ�
 #: includes/class-admin.php
 msgid "When both are specified, the shortcode feed= attribute takes priority. If feed= is omitted, the URLs from the Basic tab are used."
 msgstr "両方が指定された場合はショートコードの feed= 属性が優先されます。feed= を省略した場合は Basicタブの登録URLが使われます。"
+
+#: includes/class-admin.php
+msgid "OGP画像の自動取得・キャッシュ（curl_multi 並行取得）"
+msgstr "OGP画像の自動取得・キャッシュ（curl_multi 並行取得）"
+
+#: includes/class-admin.php
+msgid "FSEテーマのカラー変数（--wp--preset--color--*）対応"
+msgstr "FSEテーマのカラー変数（--wp--preset--color--*）対応"
+
+#: includes/class-admin.php
+msgid "管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）"
+msgstr "管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）"
