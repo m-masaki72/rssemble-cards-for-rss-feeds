@@ -88,9 +88,6 @@ function make_item( array $override = [] ): array {
 // RSSECAFO_Feed_Manager: deduplicate テスト
 // -----------------------------------------------------------------------
 
-$ogp_fetcher_stub = new class {
-	public function get_images( array $urls ): array { return []; }
-};
 $fm        = new RSSECAFO_Feed_Manager();
 $ref_dedup = new ReflectionMethod( RSSECAFO_Feed_Manager::class, 'deduplicate' );
 $ref_dedup->setAccessible( true );
@@ -499,7 +496,7 @@ $wrong_domain_found = false;
 $wrong_domain_file  = '';
 foreach ( $php_files as $f ) {
 	$src = file_get_contents( $f );
-	if ( preg_match( '/(?:esc_html__|esc_attr__|esc_html_e|_e|__)\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*[\'"](?!rssemble-cards-for-rss-feeds)[^\'"]+[\'"]\s*\)/', $src ) ) {
+	if ( preg_match( '/(?:esc_html__|esc_attr__|esc_html_e|_e|__)\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*[\'"](?!rssemble-cards-for-rss-feeds)[^\'"]+[\'"]\s*\)/s', $src ) ) {
 		$wrong_domain_found = true;
 		$wrong_domain_file  = basename( $f );
 		break;

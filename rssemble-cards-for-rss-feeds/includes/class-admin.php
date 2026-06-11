@@ -202,6 +202,7 @@ class RSSECAFO_Admin {
 			: array();
 
 		update_option( RSSECAFO_OPTION, $this->sanitize( $input ) );
+		RSSECAFO_Plugin::reset_settings_cache();
 
 		wp_safe_redirect(
 			add_query_arg(
@@ -262,7 +263,7 @@ class RSSECAFO_Admin {
 		$columns     = in_array( $columns, array( 2, 3, 4 ), true ) ? $columns : 3;
 		$count       = isset( $_POST['count'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['count'] ) ) ) : 6;
 		$count       = min( max( 1, $count ), 100 );
-		$responsive  = isset( $_POST['responsive'] ) && '0' === $_POST['responsive'] ? '0' : '1';
+		$responsive  = isset( $_POST['responsive'] ) && '0' === sanitize_text_field( wp_unslash( $_POST['responsive'] ) ) ? '0' : '1';
 		$new_tab     = ! empty( $_POST['new_tab'] ) ? '1' : '0';
 		$show_desc   = ! empty( $_POST['show_desc'] ) ? '1' : '0';
 		$show_date   = ! empty( $_POST['show_date'] ) ? '1' : '0';
