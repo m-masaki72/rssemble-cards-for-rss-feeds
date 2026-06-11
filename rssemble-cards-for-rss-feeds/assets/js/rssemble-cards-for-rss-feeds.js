@@ -73,6 +73,14 @@
 		var btnClose   = modal.querySelector( '.rss-d-modal-close' );
 		var lastFocus  = null;
 
+		var FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+		function getFocusables() {
+			return Array.prototype.slice.call( modal.querySelectorAll( FOCUSABLE ) ).filter( function ( el ) {
+				return ! el.disabled && ! el.closest( '[hidden]' );
+			} );
+		}
+
 		function openModal( trigger ) {
 			lastFocus          = trigger;
 			modalImg.src       = trigger.dataset.image || '';
@@ -115,8 +123,24 @@
 		} );
 
 		document.addEventListener( 'keydown', function ( e ) {
-			if ( ! modal.hidden && ( e.key === 'Escape' || e.key === 'Esc' ) ) {
+			if ( modal.hidden ) { return; }
+
+			if ( e.key === 'Escape' || e.key === 'Esc' ) {
 				closeModal();
+				return;
+			}
+
+			// フォーカストラップ: Tab キーをモーダル内に閉じ込める。
+			if ( e.key === 'Tab' ) {
+				var focusables = getFocusables();
+				if ( focusables.length === 0 ) { e.preventDefault(); return; }
+				var first = focusables[ 0 ];
+				var last  = focusables[ focusables.length - 1 ];
+				if ( e.shiftKey ) {
+					if ( document.activeElement === first ) { e.preventDefault(); last.focus(); }
+				} else {
+					if ( document.activeElement === last )  { e.preventDefault(); first.focus(); }
+				}
 			}
 		} );
 	}

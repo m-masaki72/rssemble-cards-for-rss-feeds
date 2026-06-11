@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'RSSECAFO_VERSION', '1.0.0' );
+define( 'RSSECAFO_VERSION', '1.0.1' );
 define( 'RSSECAFO_FILE', __FILE__ );
 define( 'RSSECAFO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RSSECAFO_URL', plugin_dir_url( __FILE__ ) );

@@ -54,7 +54,9 @@ function is_wp_error($thing) { return $thing instanceof WP_Error; }
 function esc_url_raw($url) { return filter_var(trim($url), FILTER_SANITIZE_URL) ?: ''; }
 function esc_url($url)     { return htmlspecialchars(trim($url), ENT_QUOTES, 'UTF-8'); }
 function esc_attr($s)      { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+function esc_attr__($text, $domain = 'default') { return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8'); }
 function esc_html($s)      { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+function current_user_can($cap) { return false; }
 function wp_strip_all_tags($s) { return strip_tags((string)$s); }
 function html_entity_decode_wp($s) { return html_entity_decode((string)$s, ENT_QUOTES, 'UTF-8'); }
 

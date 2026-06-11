@@ -24,8 +24,27 @@ class RSSECAFO_OGP_Fetcher {
 	/** OGP cache duration (fixed 1 month). */
 	const CACHE_TTL = MONTH_IN_SECONDS;
 
-	/** HTTP timeout in seconds. */
+	/** HTTP timeout in seconds (curl_multi parallel). */
 	const TIMEOUT = 5;
+
+	/** HTTP timeout for the serial wp_remote_get fallback. */
+	const TIMEOUT_SERIAL = 2;
+
+	/** Maximum URLs fetched serially when curl_multi is unavailable. */
+	const SERIAL_FETCH_LIMIT = 5;
+
+	/**
+	 * Returns the WordPress user-agent string for HTTP requests.
+	 *
+	 * @return string
+	 */
+	private static function user_agent() {
+		static $ua = null;
+		if ( null === $ua ) {
+			$ua = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
+		}
+		return $ua;
+	}
 
 	/**
 	 * Returns the OGP image URL for a single article URL.
@@ -73,11 +92,17 @@ class RSSECAFO_OGP_Fetcher {
 		}
 
 		if ( ! function_exists( 'curl_multi_init' ) ) {
-			// Serial fallback when curl_multi is unavailable.
-			foreach ( $to_fetch as $url ) {
+			// Serial fallback: cap at SERIAL_FETCH_LIMIT to avoid blocking the request for too long.
+			$serial_batch = array_slice( $to_fetch, 0, self::SERIAL_FETCH_LIMIT );
+			foreach ( $serial_batch as $url ) {
 				$image = $this->fetch_ogp_image( $url );
 				set_transient( $keys[ $url ], $image, self::CACHE_TTL );
 				$results[ $url ] = $image;
+			}
+			// URLs beyond the limit get a negative cache so they are not retried every request.
+			foreach ( array_slice( $to_fetch, self::SERIAL_FETCH_LIMIT ) as $url ) {
+				set_transient( $keys[ $url ], '', self::CACHE_TTL );
+				$results[ $url ] = '';
 			}
 			return $results;
 		}
@@ -89,7 +114,7 @@ class RSSECAFO_OGP_Fetcher {
 
 		$ssl_verify = (bool) apply_filters( 'https_ssl_verify', true );
 		$ca_cert    = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
-		$user_agent = 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' );
+		$user_agent = self::user_agent();
 		$proxy      = new WP_HTTP_Proxy();
 
 		foreach ( $to_fetch as $url ) {
@@ -174,10 +199,10 @@ class RSSECAFO_OGP_Fetcher {
 		$response = wp_remote_get(
 			$url,
 			array(
-				'timeout'     => self::TIMEOUT,
+				'timeout'     => self::TIMEOUT_SERIAL,
 				'redirection' => 3,
 				'sslverify'   => (bool) apply_filters( 'https_ssl_verify', true ),
-				'user-agent'  => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ),
+				'user-agent'  => self::user_agent(),
 				'headers'     => array(
 					'Accept' => 'text/html,application/xhtml+xml',
 				),
@@ -213,7 +238,11 @@ class RSSECAFO_OGP_Fetcher {
 	 * @return string Image URL, or '' if not found.
 	 */
 	private function parse_og_image( $html ) {
-		if ( ! class_exists( 'DOMDocument' ) ) {
+		static $dom_available = null;
+		if ( null === $dom_available ) {
+			$dom_available = class_exists( 'DOMDocument' );
+		}
+		if ( ! $dom_available ) {
 			return '';
 		}
 

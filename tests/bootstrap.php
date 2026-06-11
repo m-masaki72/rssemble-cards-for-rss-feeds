@@ -13,10 +13,12 @@ define( 'RSSECAFO_URL', 'http://localhost/wp-content/plugins/rssemble-cards-for-
 function esc_url_raw( $url ) { return $url; }
 function esc_url( $url ) { return htmlspecialchars( $url, ENT_QUOTES ); }
 function esc_attr( $v ) { return htmlspecialchars( (string) $v, ENT_QUOTES ); }
+function esc_attr__( $text, $domain = 'default' ) { return htmlspecialchars( $text, ENT_QUOTES ); }
 function esc_html( $v ) { return htmlspecialchars( (string) $v ); }
 function esc_html__( $text, $domain = 'default' ) { return $text; }
 function esc_html_e( $text, $domain = 'default' ) { echo $text; }
 function __( $text, $domain = 'default' ) { return $text; }
+function current_user_can( $cap ) { return false; }
 function wp_strip_all_tags( $s ) { return strip_tags( (string) $s ); }
 function absint( $v ) { return abs( (int) $v ); }
 function shortcode_atts( array $pairs, $atts, $shortcode = '' ): array {

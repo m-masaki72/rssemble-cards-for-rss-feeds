@@ -27,6 +27,9 @@ class RSSECAFO_Feed_Manager {
 	/** Maximum items fetched per feed. */
 	const MAX_ITEMS_PER_FEED = 24;
 
+	/** Per-request in-memory cache to avoid redundant transient reads. */
+	private static $payload_cache = array();
+
 	/**
 	 * Constructor.
 	 */
@@ -132,6 +135,10 @@ class RSSECAFO_Feed_Manager {
 	 * @return array { fetched:int, items:array, count:int, error:bool }
 	 */
 	public function get_feed_payload( $feed_url ) {
+		if ( isset( self::$payload_cache[ $feed_url ] ) ) {
+			return self::$payload_cache[ $feed_url ];
+		}
+
 		$key = self::CACHE_PREFIX . md5( $feed_url );
 		$ttl = $this->get_ttl();
 		$now = time();
@@ -141,6 +148,7 @@ class RSSECAFO_Feed_Manager {
 
 		// Return cached payload if still fresh.
 		if ( $has_cache && ( $now - $payload['fetched'] ) < $ttl ) {
+			self::$payload_cache[ $feed_url ] = $payload;
 			return $payload;
 		}
 
@@ -155,6 +163,7 @@ class RSSECAFO_Feed_Manager {
 				'error'   => false,
 			);
 			set_transient( $key, $payload, self::STORE_TTL );
+			self::$payload_cache[ $feed_url ] = $payload;
 
 			return $payload;
 		}
@@ -163,17 +172,20 @@ class RSSECAFO_Feed_Manager {
 		// The transient is intentionally not overwritten so stale data persists until STORE_TTL expires.
 		if ( $has_cache ) {
 			$payload['error'] = true;
+			self::$payload_cache[ $feed_url ] = $payload;
 
 			return $payload;
 		}
 
 		// No cache and fetch failed.
-		return array(
+		$payload = array(
 			'fetched' => $now,
 			'items'   => array(),
 			'count'   => 0,
 			'error'   => true,
 		);
+		self::$payload_cache[ $feed_url ] = $payload;
+		return $payload;
 	}
 
 	/**
@@ -183,10 +195,6 @@ class RSSECAFO_Feed_Manager {
 	 * @return array|false
 	 */
 	private function fetch_and_normalize( $feed_url ) {
-		if ( ! function_exists( 'fetch_feed' ) ) {
-			include_once ABSPATH . WPINC . '/feed.php';
-		}
-
 		// Disable SimplePie's own cache; this plugin manages caching via transients.
 		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'zero_lifetime' ) );
 		$feed = fetch_feed( $feed_url );

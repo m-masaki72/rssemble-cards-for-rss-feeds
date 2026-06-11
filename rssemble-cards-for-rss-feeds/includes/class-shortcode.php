@@ -83,10 +83,7 @@ class RSSECAFO_Shortcode {
 		// Columns: only 2/3/4 are valid.
 		$columns = (int) $atts['columns'];
 		if ( ! in_array( $columns, array( 2, 3, 4 ), true ) ) {
-			$columns = (int) $settings['columns'];
-			if ( ! in_array( $columns, array( 2, 3, 4 ), true ) ) {
-				$columns = 3;
-			}
+			$columns = 3;
 		}
 
 		// Item count.
@@ -115,7 +112,8 @@ class RSSECAFO_Shortcode {
 		}
 
 		if ( empty( $feeds ) ) {
-			return '';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return current_user_can( 'manage_options' ) ? '<!-- rssecafo: no feeds configured -->' : '';
 		}
 
 		// Link target: shortcode attribute overrides admin setting.
@@ -127,12 +125,10 @@ class RSSECAFO_Shortcode {
 
 		$items = $this->feed_manager->get_items( $feeds, $count, $orderby );
 		if ( empty( $items ) ) {
-			return '';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return current_user_can( 'manage_options' ) ? '<!-- rssecafo: no items returned (check feed URLs and cache) -->' : '';
 		}
 
-		if ( ! wp_style_is( 'rssemble-cards-for-rss-feeds', 'registered' ) ) {
-			wp_register_style( 'rssemble-cards-for-rss-feeds', RSSECAFO_URL . 'assets/css/rssemble-cards-for-rss-feeds.css', array(), RSSECAFO_VERSION );
-		}
 		wp_enqueue_style( 'rssemble-cards-for-rss-feeds' );
 		wp_enqueue_script( 'rssemble-cards-for-rss-feeds' );
 
@@ -187,8 +183,8 @@ class RSSECAFO_Shortcode {
 			}
 			$item['_image']      = $image;
 			$item['_date_label'] = ( $show_date && $item['timestamp'] ) ? date_i18n( $date_format, $item['timestamp'] ) : '';
-			$item['_desc_text']  = $show_desc ? ( $item['desc'] ?? '' ) : '';
-			$item['_site_name']  = $show_site ? ( $item['site'] ?? '' ) : '';
+			$item['_desc_text']  = $show_desc ? $item['desc'] : '';
+			$item['_site_name']  = $show_site ? $item['site'] : '';
 			$resolved[]          = $item;
 		}
 		return $resolved;
@@ -323,7 +319,7 @@ class RSSECAFO_Shortcode {
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
 		<div class="rss-d-carousel-wrap rss-d-type-carousel<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
-			<button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="Previous" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
+			<button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="<?php echo esc_attr__( 'Previous', 'rssemble-cards-for-rss-feeds' ); ?>" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
 			<div class="rss-d-carousel-viewport">
 				<div class="rss-d-carousel-track">
 					<?php foreach ( $items as $item ) : ?>
@@ -349,7 +345,7 @@ class RSSECAFO_Shortcode {
 					<?php endforeach; ?>
 				</div>
 			</div>
-			<button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="Next" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
+			<button type="button" class="rss-d-carousel-btn rss-d-carousel-next" aria-label="<?php echo esc_attr__( 'Next', 'rssemble-cards-for-rss-feeds' ); ?>" data-target="<?php echo esc_attr( $uid ); ?>">&#10095;</button>
 		</div>
 		<?php
 	}
@@ -407,9 +403,9 @@ class RSSECAFO_Shortcode {
 			<?php endforeach; ?>
 		</div>
 
-		<div class="rss-d-modal-overlay" id="<?php echo esc_attr( $uid . '-modal' ); ?>" role="dialog" aria-modal="true" aria-label="Article detail" hidden>
+		<div class="rss-d-modal-overlay" id="<?php echo esc_attr( $uid . '-modal' ); ?>" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Article detail', 'rssemble-cards-for-rss-feeds' ); ?>" hidden>
 			<div class="rss-d-modal">
-				<button class="rss-d-modal-close" type="button" aria-label="Close">&times;</button>
+				<button class="rss-d-modal-close" type="button" aria-label="<?php echo esc_attr__( 'Close', 'rssemble-cards-for-rss-feeds' ); ?>">&times;</button>
 				<img class="rss-d-modal-img" src="" alt="" />
 				<div class="rss-d-modal-body">
 					<p class="rss-d-modal-meta">
@@ -418,7 +414,7 @@ class RSSECAFO_Shortcode {
 					</p>
 					<h2 class="rss-d-modal-title"></h2>
 					<p class="rss-d-modal-desc"></p>
-					<a class="rss-d-modal-link button" href="#">Read article &rarr;</a>
+					<a class="rss-d-modal-link button" href="#"><?php echo esc_html__( 'Read article', 'rssemble-cards-for-rss-feeds' ); ?> &rarr;</a>
 				</div>
 			</div>
 		</div>

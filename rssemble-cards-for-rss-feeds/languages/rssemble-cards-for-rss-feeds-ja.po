@@ -516,3 +516,23 @@ msgstr "FSEテーマのカラー変数（--wp--preset--color--*）対応"
 #: includes/class-admin.php
 msgid "管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）"
 msgstr "管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）"
+
+#: includes/class-shortcode.php
+msgid "Previous"
+msgstr "前へ"
+
+#: includes/class-shortcode.php
+msgid "Next"
+msgstr "次へ"
+
+#: includes/class-shortcode.php
+msgid "Article detail"
+msgstr "記事詳細"
+
+#: includes/class-shortcode.php
+msgid "Close"
+msgstr "閉じる"
+
+#: includes/class-shortcode.php
+msgid "Read article"
+msgstr "記事を読む"
