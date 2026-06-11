@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,13 +18,16 @@ Key features:
 
 * Aggregates multiple RSS feeds with URL-based deduplication (newest date wins)
 * Automatic OGP image retrieval (priority: media:content → enclosure → og:image → default image)
+* Parallel OGP fetching via curl_multi (respects WP proxy settings and SSL verification)
 * 8 layout types: grid, list, list_vertical, text, text_line, image_only, carousel, popup_grid
 * Responsive layout (3 columns on desktop, 2 on tablet, 1 on mobile — configurable)
+* FSE theme color variable support (--wp--preset--color--*) with fallback
 * Hover zoom + shadow effect on cards
 * Transient-based caching (no WP-Cron required)
 * Configurable RSS cache duration (12 hours / 1 day / 1 week / 1 month)
 * OGP image URL cached for 1 month (includes negative cache for failed fetches)
 * Stale cache fallback when a feed fetch fails
+* Admin UI with live preview (desktop / tablet / mobile width switching)
 * Compatible with object cache (Redis, Memcached) and Cloudflare
 
 == Installation ==
@@ -38,13 +41,13 @@ Key features:
 
 Basic:
 
-`[rss_display]`
+`[rssecafo]`
 
 With parameters:
 
-`[rss_display columns="4" count="8"]`
-`[rss_display columns="2" count="6" feed="https://example.com/feed"]`
-`[rss_display orderby="random" target="_self"]`
+`[rssecafo columns="4" count="8"]`
+`[rssecafo columns="2" count="6" feed="https://example.com/feed"]`
+`[rssecafo orderby="random" target="_self"]`
 
 Parameter reference:
 
@@ -82,6 +85,12 @@ No. Feeds are fetched on demand when the shortcode runs and the cache is missing
 2. Admin settings screen.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fixed: Shortcode name in readme (was `[rss_display]`, now correctly `[rssecafo]`).
+* Improved: Admin help text and Usage tab now clarify the difference between admin-panel feed registration and the `feed=` shortcode attribute.
+* Code: Removed dead `data-i18n` attributes on child elements inside i18n-translated parents (docs page).
+* Code: Admin notice markup refactored to use shared CSS class instead of inline styles.
 
 = 1.0.0 =
 * Initial release.

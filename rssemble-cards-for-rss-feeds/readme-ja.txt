@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,13 +18,16 @@ Rssemble Cards for RSS Feeds は、複数のRSSフィードを取得し、OGP画
 
 * 複数フィードの集約・URL重複排除（同一URLは新しい日付を優先）
 * OGP画像の自動取得（優先順位: media:content → enclosure → og:image → デフォルト画像）
+* curl_multi による並行OGP取得（WPプロキシ設定・SSL検証に対応）
 * 8種類の表示タイプ: grid / list / list_vertical / text / text_line / image_only / carousel / popup_grid
 * レスポンシブレイアウト（PC: 3列、タブレット: 2列、スマホ: 1列 ― 設定変更可）
+* FSTテーマのカラー変数（--wp--preset--color--*）サポート（フォールバックあり）
 * カードのホバーズームとシャドウエフェクト
 * トランジェントベースのキャッシュ（WP-Cron不要）
 * RSSキャッシュ期間の設定（12時間 / 1日 / 1週間 / 1ヶ月）
 * OGP画像URLは1ヶ月固定キャッシュ（取得失敗のネガティブキャッシュも含む）
 * フィード取得失敗時のスタレキャッシュフォールバック
+* 管理画面ライブプレビュー（デスクトップ / タブレット / モバイル幅切替）
 * オブジェクトキャッシュ（Redis、Memcached）およびCloudflare対応
 
 == インストール ==
@@ -38,13 +41,13 @@ Rssemble Cards for RSS Feeds は、複数のRSSフィードを取得し、OGP画
 
 基本:
 
-`[rss_display]`
+`[rssecafo]`
 
 パラメーター指定:
 
-`[rss_display columns="4" count="8"]`
-`[rss_display columns="2" count="6" feed="https://example.com/feed"]`
-`[rss_display orderby="random" target="_self"]`
+`[rssecafo columns="4" count="8"]`
+`[rssecafo columns="2" count="6" feed="https://example.com/feed"]`
+`[rssecafo orderby="random" target="_self"]`
 
 パラメーター一覧:
 
@@ -82,6 +85,12 @@ RSSフィードに画像が含まれておらず、記事の og:image も取得�
 2. 管理画面の設定画面。
 
 == 変更履歴 ==
+
+= 1.0.1 =
+* 修正: readme のショートコード名が古い `[rss_display]` のままだったのを `[rssecafo]` に修正。
+* 改善: 管理画面のヒントテキストと使い方タブで、管理画面登録と `feed=` 属性の使い分けを明確化。
+* コード: docsページのi18n実装を整理（デッドアトリビュート除去・option要素のtextContent化）。
+* コード: 管理画面のインラインスタイルをCSSクラスに整理。
 
 = 1.0.0 =
 * 初回リリース。

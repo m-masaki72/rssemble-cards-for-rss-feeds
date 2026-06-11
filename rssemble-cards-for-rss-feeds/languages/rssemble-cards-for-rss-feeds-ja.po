@@ -490,8 +490,8 @@ msgid "Comma-separated, multiple URLs supported"
 msgstr "カンマ区切りで複数指定可"
 
 #: includes/class-admin.php
-msgid "<code>%s</code> alone is enough"
-msgstr "<code>%s</code> だけで表示できます"
+msgid "alone is enough"
+msgstr "だけで表示できます"
 
 #: includes/class-admin.php
 msgid "Feed fetch status visible in Feed Status tab"

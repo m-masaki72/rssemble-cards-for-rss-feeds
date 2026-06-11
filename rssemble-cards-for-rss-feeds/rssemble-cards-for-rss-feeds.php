@@ -3,7 +3,7 @@
  * Plugin Name:       Rssemble Cards for RSS Feeds
  * Plugin URI:        https://rssemble-cards-for-rss-feeds.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Masaki Mori
