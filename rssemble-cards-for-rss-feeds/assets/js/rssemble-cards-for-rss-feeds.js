@@ -7,6 +7,9 @@
 	// ---- カルーセル ----
 
 	function initCarousel( wrap ) {
+		if ( wrap.dataset.rssInit ) { return; }
+		wrap.dataset.rssInit = '1';
+
 		var track   = wrap.querySelector( '.rss-d-carousel-track' );
 		var cards   = wrap.querySelectorAll( '.rss-d-carousel-card' );
 		var btnPrev = wrap.querySelector( '.rss-d-carousel-prev' );
@@ -17,6 +20,8 @@
 		}
 
 		var current = 0;
+		var ac      = typeof AbortController !== 'undefined' ? new AbortController() : null;
+		var signal  = ac ? { signal: ac.signal } : {};
 
 		function getVisible() {
 			return parseInt( getComputedStyle( wrap ).getPropertyValue( '--rss-d-columns' ) || '3', 10 );
@@ -31,27 +36,35 @@
 			btnNext.disabled       = ( current >= max );
 		}
 
-		btnPrev.addEventListener( 'click', function () { goTo( current - 1 ); } );
-		btnNext.addEventListener( 'click', function () { goTo( current + 1 ); } );
+		btnPrev.addEventListener( 'click', function () { goTo( current - 1 ); }, signal );
+		btnNext.addEventListener( 'click', function () { goTo( current + 1 ); }, signal );
 
 		// タッチスワイプ。
 		var touchStartX = 0;
 		wrap.addEventListener( 'touchstart', function ( e ) {
 			touchStartX = e.touches[0].clientX;
-		}, { passive: true } );
+		}, ac ? { passive: true, signal: ac.signal } : { passive: true } );
 		wrap.addEventListener( 'touchend', function ( e ) {
 			var diff = touchStartX - e.changedTouches[0].clientX;
 			if ( Math.abs( diff ) > 40 ) {
 				goTo( diff > 0 ? current + 1 : current - 1 );
 			}
-		}, { passive: true } );
+		}, ac ? { passive: true, signal: ac.signal } : { passive: true } );
 
 		// リサイズ時に位置を補正（デバウンス150ms）。
 		var resizeTimer;
 		window.addEventListener( 'resize', function () {
 			clearTimeout( resizeTimer );
 			resizeTimer = setTimeout( function () { goTo( current ); }, 150 );
-		} );
+		}, signal );
+
+		// ノードが DOM から切り離されたときにリスナーを解放（MutationObserver）。
+		if ( ac && typeof MutationObserver !== 'undefined' && wrap.parentNode ) {
+			var mo = new MutationObserver( function () {
+				if ( ! wrap.isConnected ) { ac.abort(); mo.disconnect(); }
+			} );
+			mo.observe( wrap.parentNode, { childList: true } );
+		}
 
 		goTo( 0 );
 	}
@@ -59,6 +72,9 @@
 	// ---- ポップアップ（モーダル） ----
 
 	function initPopupGrid( grid ) {
+		if ( grid.dataset.rssInit ) { return; }
+		grid.dataset.rssInit = '1';
+
 		var modal = document.getElementById( grid.id + '-modal' );
 		if ( ! modal ) {
 			return;
@@ -72,6 +88,9 @@
 		var modalLink  = modal.querySelector( '.rss-d-modal-link' );
 		var btnClose   = modal.querySelector( '.rss-d-modal-close' );
 		var lastFocus  = null;
+
+		var ac     = typeof AbortController !== 'undefined' ? new AbortController() : null;
+		var signal = ac ? { signal: ac.signal } : {};
 
 		var FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -113,14 +132,14 @@
 		}
 
 		grid.querySelectorAll( '.rss-d-popup-trigger' ).forEach( function ( trigger ) {
-			trigger.addEventListener( 'click', function () { openModal( trigger ); } );
+			trigger.addEventListener( 'click', function () { openModal( trigger ); }, signal );
 		} );
 
-		btnClose.addEventListener( 'click', closeModal );
+		btnClose.addEventListener( 'click', closeModal, signal );
 
 		modal.addEventListener( 'click', function ( e ) {
 			if ( e.target === modal ) { closeModal(); }
-		} );
+		}, signal );
 
 		document.addEventListener( 'keydown', function ( e ) {
 			if ( modal.hidden ) { return; }
@@ -142,7 +161,15 @@
 					if ( document.activeElement === last )  { e.preventDefault(); first.focus(); }
 				}
 			}
-		} );
+		}, signal );
+
+		// ノードが DOM から切り離されたときにリスナーを解放（MutationObserver）。
+		if ( ac && typeof MutationObserver !== 'undefined' && grid.parentNode ) {
+			var mo = new MutationObserver( function () {
+				if ( ! grid.isConnected ) { ac.abort(); mo.disconnect(); }
+			} );
+			mo.observe( grid.parentNode, { childList: true } );
+		}
 	}
 
 	// ---- 初期化 ----

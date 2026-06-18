@@ -138,7 +138,11 @@
 					if ( res.data.js_url ) {
 						if ( ! rsDisplayLoaded ) {
 							rsDisplayLoaded = true;
-							$.ajax( { url: res.data.js_url, dataType: 'script', cache: true } );
+							$.ajax( { url: res.data.js_url, dataType: 'script', cache: true } ).done( function () {
+								if ( typeof window.rssDInitAll === 'function' ) {
+									window.rssDInitAll();
+								}
+							} );
 						} else if ( typeof window.rssDInitAll === 'function' ) {
 							window.rssDInitAll();
 						}

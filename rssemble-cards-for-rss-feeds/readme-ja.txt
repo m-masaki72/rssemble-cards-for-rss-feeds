@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,15 @@ RSSフィードに画像が含まれておらず、記事の og:image も取得�
 2. 管理画面の設定画面。
 
 == 変更履歴 ==
+
+= 1.0.2 =
+* 修正: 管理画面のフィードURL入力で http/https 以外のスキームを拒否するようになりました（ショートコード側の SSRF ガードと一貫性を持たせました）。
+* 修正: 管理画面プレビューを複数回更新してもカルーセル・popup_grid の JS イベントリスナーが重複しなくなりました（初期化済みフラグを dataset で管理）。
+* 修正: 管理画面プレビューの初回表示でカルーセル・popup_grid が正しく初期化されるようになりました（$.ajax コールバック内で初期化を実行）。
+* 修正: OGP フェッチャーの相対URL解決で `../` がルートを越えてポップしなくなり、画像URLが壊れる問題を修正しました。
+* 修正: popup_grid のモーダルオーバーレイ（position:fixed）を container-type ラッパーの外に移動し、ビューポート全体を正しく覆うようになりました。
+* 修正: カルーセル・popup_grid のグローバルイベントリスナー（window resize・document keydown）がノード削除時に適切に解放されるようになりました（AbortController + MutationObserver）。
+* 改善: レスポンシブレイアウトを CSS `@media` から `@container` クエリに変更。管理画面プレビューのデバイス幅切替でレイアウトが正しく切り替わるようになりました。`@supports not (container-type: inline-size)` フォールバックにより旧ブラウザでも引き続きレスポンシブが機能します。
 
 = 1.0.1 =
 * 修正: readme のショートコード名が古い `[rss_display]` のままだったのを `[rssecafo]` に修正。

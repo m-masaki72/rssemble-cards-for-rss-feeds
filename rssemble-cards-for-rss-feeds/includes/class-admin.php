@@ -103,10 +103,15 @@ class RSSECAFO_Admin {
 			$input = array();
 		}
 
-		// Feed URLs (one per line).
+		// Feed URLs (one per line). Only http/https schemes are permitted (mirrors the shortcode SSRF guard).
 		$feeds_raw   = isset( $input['feeds'] ) ? (string) $input['feeds'] : '';
-		$clean_lines = array_map( 'esc_url_raw', RSSECAFO_Plugin::parse_feeds( $feeds_raw ) );
-		$clean_lines = array_filter( $clean_lines );
+		$clean_lines = array_filter(
+			array_map( 'esc_url_raw', RSSECAFO_Plugin::parse_feeds( $feeds_raw ) ),
+			static function ( $u ) {
+				$scheme = wp_parse_url( $u, PHP_URL_SCHEME );
+				return in_array( strtolower( (string) $scheme ), array( 'http', 'https' ), true );
+			}
+		);
 		$out['feeds'] = implode( "\n", $clean_lines );
 
 		// Display count (1–100).

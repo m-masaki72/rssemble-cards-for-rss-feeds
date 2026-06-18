@@ -322,6 +322,29 @@ class RSSECAFO_OGP_Fetcher {
 			$dir = '/';
 		}
 
-		return $origin . $dir . $maybe_relative;
+		return $origin . $this->normalize_path( $dir . $maybe_relative );
+	}
+
+	/**
+	 * Resolves . and .. segments in a URL path.
+	 *
+	 * @param string $path Absolute path string (must start with /).
+	 * @return string
+	 */
+	private function normalize_path( $path ) {
+		$parts  = explode( '/', $path );
+		$result = array();
+		foreach ( $parts as $segment ) {
+			if ( '..' === $segment ) {
+				// 先頭の空セグメント（leading /）は絶対に pop しない。
+				if ( count( $result ) > 1 ) {
+					array_pop( $result );
+				}
+			} elseif ( '.' !== $segment ) {
+				$result[] = $segment;
+			}
+		}
+		$normalized = implode( '/', $result );
+		return '' === $normalized ? '/' : $normalized;
 	}
 }

@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,15 @@ No. Feeds are fetched on demand when the shortcode runs and the cache is missing
 2. Admin settings screen.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fixed: Admin feed URL input now rejects non-http/https schemes (mirrors the shortcode SSRF guard).
+* Fixed: Carousel and popup_grid JavaScript event listeners no longer accumulate on repeated admin preview refreshes (dataset init guard added).
+* Fixed: Admin preview carousel/popup now initializes correctly on first load (moved init call into $.ajax callback).
+* Fixed: OGP fetcher `to_absolute_url()` now normalizes `../` segments in relative paths without over-popping past the root, preventing malformed image URLs.
+* Fixed: popup_grid modal overlay (`position:fixed`) now renders outside the `container-type` wrapper to correctly cover the full viewport.
+* Fixed: carousel/popup_grid global event listeners (`window resize`, `document keydown`) are now properly torn down when nodes are removed from the DOM (AbortController + MutationObserver).
+* Improved: Responsive layout now uses CSS Container Queries (`@container`) instead of `@media`, so the admin preview device-width switcher correctly triggers layout changes. A `@supports not (container-type: inline-size)` fallback ensures older browsers retain responsive behavior.
 
 = 1.0.1 =
 * Fixed: Shortcode name in readme (was `[rss_display]`, now correctly `[rssecafo]`).

@@ -505,6 +505,87 @@ foreach ( $php_files as $f ) {
 assert_false( $wrong_domain_found, 'includes/*.php 内の __() は全て正しいテキストドメインを使っている' . ( $wrong_domain_file ? " (問題ファイル: {$wrong_domain_file})" : '' ) );
 
 // -----------------------------------------------------------------------
+// bold / responsive / title_lines パラメータ
+// -----------------------------------------------------------------------
+
+section( 'RSSECAFO_Shortcode::render() — bold / responsive / title_lines' );
+
+$sc_bold = make_sc( [ make_item() ] );
+
+// bold=1 → rss-d-title--bold クラスが付く
+$html_bold = render_sc( $sc_bold, [ 'bold' => '1' ] );
+assert_contains( 'rss-d-title--bold', $html_bold, 'bold=1 のとき rss-d-title--bold クラスが出力される' );
+
+// bold=0（デフォルト）→ rss-d-title--bold クラスが付かない
+$html_no_bold = render_sc( $sc_bold, [ 'bold' => '0' ] );
+assert_not_contains( 'rss-d-title--bold', $html_no_bold, 'bold=0 のとき rss-d-title--bold クラスが出力されない' );
+
+// responsive=1（デフォルト）→ rss-d-responsive クラスが付く
+$html_responsive = render_sc( $sc_bold, [ 'responsive' => '1' ] );
+assert_contains( 'rss-d-responsive', $html_responsive, 'responsive=1 のとき rss-d-responsive クラスが出力される' );
+
+// responsive=0 → rss-d-responsive クラスが付かない
+$html_no_responsive = render_sc( $sc_bold, [ 'responsive' => '0' ] );
+assert_not_contains( 'rss-d-responsive', $html_no_responsive, 'responsive=0 のとき rss-d-responsive クラスが出力されない' );
+
+// title_lines=3 → CSS変数に反映される
+$html_title_lines = render_sc( $sc_bold, [ 'title_lines' => '3' ] );
+assert_contains( '--rss-d-title-lines:3', $html_title_lines, 'title_lines=3 が CSS変数に反映される' );
+
+// title_lines が範囲外（負）→ 2 にクランプ
+$html_title_lines_neg = render_sc( $sc_bold, [ 'title_lines' => '-1' ] );
+assert_contains( '--rss-d-title-lines:2', $html_title_lines_neg, 'title_lines=-1 は 2 にクランプされる' );
+
+// title_lines が範囲外（11）→ 2 にクランプ
+$html_title_lines_over = render_sc( $sc_bold, [ 'title_lines' => '11' ] );
+assert_contains( '--rss-d-title-lines:2', $html_title_lines_over, 'title_lines=11 は 2 にクランプされる' );
+
+// -----------------------------------------------------------------------
+// popup_grid — .rss-d-wrap 構造とモーダル位置
+// -----------------------------------------------------------------------
+
+section( 'RSSECAFO_Shortcode::render() — popup_grid .rss-d-wrap 構造' );
+
+$sc_popup = make_sc( [ make_item() ] );
+$html_popup = render_sc( $sc_popup, [ 'type' => 'popup_grid' ] );
+
+// .rss-d-wrap が出力される
+assert_contains( '<div class="rss-d-wrap">', $html_popup, 'popup_grid: .rss-d-wrap が出力される' );
+
+// .rss-d-modal-overlay が .rss-d-wrap の外側（後ろ）にある
+$wrap_open  = strpos( $html_popup, '<div class="rss-d-wrap">' );
+$wrap_close = strpos( $html_popup, '</div></div>' ); // grid の閉じタグ + wrap の閉じタグ
+$modal_pos  = strpos( $html_popup, 'rss-d-modal-overlay' );
+assert_true( $wrap_open !== false && $modal_pos !== false && $modal_pos > $wrap_close,
+	'popup_grid: .rss-d-modal-overlay が .rss-d-wrap の外側（後）に出力される' );
+
+// -----------------------------------------------------------------------
+// RSSECAFO_OGP_Fetcher::normalize_path() — パス正規化
+// -----------------------------------------------------------------------
+
+section( 'RSSECAFO_OGP_Fetcher::normalize_path()' );
+
+$ogp = new RSSECAFO_OGP_Fetcher();
+$ref = new ReflectionMethod( RSSECAFO_OGP_Fetcher::class, 'normalize_path' );
+$ref->setAccessible( true );
+
+// 基本的な .. 解決
+assert_equals( '/a/c.jpg', $ref->invoke( $ogp, '/a/b/../c.jpg' ), 'normalize_path: /a/b/../c.jpg → /a/c.jpg' );
+
+// ルートを越える .. はルートで止まる
+assert_equals( '/b.jpg', $ref->invoke( $ogp, '/a/../../b.jpg' ), 'normalize_path: /a/../../b.jpg はルートで止まり /b.jpg になる' );
+assert_equals( '/foo.png', $ref->invoke( $ogp, '/../foo.png' ), 'normalize_path: /../foo.png → /foo.png（leading / は保持）' );
+
+// . の除去
+assert_equals( '/a/b.jpg', $ref->invoke( $ogp, '/a/./b.jpg' ), 'normalize_path: /a/./b.jpg → /a/b.jpg' );
+
+// 複数の .. を連続適用
+assert_equals( '/a/d.jpg', $ref->invoke( $ogp, '/a/b/c/../../d.jpg' ), 'normalize_path: /a/b/c/../../d.jpg → /a/d.jpg' );
+
+// ルートのみ
+assert_equals( '/', $ref->invoke( $ogp, '/' ), 'normalize_path: / → /' );
+
+// -----------------------------------------------------------------------
 // 結果サマリ
 // -----------------------------------------------------------------------
 

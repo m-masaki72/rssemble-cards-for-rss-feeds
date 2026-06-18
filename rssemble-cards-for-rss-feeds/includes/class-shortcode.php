@@ -207,12 +207,18 @@ class RSSECAFO_Shortcode {
 	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false, $responsive = true ) {
 		$title_class = 'rss-d-title' . ( $bold_title ? ' rss-d-title--bold' : '' );
 		ob_start();
-		if ( 'carousel' === $type ) {
-			$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
-		} elseif ( 'popup_grid' === $type ) {
+		if ( 'popup_grid' === $type ) {
+			// popup_grid は render_popup_grid 内で .rss-d-wrap を管理する。
+			// モーダルオーバーレイ（position:fixed）は container-type 要素の外に置く必要があるため。
 			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class, $responsive );
 		} else {
-			$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
+			echo '<div class="rss-d-wrap">';
+			if ( 'carousel' === $type ) {
+				$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
+			} else {
+				$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
+			}
+			echo '</div>';
 		}
 		return ob_get_clean();
 	}
@@ -366,7 +372,7 @@ class RSSECAFO_Shortcode {
 		$uid            = 'rss-d-popup-' . $popup_id;
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-grid rss-d-type-popup_grid<?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
+		<div class="rss-d-wrap"><div class="rss-d-grid rss-d-type-popup_grid<?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];
@@ -401,7 +407,7 @@ class RSSECAFO_Shortcode {
 					<?php endif; ?>
 				</button>
 			<?php endforeach; ?>
-		</div>
+		</div></div>
 
 		<div class="rss-d-modal-overlay" id="<?php echo esc_attr( $uid . '-modal' ); ?>" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Article detail', 'rssemble-cards-for-rss-feeds' ); ?>" hidden>
 			<div class="rss-d-modal">
