@@ -18,10 +18,11 @@
 	--rss-d-overlay-light:  rgba(255, 255, 255, 0.85);
 }
 
+/* --rss-d-card-scale / --rss-d-text-scale: 0.8(小)/1(中)/1.25(大)。各タイプの style 属性で指定される。 */
 .rss-d-grid {
 	display: grid;
 	grid-template-columns: repeat(var(--rss-d-columns, 3), 1fr);
-	gap: 16px;
+	gap: calc(16px * var(--rss-d-card-scale, 1));
 	margin: 0 0 1.5em;
 	padding: 0;
 	list-style: none;
@@ -74,7 +75,7 @@
 	right: 8px;
 	z-index: 2;
 	padding: 3px 8px;
-	font-size: 12px;
+	font-size: calc(12px * var(--rss-d-text-scale, 1));
 	line-height: 1.4;
 	color: #ffffff;
 	background: rgba(0, 0, 0, 0.6);
@@ -91,7 +92,7 @@
 	z-index: 2;
 	margin: 0;
 	padding: 0;
-	font-size: 15px;
+	font-size: calc(15px * var(--rss-d-text-scale, 1));
 	font-weight: 700;
 	line-height: 1.4;
 	color: #ffffff;
@@ -115,7 +116,7 @@
 	left: 8px;
 	z-index: 2;
 	padding: 3px 8px;
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	line-height: 1.4;
 	color: #ffffff;
 	background: var(--rss-d-overlay-dark);
@@ -135,7 +136,7 @@
 	z-index: 2;
 	margin: 0;
 	padding: 0;
-	font-size: 12px;
+	font-size: calc(12px * var(--rss-d-text-scale, 1));
 	line-height: 1.4;
 	color: var(--rss-d-overlay-light);
 	display: -webkit-box;
@@ -149,7 +150,7 @@
 .rss-d-type-list {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: calc(12px * var(--rss-d-card-scale, 1));
 }
 
 .rss-d-type-list .rss-d-card {
@@ -157,14 +158,14 @@
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
-	min-height: 80px;
+	min-height: calc(80px * var(--rss-d-card-scale, 1));
 	border-radius: 6px;
 }
 
 .rss-d-type-list .rss-d-img {
 	position: relative;
-	flex: 0 0 120px;
-	width: 120px;
+	flex: 0 0 calc(120px * var(--rss-d-card-scale, 1));
+	width: calc(120px * var(--rss-d-card-scale, 1));
 	height: auto;
 	object-fit: cover;
 	inset: unset;
@@ -192,12 +193,12 @@
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
-	padding: 10px 12px;
+	padding: calc(10px * var(--rss-d-card-scale, 1)) calc(12px * var(--rss-d-card-scale, 1));
 	min-width: 0;
 }
 
 .rss-d-type-list .rss-d-title {
-	font-size: 14px;
+	font-size: calc(14px * var(--rss-d-text-scale, 1));
 	font-weight: 700;
 	margin: 0;
 	display: -webkit-box;
@@ -208,19 +209,19 @@
 }
 
 .rss-d-type-list .rss-d-date {
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list .rss-d-site {
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list .rss-d-desc {
-	font-size: 12px;
+	font-size: calc(12px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
@@ -241,7 +242,7 @@
 .rss-d-type-list_vertical {
 	display: grid;
 	grid-template-columns: repeat(var(--rss-d-columns, 3), 1fr);
-	gap: 16px;
+	gap: calc(16px * var(--rss-d-card-scale, 1));
 }
 
 .rss-d-type-list_vertical .rss-d-card {
@@ -258,7 +259,7 @@
 	position: relative;
 	inset: unset;
 	width: 100%;
-	height: 160px;
+	height: calc(160px * var(--rss-d-card-scale, 1));
 	object-fit: cover;
 	flex-shrink: 0;
 	border-radius: 8px 8px 0 0;
@@ -274,7 +275,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
-	padding: 10px 12px;
+	padding: calc(10px * var(--rss-d-card-scale, 1)) calc(12px * var(--rss-d-card-scale, 1));
 	min-width: 0;
 }
 
@@ -292,7 +293,7 @@
 }
 
 .rss-d-type-list_vertical .rss-d-title {
-	font-size: 14px;
+	font-size: calc(14px * var(--rss-d-text-scale, 1));
 	font-weight: 700;
 	margin: 0;
 	display: -webkit-box;
@@ -304,13 +305,13 @@
 
 .rss-d-type-list_vertical .rss-d-date,
 .rss-d-type-list_vertical .rss-d-site {
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-list_vertical .rss-d-desc {
-	font-size: 12px;
+	font-size: calc(12px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
@@ -323,7 +324,7 @@
 .rss-d-type-text {
 	display: grid;
 	grid-template-columns: repeat(var(--rss-d-columns, 3), 1fr);
-	gap: 16px;
+	gap: calc(16px * var(--rss-d-card-scale, 1));
 }
 
 .rss-d-type-text .rss-d-card {
@@ -339,7 +340,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	padding: 14px 16px;
+	padding: calc(14px * var(--rss-d-card-scale, 1)) calc(16px * var(--rss-d-card-scale, 1));
 }
 
 .rss-d-type-text .rss-d-title,
@@ -356,7 +357,7 @@
 }
 
 .rss-d-type-text .rss-d-title {
-	font-size: 14px;
+	font-size: calc(14px * var(--rss-d-text-scale, 1));
 	font-weight: 700;
 	margin: 0;
 	display: -webkit-box;
@@ -368,13 +369,13 @@
 
 .rss-d-type-text .rss-d-date,
 .rss-d-type-text .rss-d-site {
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-subtle);
 	max-width: none;
 }
 
 .rss-d-type-text .rss-d-desc {
-	font-size: 12px;
+	font-size: calc(12px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
@@ -410,7 +411,7 @@
 	flex-direction: row;
 	align-items: center;
 	gap: 12px;
-	padding: 10px 4px;
+	padding: calc(10px * var(--rss-d-card-scale, 1)) 4px;
 }
 
 .rss-d-type-text_line .rss-d-title,
@@ -426,7 +427,7 @@
 }
 
 .rss-d-type-text_line .rss-d-title {
-	font-size: 14px;
+	font-size: calc(14px * var(--rss-d-text-scale, 1));
 	font-weight: 600;
 	margin: 0;
 	flex: 1 1 auto;
@@ -439,7 +440,7 @@
 
 .rss-d-type-text_line .rss-d-date,
 .rss-d-type-text_line .rss-d-site {
-	font-size: 11px;
+	font-size: calc(11px * var(--rss-d-text-scale, 1));
 	color: var(--rss-d-fg-subtle);
 	flex-shrink: 0;
 }
@@ -469,7 +470,7 @@
 .rss-d-carousel-card {
 	flex: 0 0 calc(100% / var(--rss-d-columns, 3));
 	min-width: 0;
-	padding: 0 8px;
+	padding: 0 calc(8px * var(--rss-d-card-scale, 1));
 	box-sizing: border-box;
 }
 
@@ -626,8 +627,14 @@
 	background-color: var(--rss-d-bg-muted);
 }
 
-/* レスポンシブ：タブレット2列 / スマホ1列（responsive="1" 時のみ） */
-@media (max-width: 1024px) {
+/* レスポンシブ：コンテナ幅でタブレット2列 / スマホ1列に切替（responsive="1" 時のみ） */
+/* @container を使うことで管理画面プレビューのデバイス幅切替にも対応 */
+.rss-d-wrap {
+	container-type: inline-size;
+	container-name: rss-d-wrap;
+}
+
+@container rss-d-wrap (max-width: 1024px) {
 	.rss-d-responsive.rss-d-grid,
 	.rss-d-responsive.rss-d-type-list_vertical,
 	.rss-d-responsive.rss-d-type-text {
@@ -643,7 +650,7 @@
 	}
 }
 
-@media (max-width: 600px) {
+@container rss-d-wrap (max-width: 600px) {
 	.rss-d-responsive.rss-d-grid,
 	.rss-d-responsive.rss-d-type-list_vertical,
 	.rss-d-responsive.rss-d-type-text {
@@ -676,5 +683,60 @@
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
+	}
+}
+
+/* @container 非対応ブラウザ向けフォールバック（Safari <16 / Chrome <105 / Firefox <110） */
+@supports not (container-type: inline-size) {
+	@media (max-width: 1024px) {
+		.rss-d-responsive.rss-d-grid,
+		.rss-d-responsive.rss-d-type-list_vertical,
+		.rss-d-responsive.rss-d-type-text {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.rss-d-responsive.rss-d-type-list_vertical .rss-d-img {
+			height: 140px;
+		}
+
+		.rss-d-carousel-wrap.rss-d-responsive {
+			--rss-d-columns: 2;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.rss-d-responsive.rss-d-grid,
+		.rss-d-responsive.rss-d-type-list_vertical,
+		.rss-d-responsive.rss-d-type-text {
+			grid-template-columns: 1fr;
+		}
+
+		.rss-d-carousel-wrap.rss-d-responsive {
+			--rss-d-columns: 1;
+		}
+
+		.rss-d-type-list .rss-d-img {
+			flex: 0 0 90px;
+			width: 90px;
+		}
+
+		.rss-d-type-list_vertical .rss-d-img {
+			height: 180px;
+		}
+
+		.rss-d-type-text_line .rss-d-card-body {
+			flex-wrap: wrap;
+			gap: 4px;
+		}
+
+		.rss-d-type-text_line .rss-d-title {
+			white-space: normal;
+			text-overflow: unset;
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			line-clamp: 2;
+			-webkit-box-orient: vertical;
+		}
 	}
 }
