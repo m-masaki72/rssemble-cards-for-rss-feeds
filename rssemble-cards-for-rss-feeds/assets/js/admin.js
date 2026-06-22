@@ -94,6 +94,8 @@
 			var showSite    = $( '#rss-d-preview-show-site' ).is( ':checked' ) ? '1' : '0';
 			var boldTitle   = $( '#rss-d-preview-bold-title' ).is( ':checked' ) ? '1' : '0';
 			var titleLines  = $( '#rss-d-preview-title-lines' ).val();
+			var cardSize    = $( '#rss-d-preview-card-size' ).val();
+			var textSize    = $( '#rss-d-preview-text-size' ).val();
 
 			$frame.html( '<p style="padding:2em;color:#888;">' + rssDAdmin.msgLoading + '</p>' );
 
@@ -111,7 +113,9 @@
 					show_date    : showDate,
 					show_site    : showSite,
 					bold_title   : boldTitle,
-					title_lines  : titleLines
+					title_lines  : titleLines,
+					card_size    : cardSize,
+					text_size    : textSize
 				},
 				function ( res ) {
 					if ( ! res.success ) {
@@ -130,6 +134,8 @@
 					if ( '1' === showSite )    { sc += ' site="1"'; }
 					if ( '1' === boldTitle )   { sc += ' bold="1"'; }
 					if ( '2' !== titleLines )  { sc += ' title_lines="' + titleLines + '"'; }
+					if ( 'medium' !== cardSize ) { sc += ' card_size="' + cardSize + '"'; }
+					if ( 'medium' !== textSize ) { sc += ' text_size="' + textSize + '"'; }
 					sc += ']';
 					$previewShortcodeText.text( sc );
 					$previewShortcode.css( 'display', 'flex' );

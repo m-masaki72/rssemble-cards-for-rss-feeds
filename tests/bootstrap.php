@@ -66,6 +66,8 @@ class RSSECAFO_Plugin {
 			'count'             => 10,
 			'columns'           => 3,
 			'title_lines'       => 2,
+			'card_size'         => 'medium',
+			'text_size'         => 'medium',
 			'cache_ttl'         => DAY_IN_SECONDS,
 			'default_image_id'  => 0,
 			'default_image_url' => '',
@@ -80,6 +82,23 @@ class RSSECAFO_Plugin {
 
 	public static function allowed_types() {
 		return array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
+	}
+
+	public static function allowed_sizes() {
+		return array( 'small', 'medium', 'large' );
+	}
+
+	public static function validate_size( $value, $default = 'medium' ) {
+		return in_array( $value, self::allowed_sizes(), true ) ? $value : $default;
+	}
+
+	public static function size_scale( $size ) {
+		static $scale = array(
+			'small'  => 0.8,
+			'medium' => 1,
+			'large'  => 1.25,
+		);
+		return $scale[ $size ] ?? 1;
 	}
 
 	public static function parse_feeds( $raw ) {

@@ -222,6 +222,34 @@ msgid "Title Max Lines"
 msgstr "タイトル最大行数"
 
 #: includes/class-admin.php
+msgid "Card Size"
+msgstr "カードサイズ"
+
+#: includes/class-admin.php
+msgid "Scales card spacing and image size. Can be overridden per shortcode with card_size=."
+msgstr "カードの余白・画像サイズを拡大縮小します。ショートコードの card_size= 属性で個別に上書きできます。"
+
+#: includes/class-admin.php
+msgid "Text Size"
+msgstr "文字サイズ"
+
+#: includes/class-admin.php
+msgid "Scales title, date, site, and description font size. Can be overridden per shortcode with text_size=."
+msgstr "タイトル・日付・サイト名・説明文の文字サイズを拡大縮小します。ショートコードの text_size= 属性で個別に上書きできます。"
+
+#: includes/class-admin.php
+msgid "Small"
+msgstr "小"
+
+#: includes/class-admin.php
+msgid "Medium"
+msgstr "中"
+
+#: includes/class-admin.php
+msgid "Large"
+msgstr "大"
+
+#: includes/class-admin.php
 msgid "Display Options"
 msgstr "表示オプション"
 
@@ -248,6 +276,14 @@ msgstr "カラム："
 #: includes/class-admin.php
 msgid "Count:"
 msgstr "件数："
+
+#: includes/class-admin.php
+msgid "Card Size:"
+msgstr "カードサイズ："
+
+#: includes/class-admin.php
+msgid "Text Size:"
+msgstr "文字サイズ："
 
 #: includes/class-admin.php
 msgid "Refresh Preview"
@@ -412,6 +448,10 @@ msgstr "OGP画像の自動取得・キャッシュ"
 #: includes/class-admin.php
 msgid "レスポンシブ対応（PC/タブレット/スマホ）"
 msgstr "レスポンシブ対応（PC/タブレット/スマホ）"
+
+#: includes/class-admin.php
+msgid "カードサイズ・文字サイズのプリセット調整（small/medium/large、ショートコードで個別上書き可）"
+msgstr "カードサイズ・文字サイズのプリセット調整（small/medium/large、ショートコードで個別上書き可）"
 
 #: includes/class-admin.php
 msgid "外部サービス依存なし（WordPress組み込み機能のみ）"

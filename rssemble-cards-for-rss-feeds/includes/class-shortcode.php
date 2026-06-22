@@ -75,6 +75,8 @@ class RSSECAFO_Shortcode {
 				'bold'        => '0',
 				'responsive'  => '1',
 				'title_lines' => '',
+				'card_size'   => $settings['card_size'],
+				'text_size'   => $settings['text_size'],
 			),
 			$atts,
 			'rssecafo'
@@ -146,9 +148,12 @@ class RSSECAFO_Shortcode {
 			$title_lines = 2;
 		}
 
+		$card_size = RSSECAFO_Plugin::validate_size( $atts['card_size'], $settings['card_size'] );
+		$text_size = RSSECAFO_Plugin::validate_size( $atts['text_size'], $settings['text_size'] );
+
 		$resolved = $this->resolve_items( $items, $default_image, $show_date, $show_desc, $show_site );
 
-		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title, $responsive );
+		return $this->render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title, $responsive, $card_size, $text_size );
 	}
 
 	/**
@@ -202,25 +207,41 @@ class RSSECAFO_Shortcode {
 	 * @param bool   $show_date   Show date.
 	 * @param bool   $show_site   Show site name.
 	 * @param bool   $bold_title  Bold title.
+	 * @param string $card_size   Card size preset (small/medium/large).
+	 * @param string $text_size   Text size preset (small/medium/large).
 	 * @return string
 	 */
-	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false, $responsive = true ) {
+	private function render_type( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $bold_title = false, $responsive = true, $card_size = 'medium', $text_size = 'medium' ) {
 		$title_class = 'rss-d-title' . ( $bold_title ? ' rss-d-title--bold' : '' );
+		$size_vars   = $this->size_css_vars( $card_size, $text_size );
 		ob_start();
 		if ( 'popup_grid' === $type ) {
 			// popup_grid は render_popup_grid 内で .rss-d-wrap を管理する。
 			// モーダルオーバーレイ（position:fixed）は container-type 要素の外に置く必要があるため。
-			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class, $responsive );
+			$this->render_popup_grid( $resolved, $columns, $title_lines, $new_tab, $title_class, $responsive, $size_vars );
 		} else {
 			echo '<div class="rss-d-wrap">';
 			if ( 'carousel' === $type ) {
-				$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
+				$this->render_carousel( $resolved, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive, $size_vars );
 			} else {
-				$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive );
+				$this->render_standard( $resolved, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class, $responsive, $size_vars );
 			}
 			echo '</div>';
 		}
 		return ob_get_clean();
+	}
+
+	/**
+	 * Maps card/text size presets to CSS custom property scale values.
+	 *
+	 * @param string $card_size Card size preset (small/medium/large).
+	 * @param string $text_size Text size preset (small/medium/large).
+	 * @return string CSS custom property declarations (e.g. "--rss-d-card-scale:0.8;--rss-d-text-scale:1;").
+	 */
+	private function size_css_vars( $card_size, $text_size ) {
+		$card_scale = RSSECAFO_Plugin::size_scale( $card_size );
+		$text_scale = RSSECAFO_Plugin::size_scale( $text_size );
+		return sprintf( '--rss-d-card-scale:%s;--rss-d-text-scale:%s;', esc_attr( $card_scale ), esc_attr( $text_scale ) );
 	}
 
 	/**
@@ -235,13 +256,14 @@ class RSSECAFO_Shortcode {
 	 * @param bool   $show_date   Show date.
 	 * @param bool   $show_site   Show site name.
 	 * @param string $title_class CSS class string for the title element.
+	 * @param string $size_vars   CSS custom property declarations for card/text scale.
 	 * @return void
 	 */
-	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true ) {
+	private function render_standard( $items, $type, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true, $size_vars = '' ) {
 		$target_attr    = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?><?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-grid rss-d-type-<?php echo esc_attr( $type ); ?><?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;<?php echo $size_vars; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped in size_css_vars() ?>">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];
@@ -315,16 +337,17 @@ class RSSECAFO_Shortcode {
 	 * @param bool   $show_date   Show date.
 	 * @param bool   $show_site   Show site name.
 	 * @param string $title_class CSS class string for the title element.
+	 * @param string $size_vars   CSS custom property declarations for card/text scale.
 	 * @return void
 	 */
-	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true ) {
+	private function render_carousel( $items, $columns, $title_lines, $new_tab, $show_desc, $show_date, $show_site, $title_class = 'rss-d-title', $responsive = true, $size_vars = '' ) {
 		static $carousel_id = 0;
 		++$carousel_id;
 		$uid            = 'rss-d-carousel-' . $carousel_id;
 		$target_attr    = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-carousel-wrap rss-d-type-carousel<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;">
+		<div class="rss-d-carousel-wrap rss-d-type-carousel<?php echo esc_attr( $responsive_cls ); ?>" id="<?php echo esc_attr( $uid ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;<?php echo $size_vars; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped in size_css_vars() ?>">
 			<button type="button" class="rss-d-carousel-btn rss-d-carousel-prev" aria-label="<?php echo esc_attr__( 'Previous', 'rssemble-cards-for-rss-feeds' ); ?>" data-target="<?php echo esc_attr( $uid ); ?>">&#10094;</button>
 			<div class="rss-d-carousel-viewport">
 				<div class="rss-d-carousel-track">
@@ -364,15 +387,16 @@ class RSSECAFO_Shortcode {
 	 * @param int    $title_lines Maximum title lines.
 	 * @param bool   $new_tab     Open links in new tab.
 	 * @param string $title_class CSS class string for the title element.
+	 * @param string $size_vars   CSS custom property declarations for card/text scale.
 	 * @return void
 	 */
-	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title', $responsive = true ) {
+	private function render_popup_grid( $items, $columns, $title_lines, $new_tab, $title_class = 'rss-d-title', $responsive = true, $size_vars = '' ) {
 		static $popup_id = 0;
 		++$popup_id;
 		$uid            = 'rss-d-popup-' . $popup_id;
 		$responsive_cls = $responsive ? ' rss-d-responsive' : '';
 		?>
-		<div class="rss-d-wrap"><div class="rss-d-grid rss-d-type-popup_grid<?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;" id="<?php echo esc_attr( $uid ); ?>">
+		<div class="rss-d-wrap"><div class="rss-d-grid rss-d-type-popup_grid<?php echo esc_attr( $responsive_cls ); ?>" style="--rss-d-columns:<?php echo esc_attr( $columns ); ?>;--rss-d-title-lines:<?php echo esc_attr( $title_lines ); ?>;<?php echo $size_vars; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped in size_css_vars() ?>" id="<?php echo esc_attr( $uid ); ?>">
 			<?php foreach ( $items as $item ) : ?>
 				<?php
 				$image      = $item['_image'];

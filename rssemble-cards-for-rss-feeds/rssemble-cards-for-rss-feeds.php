@@ -3,7 +3,7 @@
  * Plugin Name:       Rssemble Cards for RSS Feeds
  * Plugin URI:        https://rssemble-cards-for-rss-feeds.pages.dev/
  * Description:       Display multiple RSS feeds as OGP image card grids. No external service dependencies.
- * Version:           1.0.2
+ * Version:           1.0.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Masaki Mori
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'RSSECAFO_VERSION', '1.0.2' );
+define( 'RSSECAFO_VERSION', '1.0.3' );
 define( 'RSSECAFO_FILE', __FILE__ );
 define( 'RSSECAFO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RSSECAFO_URL', plugin_dir_url( __FILE__ ) );
@@ -112,6 +112,8 @@ final class RSSECAFO_Plugin {
 			'count'             => 10,
 			'columns'           => 3,
 			'title_lines'       => 2,
+			'card_size'         => 'medium',
+			'text_size'         => 'medium',
 			'cache_ttl'         => 86400,
 			'default_image_id'  => 0,
 			'default_image_url' => '',
@@ -168,6 +170,41 @@ final class RSSECAFO_Plugin {
 	 */
 	public static function allowed_types() {
 		return array( 'grid', 'image_only', 'list', 'list_vertical', 'text', 'text_line', 'carousel', 'popup_grid' );
+	}
+
+	/**
+	 * Returns the list of valid card/text size presets.
+	 *
+	 * @return string[]
+	 */
+	public static function allowed_sizes() {
+		return array( 'small', 'medium', 'large' );
+	}
+
+	/**
+	 * Validates a card/text size preset against the allowed list, falling back to a default.
+	 *
+	 * @param mixed  $value   Raw value to validate.
+	 * @param string $default Fallback value when invalid (must itself be a valid preset).
+	 * @return string
+	 */
+	public static function validate_size( $value, $default = 'medium' ) {
+		return in_array( $value, self::allowed_sizes(), true ) ? $value : $default;
+	}
+
+	/**
+	 * Returns the CSS scale multiplier for a given size preset.
+	 *
+	 * @param string $size Size preset (small/medium/large).
+	 * @return float
+	 */
+	public static function size_scale( $size ) {
+		static $scale = array(
+			'small'  => 0.8,
+			'medium' => 1,
+			'large'  => 1.25,
+		);
+		return $scale[ $size ] ?? 1;
 	}
 
 	/**

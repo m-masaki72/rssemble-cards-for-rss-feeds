@@ -126,6 +126,12 @@ class RSSECAFO_Admin {
 		$tl                 = isset( $input['title_lines'] ) ? (int) $input['title_lines'] : $defaults['title_lines'];
 		$out['title_lines'] = in_array( $tl, array( 1, 2, 3 ), true ) ? $tl : $defaults['title_lines'];
 
+		// Card / text size presets (small/medium/large).
+		$card_size        = isset( $input['card_size'] ) ? (string) $input['card_size'] : $defaults['card_size'];
+		$out['card_size'] = RSSECAFO_Plugin::validate_size( $card_size, $defaults['card_size'] );
+		$text_size        = isset( $input['text_size'] ) ? (string) $input['text_size'] : $defaults['text_size'];
+		$out['text_size'] = RSSECAFO_Plugin::validate_size( $text_size, $defaults['text_size'] );
+
 		// Cache TTL.
 		$allowed_ttl      = array( 43200, 86400, 604800, 2592000 );
 		$ttl              = isset( $input['cache_ttl'] ) ? (int) $input['cache_ttl'] : $defaults['cache_ttl'];
@@ -277,9 +283,15 @@ class RSSECAFO_Admin {
 		$title_lines = isset( $_POST['title_lines'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['title_lines'] ) ) ) : 2;
 		$title_lines = min( $title_lines, 10 );
 
+		$settings  = RSSECAFO_Plugin::get_settings();
+		$card_size = isset( $_POST['card_size'] ) ? sanitize_text_field( wp_unslash( $_POST['card_size'] ) ) : $settings['card_size']; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+		$card_size = RSSECAFO_Plugin::validate_size( $card_size, $settings['card_size'] );
+		$text_size = isset( $_POST['text_size'] ) ? sanitize_text_field( wp_unslash( $_POST['text_size'] ) ) : $settings['text_size']; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+		$text_size = RSSECAFO_Plugin::validate_size( $text_size, $settings['text_size'] );
+
 		$html = do_shortcode(
 			sprintf(
-				'[rssecafo type="%s" columns="%d" count="%d" responsive="%s" target="%s" desc="%s" date="%s" site="%s" bold="%s" title_lines="%d"]',
+				'[rssecafo type="%s" columns="%d" count="%d" responsive="%s" target="%s" desc="%s" date="%s" site="%s" bold="%s" title_lines="%d" card_size="%s" text_size="%s"]',
 				esc_attr( $type ),
 				$columns,
 				$count,
@@ -289,7 +301,9 @@ class RSSECAFO_Admin {
 				$show_date,
 				$show_site,
 				$bold_title,
-				$title_lines
+				$title_lines,
+				esc_attr( $card_size ),
+				esc_attr( $text_size )
 			)
 		);
 
@@ -520,6 +534,34 @@ class RSSECAFO_Admin {
 						</tr>
 
 						<tr>
+							<th scope="row">
+								<label for="rssecafo_card_size"><?php esc_html_e( 'Card Size', 'rssemble-cards-for-rss-feeds' ); ?></label>
+							</th>
+							<td>
+								<select id="rssecafo_card_size" name="<?php echo esc_attr( $option ); ?>[card_size]">
+									<option value="small"  <?php selected( $settings['card_size'], 'small' ); ?>><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<option value="medium" <?php selected( $settings['card_size'], 'medium' ); ?>><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<option value="large"  <?php selected( $settings['card_size'], 'large' ); ?>><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								</select>
+								<p class="description"><?php esc_html_e( 'Scales card spacing and image size. Can be overridden per shortcode with card_size=.', 'rssemble-cards-for-rss-feeds' ); ?></p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="rssecafo_text_size"><?php esc_html_e( 'Text Size', 'rssemble-cards-for-rss-feeds' ); ?></label>
+							</th>
+							<td>
+								<select id="rssecafo_text_size" name="<?php echo esc_attr( $option ); ?>[text_size]">
+									<option value="small"  <?php selected( $settings['text_size'], 'small' ); ?>><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<option value="medium" <?php selected( $settings['text_size'], 'medium' ); ?>><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<option value="large"  <?php selected( $settings['text_size'], 'large' ); ?>><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								</select>
+								<p class="description"><?php esc_html_e( 'Scales title, date, site, and description font size. Can be overridden per shortcode with text_size=.', 'rssemble-cards-for-rss-feeds' ); ?></p>
+							</td>
+						</tr>
+
+						<tr>
 							<th scope="row"><?php esc_html_e( 'Display Options', 'rssemble-cards-for-rss-feeds' ); ?></th>
 							<td>
 								<fieldset>
@@ -583,6 +625,24 @@ class RSSECAFO_Admin {
 						<!-- Count selector -->
 						<label><?php esc_html_e( 'Count:', 'rssemble-cards-for-rss-feeds' ); ?>
 							<input type="number" id="rss-d-preview-count" value="6" min="1" max="100" style="width:60px;" />
+						</label>
+
+						<!-- Card size selector -->
+						<label><?php esc_html_e( 'Card Size:', 'rssemble-cards-for-rss-feeds' ); ?>
+							<select id="rss-d-preview-card-size">
+								<option value="small"><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<option value="medium" selected><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<option value="large"><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+							</select>
+						</label>
+
+						<!-- Text size selector -->
+						<label><?php esc_html_e( 'Text Size:', 'rssemble-cards-for-rss-feeds' ); ?>
+							<select id="rss-d-preview-text-size">
+								<option value="small"><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<option value="medium" selected><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<option value="large"><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+							</select>
 						</label>
 
 						<button type="button" id="rss-d-preview-btn" class="button button-primary"><?php esc_html_e( 'Refresh Preview', 'rssemble-cards-for-rss-feeds' ); ?></button>
@@ -767,6 +827,7 @@ class RSSECAFO_Admin {
 								<li><?php esc_html_e( '複数フィードの集約・重複排除', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( 'OGP画像の自動取得・キャッシュ（curl_multi 並行取得）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( 'レスポンシブ対応（PC/タブレット/スマホ）', 'rssemble-cards-for-rss-feeds' ); ?></li>
+								<li><?php esc_html_e( 'カードサイズ・文字サイズのプリセット調整（small/medium/large、ショートコードで個別上書き可）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( 'FSEテーマのカラー変数（--wp--preset--color--*）対応', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( '管理画面ライブプレビュー（デスクトップ/タブレット/モバイル）', 'rssemble-cards-for-rss-feeds' ); ?></li>
 								<li><?php esc_html_e( '外部サービス依存なし（WordPress組み込み機能のみ）', 'rssemble-cards-for-rss-feeds' ); ?></li>

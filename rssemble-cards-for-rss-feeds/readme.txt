@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,8 @@ Parameter reference:
 * bold       : Bold title (1 / 0). Default: 0.
 * responsive : Responsive columns (1 / 0). Default: 1.
 * title_lines: Maximum title lines (1 / 2 / 3). Default: admin setting.
+* card_size  : Card size preset (small / medium / large). Default: admin setting.
+* text_size  : Text size preset (small / medium / large). Default: admin setting.
 * img        : Override default image URL.
 
 == Frequently Asked Questions ==
@@ -85,6 +87,10 @@ No. Feeds are fetched on demand when the shortcode runs and the cache is missing
 2. Admin settings screen.
 
 == Changelog ==
+
+= 1.0.3 =
+* Added: Card size and text size presets (small/medium/large), adjustable in admin settings or per-shortcode via `card_size=` / `text_size=` attributes. Lets different layout types (grid, list, carousel, etc.) use independent sizing on the same page.
+* Improved: Admin live preview now includes Card Size and Text Size selectors.
 
 = 1.0.2 =
 * Fixed: Admin feed URL input now rejects non-http/https schemes (mirrors the shortcode SSRF guard).

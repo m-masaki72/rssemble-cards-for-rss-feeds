@@ -541,6 +541,32 @@ $html_title_lines_over = render_sc( $sc_bold, [ 'title_lines' => '11' ] );
 assert_contains( '--rss-d-title-lines:2', $html_title_lines_over, 'title_lines=11 は 2 にクランプされる' );
 
 // -----------------------------------------------------------------------
+// card_size / text_size パラメータ
+// -----------------------------------------------------------------------
+
+section( 'RSSECAFO_Shortcode::render() — card_size / text_size' );
+
+// card_size=small → --rss-d-card-scale:0.8 が出力される
+$html_card_small = render_sc( $sc_bold, [ 'card_size' => 'small' ] );
+assert_contains( '--rss-d-card-scale:0.8', $html_card_small, 'card_size=small は --rss-d-card-scale:0.8 になる' );
+
+// card_size=large → --rss-d-card-scale:1.25 が出力される
+$html_card_large = render_sc( $sc_bold, [ 'card_size' => 'large' ] );
+assert_contains( '--rss-d-card-scale:1.25', $html_card_large, 'card_size=large は --rss-d-card-scale:1.25 になる' );
+
+// card_size 不正値 → medium（1）にフォールバック
+$html_card_invalid = render_sc( $sc_bold, [ 'card_size' => 'huge' ] );
+assert_contains( '--rss-d-card-scale:1', $html_card_invalid, '不正な card_size は medium(1) にフォールバックされる' );
+
+// text_size=small → --rss-d-text-scale:0.8 が出力される
+$html_text_small = render_sc( $sc_bold, [ 'text_size' => 'small' ] );
+assert_contains( '--rss-d-text-scale:0.8', $html_text_small, 'text_size=small は --rss-d-text-scale:0.8 になる' );
+
+// text_size=large → --rss-d-text-scale:1.25 が出力される
+$html_text_large = render_sc( $sc_bold, [ 'text_size' => 'large' ] );
+assert_contains( '--rss-d-text-scale:1.25', $html_text_large, 'text_size=large は --rss-d-text-scale:1.25 になる' );
+
+// -----------------------------------------------------------------------
 // popup_grid — .rss-d-wrap 構造とモーダル位置
 // -----------------------------------------------------------------------
 

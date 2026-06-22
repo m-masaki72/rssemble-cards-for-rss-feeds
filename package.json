@@ -1,6 +1,6 @@
 {
   "name": "rssemble-cards-for-rss-feeds",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "複数のRSSフィードを取得し、OGP画像付きカードグリッドとして表示するWordPressプラグイン。外部サービス依存なし。",
   "main": "index.js",
   "directories": {

@@ -4,7 +4,7 @@ Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,8 @@ Rssemble Cards for RSS Feeds は、複数のRSSフィードを取得し、OGP画
 * bold       : タイトルを太字（1 / 0）。デフォルト: 0。
 * responsive : レスポンシブ対応（1 / 0）。デフォルト: 1。
 * title_lines: タイトル最大行数（1 / 2 / 3）。デフォルト: 管理画面設定値。
+* card_size  : カードサイズ（small / medium / large）。デフォルト: 管理画面設定値。
+* text_size  : 文字サイズ（small / medium / large）。デフォルト: 管理画面設定値。
 * img        : デフォルト画像URLの上書き。
 
 == よくある質問 ==
@@ -85,6 +87,10 @@ RSSフィードに画像が含まれておらず、記事の og:image も取得�
 2. 管理画面の設定画面。
 
 == 変更履歴 ==
+
+= 1.0.3 =
+* 追加: カードサイズ・文字サイズのプリセット（small/medium/large）。管理画面設定、またはショートコードの `card_size=` / `text_size=` 属性で個別指定可能。grid・list・carousel など表示タイプごとに異なるサイズを同一ページ内で使い分けられます。
+* 改善: 管理画面ライブプレビューに「カードサイズ」「文字サイズ」セレクターを追加。
 
 = 1.0.2 =
 * 修正: 管理画面のフィードURL入力で http/https 以外のスキームを拒否するようになりました（ショートコード側の SSRF ガードと一貫性を持たせました）。

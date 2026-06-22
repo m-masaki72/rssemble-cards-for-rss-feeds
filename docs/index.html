@@ -544,6 +544,22 @@ a:hover { text-decoration: underline; }
           </div>
         </div>
         <div class="ctrl-section">
+          <div class="ctrl-section-title" data-i18n="ctrl_card_size">カードサイズ</div>
+          <div class="btn-group" id="ctrl-card-size-group">
+            <button onclick="setCardSize('small')" data-i18n="size_small">小</button>
+            <button onclick="setCardSize('medium')" class="active" data-i18n="size_medium">中</button>
+            <button onclick="setCardSize('large')" data-i18n="size_large">大</button>
+          </div>
+        </div>
+        <div class="ctrl-section">
+          <div class="ctrl-section-title" data-i18n="ctrl_text_size">文字サイズ</div>
+          <div class="btn-group" id="ctrl-text-size-group">
+            <button onclick="setTextSize('small')" data-i18n="size_small">小</button>
+            <button onclick="setTextSize('medium')" class="active" data-i18n="size_medium">中</button>
+            <button onclick="setTextSize('large')" data-i18n="size_large">大</button>
+          </div>
+        </div>
+        <div class="ctrl-section">
           <div class="ctrl-section-title" data-i18n="ctrl_meta">メタ情報</div>
           <div class="toggle-list">
             <div class="toggle-row">
@@ -665,6 +681,16 @@ a:hover { text-decoration: underline; }
         <td><code>title_lines</code></td>
         <td style="color:var(--c-muted);">2</td>
         <td data-i18n="param_title_lines_desc">タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span></td>
+      </tr>
+      <tr>
+        <td><code>card_size</code></td>
+        <td style="color:var(--c-muted);" data-i18n="param_card_size_default">（設定画面の値）</td>
+        <td data-i18n="param_card_size_desc">カードサイズのプリセット。表示タイプ（type）ごとに個別指定できます。<br><span class="val-list">small / medium / large</span></td>
+      </tr>
+      <tr>
+        <td><code>text_size</code></td>
+        <td style="color:var(--c-muted);" data-i18n="param_text_size_default">（設定画面の値）</td>
+        <td data-i18n="param_text_size_desc">文字サイズのプリセット。表示タイプ（type）ごとに個別指定できます。<br><span class="val-list">small / medium / large</span></td>
       </tr>
       <tr>
         <td><code>img</code></td>
@@ -830,6 +856,11 @@ const I18N = {
     ctrl_columns: '列数',
     ctrl_count: '件数',
     ctrl_title_lines: 'タイトル行数',
+    ctrl_card_size: 'カードサイズ',
+    ctrl_text_size: '文字サイズ',
+    size_small: '小',
+    size_medium: '中',
+    size_large: '大',
     ctrl_meta: 'メタ情報',
     ctrl_desc: '説明文',
     ctrl_date: '日付',
@@ -859,6 +890,10 @@ const I18N = {
     param_bold_desc: 'タイトルを太字にする。<br><span class="val-list">1（太字） / 0（通常）</span>',
     param_responsive_desc: 'レスポンシブ対応。0にするとPC・スマホで同じ列数になります。<br><span class="val-list">1（有効） / 0（固定）</span>',
     param_title_lines_desc: 'タイトルの最大表示行数（0で無制限）。<br><span class="val-list">0–10</span>',
+    param_card_size_default: '（設定画面の値）',
+    param_card_size_desc: 'カードサイズのプリセット。表示タイプ（type）ごとに個別指定できます。<br><span class="val-list">small / medium / large</span>',
+    param_text_size_default: '（設定画面の値）',
+    param_text_size_desc: '文字サイズのプリセット。表示タイプ（type）ごとに個別指定できます。<br><span class="val-list">small / medium / large</span>',
     param_img_default: '（設定画面の値）',
     param_img_desc: '記事に画像がない場合のフォールバック画像URL。省略すると管理画面で設定したデフォルト画像が使われます。<br><span class="val-list">例: <code>img="https://example.com/no-image.png"</code></span>',
     cache_title: 'キャッシュについて',
@@ -950,6 +985,11 @@ const I18N = {
     ctrl_columns: 'Columns',
     ctrl_count: 'Count',
     ctrl_title_lines: 'Title Lines',
+    ctrl_card_size: 'Card Size',
+    ctrl_text_size: 'Text Size',
+    size_small: 'Small',
+    size_medium: 'Medium',
+    size_large: 'Large',
     ctrl_meta: 'Meta',
     ctrl_desc: 'Description',
     ctrl_date: 'Date',
@@ -979,6 +1019,10 @@ const I18N = {
     param_bold_desc: 'Make title bold.<br><span class="val-list">1 (bold) / 0 (normal)</span>',
     param_responsive_desc: 'Responsive layout. Set to 0 to use the same column count on all screen sizes.<br><span class="val-list">1 (enabled) / 0 (fixed)</span>',
     param_title_lines_desc: 'Max lines for title text (0 = unlimited).<br><span class="val-list">0–10</span>',
+    param_card_size_default: '(from settings)',
+    param_card_size_desc: 'Card size preset. Can be set independently per display type (type).<br><span class="val-list">small / medium / large</span>',
+    param_text_size_default: '(from settings)',
+    param_text_size_desc: 'Text size preset. Can be set independently per display type (type).<br><span class="val-list">small / medium / large</span>',
     param_img_default: '(from settings)',
     param_img_desc: 'Fallback image URL when a post has no image. Omit to use the default image set in the admin panel.<br><span class="val-list">e.g. <code>img="https://example.com/no-image.png"</code></span>',
     cache_title: 'About Caching',
@@ -1055,8 +1099,13 @@ const ITEMS = [
 
 const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%23e8e8ec'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='18' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
+// PHP側 size_css_vars() の $scale と同じ値（small=0.8 / medium=1 / large=1.25）。
+const SIZE_SCALE = { small: 0.8, medium: 1, large: 1.25 };
+
 let currentColumns = 3;
 let currentLines = 2;
+let currentCardSize = 'medium';
+let currentTextSize = 'medium';
 
 function e(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1078,12 +1127,30 @@ function setLines(n) {
   buildDemo();
 }
 
+function setCardSize(v) {
+  currentCardSize = v;
+  document.querySelectorAll('#ctrl-card-size-group button').forEach((b, i) => {
+    b.classList.toggle('active', ['small','medium','large'][i] === v);
+  });
+  buildDemo();
+}
+
+function setTextSize(v) {
+  currentTextSize = v;
+  document.querySelectorAll('#ctrl-text-size-group button').forEach((b, i) => {
+    b.classList.toggle('active', ['small','medium','large'][i] === v);
+  });
+  buildDemo();
+}
+
 function getParams() {
   return {
     type:       document.getElementById('ctrl-type').value,
     columns:    currentColumns,
     count:      +document.getElementById('ctrl-count').value,
     lines:      currentLines,
+    cardSize:   currentCardSize,
+    textSize:   currentTextSize,
     showDesc:   document.getElementById('ctrl-desc').checked,
     showDate:   document.getElementById('ctrl-date').checked,
     showSite:   document.getElementById('ctrl-site').checked,
@@ -1105,6 +1172,8 @@ function buildShortcode(p) {
   if (p.bold)                  parts.push('bold="1"');
   if (!p.responsive)           parts.push('responsive="0"');
   if (p.lines !== 2)           parts.push(`title_lines="${p.lines}"`);
+  if (p.cardSize !== 'medium') parts.push(`card_size="${p.cardSize}"`);
+  if (p.textSize !== 'medium') parts.push(`text_size="${p.textSize}"`);
   return parts.join(' ') + ']';
 }
 
@@ -1170,7 +1239,7 @@ function buildCarousel(items, p) {
     const titleCls = 'rss-d-title' + (p.bold ? ' rss-d-title--bold' : '');
     return `<div class="rss-d-carousel-card"><a class="rss-d-card" href="${e(item.url)}" target="_blank" rel="noopener noreferrer"><img class="rss-d-img" src="${e(img)}" alt="${e(item.title)}" loading="lazy"><span class="rss-d-overlay" aria-hidden="true"></span>${dateH}${siteH}<h3 class="${titleCls}">${e(item.title)}</h3>${descH}</a></div>`;
   }).join('');
-  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};`;
+  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};--rss-d-card-scale:${SIZE_SCALE[p.cardSize]};--rss-d-text-scale:${SIZE_SCALE[p.textSize]};`;
   const carouselPrev = currentLang === 'ja' ? '前へ' : 'Prev';
   const carouselNext = currentLang === 'ja' ? '次へ' : 'Next';
   const html = `<div class="rss-d-carousel-wrap rss-d-type-carousel${responsiveCls}" id="${uid}" style="${style}">
@@ -1223,7 +1292,7 @@ function buildDemo() {
     : ITEMS.slice(0, p.count);
 
   const gridCls = ['rss-d-grid', `rss-d-type-${p.type}`, p.responsive ? 'rss-d-responsive' : ''].filter(Boolean).join(' ');
-  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};`;
+  const style = `--rss-d-columns:${p.columns};--rss-d-title-lines:${p.lines};--rss-d-card-scale:${SIZE_SCALE[p.cardSize]};--rss-d-text-scale:${SIZE_SCALE[p.textSize]};`;
 
   let html = '';
   if (p.type === 'carousel') {
