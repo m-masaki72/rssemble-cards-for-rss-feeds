@@ -352,6 +352,12 @@ class RSSECAFO_Admin {
 			'carousel'      => 'carousel — ' . __( 'スライドカルーセル', 'rssemble-cards-for-rss-feeds' ),
 			'popup_grid'    => 'popup_grid — ' . __( 'クリックでモーダル表示グリッド', 'rssemble-cards-for-rss-feeds' ),
 		);
+
+		$size_labels = array(
+			'small'  => __( 'Small', 'rssemble-cards-for-rss-feeds' ),
+			'medium' => __( 'Medium', 'rssemble-cards-for-rss-feeds' ),
+			'large'  => __( 'Large', 'rssemble-cards-for-rss-feeds' ),
+		);
 		?>
 		<div class="wrap rss-d-admin">
 			<h1><?php echo esc_html__( 'Rssemble Cards for RSS Feeds Settings', 'rssemble-cards-for-rss-feeds' ); ?></h1>
@@ -539,9 +545,9 @@ class RSSECAFO_Admin {
 							</th>
 							<td>
 								<select id="rssecafo_card_size" name="<?php echo esc_attr( $option ); ?>[card_size]">
-									<option value="small"  <?php selected( $settings['card_size'], 'small' ); ?>><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
-									<option value="medium" <?php selected( $settings['card_size'], 'medium' ); ?>><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
-									<option value="large"  <?php selected( $settings['card_size'], 'large' ); ?>><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<?php foreach ( $size_labels as $val => $label ) : ?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $settings['card_size'], $val ); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
 								</select>
 								<p class="description"><?php esc_html_e( 'Scales card spacing and image size. Can be overridden per shortcode with card_size=.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 							</td>
@@ -553,9 +559,9 @@ class RSSECAFO_Admin {
 							</th>
 							<td>
 								<select id="rssecafo_text_size" name="<?php echo esc_attr( $option ); ?>[text_size]">
-									<option value="small"  <?php selected( $settings['text_size'], 'small' ); ?>><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
-									<option value="medium" <?php selected( $settings['text_size'], 'medium' ); ?>><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
-									<option value="large"  <?php selected( $settings['text_size'], 'large' ); ?>><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+									<?php foreach ( $size_labels as $val => $label ) : ?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $settings['text_size'], $val ); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
 								</select>
 								<p class="description"><?php esc_html_e( 'Scales title, date, site, and description font size. Can be overridden per shortcode with text_size=.', 'rssemble-cards-for-rss-feeds' ); ?></p>
 							</td>
@@ -630,18 +636,18 @@ class RSSECAFO_Admin {
 						<!-- Card size selector -->
 						<label><?php esc_html_e( 'Card Size:', 'rssemble-cards-for-rss-feeds' ); ?>
 							<select id="rss-d-preview-card-size">
-								<option value="small"><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
-								<option value="medium" selected><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
-								<option value="large"><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<?php foreach ( $size_labels as $val => $label ) : ?>
+									<option value="<?php echo esc_attr( $val ); ?>" <?php selected( 'medium', $val ); ?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
 							</select>
 						</label>
 
 						<!-- Text size selector -->
 						<label><?php esc_html_e( 'Text Size:', 'rssemble-cards-for-rss-feeds' ); ?>
 							<select id="rss-d-preview-text-size">
-								<option value="small"><?php esc_html_e( 'Small', 'rssemble-cards-for-rss-feeds' ); ?></option>
-								<option value="medium" selected><?php esc_html_e( 'Medium', 'rssemble-cards-for-rss-feeds' ); ?></option>
-								<option value="large"><?php esc_html_e( 'Large', 'rssemble-cards-for-rss-feeds' ); ?></option>
+								<?php foreach ( $size_labels as $val => $label ) : ?>
+									<option value="<?php echo esc_attr( $val ); ?>" <?php selected( 'medium', $val ); ?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
 							</select>
 						</label>
 

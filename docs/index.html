@@ -1127,20 +1127,23 @@ function setLines(n) {
   buildDemo();
 }
 
-function setCardSize(v) {
-  currentCardSize = v;
-  document.querySelectorAll('#ctrl-card-size-group button').forEach((b, i) => {
-    b.classList.toggle('active', ['small','medium','large'][i] === v);
+const SIZE_KEYS = Object.keys(SIZE_SCALE);
+
+function setSize(groupId, v) {
+  document.querySelectorAll(`#${groupId} button`).forEach((b, i) => {
+    b.classList.toggle('active', SIZE_KEYS[i] === v);
   });
   buildDemo();
 }
 
+function setCardSize(v) {
+  currentCardSize = v;
+  setSize('ctrl-card-size-group', v);
+}
+
 function setTextSize(v) {
   currentTextSize = v;
-  document.querySelectorAll('#ctrl-text-size-group button').forEach((b, i) => {
-    b.classList.toggle('active', ['small','medium','large'][i] === v);
-  });
-  buildDemo();
+  setSize('ctrl-text-size-group', v);
 }
 
 function getParams() {
