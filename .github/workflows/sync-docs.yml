@@ -6,6 +6,10 @@ on:
     paths:
       - 'rssemble-cards-for-rss-feeds/assets/css/rssemble-cards-for-rss-feeds.css'
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   sync:
     runs-on: ubuntu-latest
