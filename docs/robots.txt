@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rssemble.morilab-garage.com/sitemap.xml
