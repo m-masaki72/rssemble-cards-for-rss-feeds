@@ -97,3 +97,8 @@ node scripts/generate-assets.js
 ## License
 
 [GNU General Public License v2.0 or later](./LICENSE)
+
+## 紹介ページ
+
+- [制作物ページ（Mori Lab）](https://morilab-garage.com/projects/rssemble-cards/)
+- [開発ブログ記事（はてなブログ）](https://mementomori7272.hatenablog.com/entry/2026/06/12/004504)
