@@ -44,6 +44,10 @@ function delete_transient($key) {
     return true;
 }
 
+// WP-Cron（予約できない扱いにして、表示中に取得させる）
+function wp_next_scheduled($hook, $args = []) { return false; }
+function wp_schedule_single_event($ts, $hook, $args = []) { return false; }
+
 // WP_Error
 class WP_Error {
     public function __construct(public string $code = '', public string $message = '') {}

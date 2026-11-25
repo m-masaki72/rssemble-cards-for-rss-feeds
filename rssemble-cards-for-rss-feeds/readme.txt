@@ -2,7 +2,7 @@
 Contributors: masakimori
 Tags: rss, feed, grid, ogp, cards
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.3
 License: GPLv2 or later
@@ -23,9 +23,9 @@ Key features:
 * Responsive layout (3 columns on desktop, 2 on tablet, 1 on mobile — configurable)
 * FSE theme color variable support (--wp--preset--color--*) with fallback
 * Hover zoom + shadow effect on cards
-* Transient-based caching (no WP-Cron required)
+* Transient-based caching; expired feeds are refreshed in the background via WP-Cron
 * Configurable RSS cache duration (12 hours / 1 day / 1 week / 1 month)
-* OGP image URL cached for 1 month (includes negative cache for failed fetches)
+* OGP image URL cached for 1 month (failed fetches are retried in the background after 1 hour)
 * Stale cache fallback when a feed fetch fails
 * Admin UI with live preview (desktop / tablet / mobile width switching)
 * Compatible with object cache (Redis, Memcached) and Cloudflare
@@ -79,7 +79,7 @@ Go to **Settings > Rssemble Cards** and click **Refresh Now**. This clears the R
 
 = Does it use WP-Cron? =
 
-No. Feeds are fetched on demand when the shortcode runs and the cache is missing or expired.
+Yes, to refresh expired feeds and retry failed images without slowing down page views. The first fetch runs when the shortcode is displayed. If WP-Cron has not run within about an hour, the feed is fetched during a page view instead.
 
 == Screenshots ==
 
@@ -90,6 +90,9 @@ No. Feeds are fetched on demand when the shortcode runs and the cache is missing
 
 = 1.0.3 =
 * Added: Card size and text size presets (small/medium/large), adjustable in admin settings or per-shortcode via `card_size=` / `text_size=` attributes. Lets different layout types (grid, list, carousel, etc.) use independent sizing on the same page.
+* Improved: Expired feeds are refreshed in the background via WP-Cron while the cached cards stay visible.
+* Fixed: A failing feed no longer triggers a new request on every page view (retried after 1 hour, or 5 minutes when nothing is cached).
+* Fixed: OGP images that failed to load (timeout, HTTP error) are retried after 1 hour instead of staying on the default image for 1 month.
 * Improved: Admin live preview now includes Card Size and Text Size selectors.
 
 = 1.0.2 =

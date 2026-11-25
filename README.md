@@ -24,7 +24,7 @@ A WordPress plugin that fetches multiple RSS feeds and displays them as OGP imag
 - 8 layout types: `grid` / `list` / `list_vertical` / `text` / `text_line` / `image_only` / `carousel` / `popup_grid`
 - Responsive layout (configurable columns on desktop, 2 on tablet, 1 on mobile)
 - FSE theme color variable support (`--wp--preset--color--*`) with fallback
-- Transient-based caching (no WP-Cron), configurable TTL (12h / 1d / 1w / 1mo)
+- Transient-based caching (expired feeds refresh in the background via WP-Cron), configurable TTL (12h / 1d / 1w / 1mo)
 - Stale cache fallback when a feed fetch fails
 - Admin UI with live preview (desktop / tablet / mobile width switching)
 

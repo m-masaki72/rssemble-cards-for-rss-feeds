@@ -42,11 +42,16 @@ function get_option( $k, $d = '' ) {
 	if ( 'date_format' === $k ) { return 'Y-m-d'; }
 	return $d;
 }
-function get_transient( $k ) { return false; }
-function set_transient( $k, $v, $ttl ) {}
-function delete_transient( $k ) {}
+$GLOBALS['t_store'] = [];
+$GLOBALS['t_cron']  = [];
+$GLOBALS['t_ttl']   = [];
+function get_transient( $k ) { return $GLOBALS['t_store'][ $k ] ?? false; }
+function set_transient( $k, $v, $ttl ) { $GLOBALS['t_store'][ $k ] = $v; $GLOBALS['t_ttl'][ $k ] = $ttl; }
+function delete_transient( $k ) { unset( $GLOBALS['t_store'][ $k ] ); }
+function wp_next_scheduled( $hook, $args = [] ) { return false; }
+function wp_schedule_single_event( $ts, $hook, $args = [] ) { $GLOBALS['t_cron'][] = [ $hook, $args ]; return true; }
 function date_i18n( $fmt, $ts ) { return date( $fmt, $ts ); }
-function fetch_feed( $url ) { return new WP_Error( 'stub', 'stub' ); }
+function fetch_feed( $url ) { $GLOBALS['t_fetch'] = ( $GLOBALS['t_fetch'] ?? 0 ) + 1; return new WP_Error( 'stub', 'stub' ); }
 function is_wp_error( $v ) { return $v instanceof WP_Error; }
 function is_singular() { return false; }
 function get_post() { return null; }

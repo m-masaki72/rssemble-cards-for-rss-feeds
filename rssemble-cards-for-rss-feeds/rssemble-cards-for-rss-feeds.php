@@ -99,6 +99,35 @@ final class RSSECAFO_Plugin {
 			$this->admin = new RSSECAFO_Admin( $this->feed_manager );
 		}
 
+		add_action( RSSECAFO_Feed_Manager::CRON_HOOK, array( $this, 'cron_refresh_feed' ) );
+		add_action( RSSECAFO_OGP_Fetcher::CRON_HOOK, array( $this->ogp_fetcher, 'refresh_images' ) );
+	}
+
+	/**
+	 * WP-Cron: フィードを更新し、新着記事のOGP画像も先に取得しておく。
+	 *
+	 * @param string $feed_url Feed URL.
+	 * @return void
+	 */
+	public function cron_refresh_feed( $feed_url ) {
+		$payload = $this->feed_manager->refresh_feed( $feed_url );
+		$urls    = array();
+		foreach ( $payload['items'] as $item ) {
+			if ( '' === $item['image'] && '' !== $item['url'] ) {
+				$urls[] = $item['url'];
+			}
+		}
+		$this->ogp_fetcher->refresh_images( $urls );
+	}
+
+	/**
+	 * 無効化時に予約済みのWP-Cronイベントを消す。
+	 *
+	 * @return void
+	 */
+	public static function deactivate() {
+		wp_unschedule_hook( RSSECAFO_Feed_Manager::CRON_HOOK );
+		wp_unschedule_hook( RSSECAFO_OGP_Fetcher::CRON_HOOK );
 	}
 
 	/**
@@ -218,6 +247,7 @@ final class RSSECAFO_Plugin {
 	}
 }
 
+register_deactivation_hook( __FILE__, array( 'RSSECAFO_Plugin', 'deactivate' ) );
 register_uninstall_hook( __FILE__, array( 'RSSECAFO_Plugin', 'uninstall' ) );
 
 /**

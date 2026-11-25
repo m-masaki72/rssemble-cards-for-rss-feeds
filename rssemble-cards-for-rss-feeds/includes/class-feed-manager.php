@@ -18,14 +18,32 @@ class RSSECAFO_Feed_Manager {
 	const CACHE_PREFIX = 'rssecafo_feed_';
 
 	/**
-	 * How long to keep cached data (max 1 month).
+	 * How long to keep cached data (longer than the longest TTL of 1 month).
 	 * Freshness is determined by the fetched timestamp + user TTL setting;
 	 * the raw payload is kept longer as a stale fallback.
 	 */
-	const STORE_TTL = MONTH_IN_SECONDS;
+	const STORE_TTL = 2 * MONTH_IN_SECONDS;
 
 	/** Maximum items fetched per feed. */
 	const MAX_ITEMS_PER_FEED = 24;
+
+	/** Transient key prefix: feed fetch failed recently, do not retry yet. */
+	const FAIL_PREFIX = 'rssecafo_fail_';
+
+	/** Transient key prefix: background refresh requested (value = request time). */
+	const WAIT_PREFIX = 'rssecafo_wait_';
+
+	/** WP-Cron hook that refreshes one feed. */
+	const CRON_HOOK = 'rssecafo_refresh_feed';
+
+	/** Seconds to wait before retrying a failed feed that has a stale cache. */
+	const RETRY_STALE = 3600;
+
+	/** Seconds to wait before retrying a failed feed that has no cache at all. */
+	const RETRY_EMPTY = 300;
+
+	/** If WP-Cron has not refreshed the feed after this many seconds, fetch during the request. */
+	const CRON_GRACE = 3600;
 
 	/** Per-request in-memory cache to avoid redundant transient reads. */
 	private static $payload_cache = array();
@@ -128,8 +146,9 @@ class RSSECAFO_Feed_Manager {
 	 *
 	 * Strategy:
 	 *   1. Return cached payload if still fresh (within user-configured TTL).
-	 *   2. Re-fetch on stale; update cache on success.
-	 *   3. On fetch failure, return stale cache payload as fallback.
+	 *   2. On stale, return the stale payload and refresh it in the background (WP-Cron).
+	 *   3. Fetch during the request only when nothing is cached or WP-Cron did not run.
+	 *   4. After a failed fetch, do not retry until the back-off expires.
 	 *
 	 * @param string $feed_url Feed URL.
 	 * @return array { fetched:int, items:array, count:int, error:bool }
@@ -152,8 +171,61 @@ class RSSECAFO_Feed_Manager {
 			return $payload;
 		}
 
-		// Attempt re-fetch.
+		// Back off after a recent failure, or hand the refresh over to WP-Cron.
+		if ( false !== get_transient( self::FAIL_PREFIX . md5( $feed_url ) )
+			|| ( $has_cache && $this->defer_refresh( $feed_url, $now ) ) ) {
+			if ( ! $has_cache ) {
+				$payload = array(
+					'fetched' => $now,
+					'items'   => array(),
+					'count'   => 0,
+					'error'   => true,
+				);
+			}
+			self::$payload_cache[ $feed_url ] = $payload;
+			return $payload;
+		}
+
+		return $this->refresh_feed( $feed_url );
+	}
+
+	/**
+	 * Schedules a background refresh of a stale feed.
+	 *
+	 * @param string $feed_url Feed URL.
+	 * @param int    $now      Current timestamp.
+	 * @return bool False when the refresh must run in the current request.
+	 */
+	private function defer_refresh( $feed_url, $now ) {
+		$wait_key = self::WAIT_PREFIX . md5( $feed_url );
+		$since    = get_transient( $wait_key );
+
+		if ( false !== $since ) {
+			return ( $now - (int) $since ) < self::CRON_GRACE;
+		}
+
+		$args = array( $feed_url );
+		if ( ! wp_next_scheduled( self::CRON_HOOK, $args ) && false === wp_schedule_single_event( $now, self::CRON_HOOK, $args ) ) {
+			return false;
+		}
+		set_transient( $wait_key, $now, self::STORE_TTL );
+		return true;
+	}
+
+	/**
+	 * Fetches a feed now and updates the cache.
+	 *
+	 * @param string $feed_url Feed URL.
+	 * @return array { fetched:int, items:array, count:int, error:bool }
+	 */
+	public function refresh_feed( $feed_url ) {
+		$key       = self::CACHE_PREFIX . md5( $feed_url );
+		$now       = time();
+		$payload   = get_transient( $key );
+		$has_cache = ( is_array( $payload ) && isset( $payload['fetched'] ) );
+
 		$items = $this->fetch_and_normalize( $feed_url );
+		delete_transient( self::WAIT_PREFIX . md5( $feed_url ) );
 
 		if ( false !== $items ) {
 			$payload = array(
@@ -163,10 +235,13 @@ class RSSECAFO_Feed_Manager {
 				'error'   => false,
 			);
 			set_transient( $key, $payload, self::STORE_TTL );
+			delete_transient( self::FAIL_PREFIX . md5( $feed_url ) );
 			self::$payload_cache[ $feed_url ] = $payload;
 
 			return $payload;
 		}
+
+		set_transient( self::FAIL_PREFIX . md5( $feed_url ), $now, $has_cache ? self::RETRY_STALE : self::RETRY_EMPTY );
 
 		// Fetch failed: return stale cache if available.
 		// The transient is intentionally not overwritten so stale data persists until STORE_TTL expires.
@@ -332,6 +407,9 @@ class RSSECAFO_Feed_Manager {
 				continue;
 			}
 			delete_transient( self::CACHE_PREFIX . md5( $feed_url ) );
+			delete_transient( self::FAIL_PREFIX . md5( $feed_url ) );
+			delete_transient( self::WAIT_PREFIX . md5( $feed_url ) );
+			unset( self::$payload_cache[ $feed_url ] );
 		}
 	}
 
@@ -349,7 +427,7 @@ class RSSECAFO_Feed_Manager {
 			return array(
 				'fetched' => (int) $payload['fetched'],
 				'count'   => isset( $payload['count'] ) ? (int) $payload['count'] : 0,
-				'error'   => ! empty( $payload['error'] ),
+				'error'   => false !== get_transient( self::FAIL_PREFIX . md5( $feed_url ) ),
 				'cached'  => true,
 			);
 		}

@@ -756,7 +756,7 @@ a:hover { text-decoration: underline; }
     <ul style="margin:0 0 16px;padding-left:20px;font-size:13px;color:var(--c-muted);line-height:2;">
       <li data-i18n="cache_li1"><strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ</li>
       <li data-i18n="cache_li2"><strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ</li>
-      <li data-i18n="cache_li3">フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します</li>
+      <li data-i18n="cache_li3">期限切れや取得失敗の間は古いキャッシュを表示し、裏側（WP-Cron）で更新します</li>
     </ul>
     <p style="margin:0;font-size:13px;color:var(--c-muted);" data-i18n="cache_p2">
       <strong style="color:var(--c-text);">すぐに反映させたい場合</strong>：管理画面の <strong>設定 → Rssemble Cards → フィードステータス</strong> から各フィードのキャッシュを手動でクリアできます。または <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a> などのプラグインでトランジェントを一括削除することもできます。
@@ -950,7 +950,7 @@ const I18N = {
     cache_p1: 'このプラグインはWordPressのトランジェントキャッシュを利用しています。',
     cache_li1: '<strong style="color:var(--c-text);">RSSフィード</strong>：管理画面で設定したTTL（12時間 / 1日 / 1週間 / 1ヶ月）でキャッシュ',
     cache_li2: '<strong style="color:var(--c-text);">OGP画像</strong>：取得成功後1ヶ月間キャッシュ',
-    cache_li3: 'フィード取得に失敗した場合は、古いキャッシュをフォールバックとして表示します',
+    cache_li3: '期限切れや取得失敗の間は古いキャッシュを表示し、裏側（WP-Cron）で更新します',
     cache_p2: '<strong style="color:var(--c-text);">すぐに反映させたい場合</strong>：管理画面の <strong>設定 → Rssemble Cards → フィードステータス</strong> から各フィードのキャッシュを手動でクリアできます。または <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a> などのプラグインでトランジェントを一括削除することもできます。',
     req_title: '動作環境',
     req_license: 'ライセンス <strong>GPL-2.0-or-later</strong>',
@@ -1081,7 +1081,7 @@ const I18N = {
     cache_p1: 'This plugin uses WordPress Transient Cache.',
     cache_li1: '<strong style="color:var(--c-text);">RSS feeds</strong>: Cached with the TTL set in the admin panel (12h / 1 day / 1 week / 1 month)',
     cache_li2: '<strong style="color:var(--c-text);">OGP images</strong>: Cached for 1 month after a successful fetch',
-    cache_li3: 'If a feed fetch fails, the stale cache is used as a fallback.',
+    cache_li3: 'While a feed is expired or failing, the stale cache is shown and refreshed in the background (WP-Cron).',
     cache_p2: '<strong style="color:var(--c-text);">To refresh immediately</strong>: Clear the cache for each feed manually from <strong>Settings → Rssemble Cards → Feed Status</strong> in the admin panel. You can also bulk-delete transients with a plugin like <a href="https://wordpress.org/plugins/transients-manager/" target="_blank" rel="noopener noreferrer">Transients Manager</a>.',
     req_title: 'Requirements',
     req_license: 'License <strong>GPL-2.0-or-later</strong>',

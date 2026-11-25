@@ -612,6 +612,71 @@ assert_equals( '/a/d.jpg', $ref->invoke( $ogp, '/a/b/c/../../d.jpg' ), 'normaliz
 assert_equals( '/', $ref->invoke( $ogp, '/' ), 'normalize_path: / → /' );
 
 // -----------------------------------------------------------------------
+// バックグラウンド更新と失敗時の再試行
+// -----------------------------------------------------------------------
+
+section( '期限切れ・取得失敗時の動き' );
+
+function payload_of( int $age ): array {
+	return [ 'fetched' => time() - $age, 'items' => [ make_item() ], 'count' => 1, 'error' => false ];
+}
+function reset_state(): void {
+	$GLOBALS['t_store'] = $GLOBALS['t_cron'] = $GLOBALS['t_ttl'] = [];
+	$GLOBALS['t_fetch'] = 0;
+	$p = new ReflectionProperty( RSSECAFO_Feed_Manager::class, 'payload_cache' );
+	$p->setAccessible( true );
+	$p->setValue( null, [] );
+}
+function clear_request_cache(): void {
+	$p = new ReflectionProperty( RSSECAFO_Feed_Manager::class, 'payload_cache' );
+	$p->setAccessible( true );
+	$p->setValue( null, [] );
+}
+$bg  = new RSSECAFO_Feed_Manager();
+$url = 'https://bg.feed/';
+$h   = md5( $url );
+
+reset_state();
+$GLOBALS['t_store'][ 'rssecafo_feed_' . $h ] = payload_of( 2 * DAY_IN_SECONDS );
+$r = $bg->get_feed_payload( $url );
+assert_equals( 1, $r['count'], '期限切れは古いキャッシュを返す' );
+assert_equals( 0, $GLOBALS['t_fetch'], '期限切れでも表示中に取得しない' );
+assert_equals( [ [ 'rssecafo_refresh_feed', [ $url ] ] ], $GLOBALS['t_cron'], 'WP-Cronに更新を予約する' );
+clear_request_cache();
+$bg->get_feed_payload( $url );
+assert_equals( 1, count( $GLOBALS['t_cron'] ), '予約は重ねない' );
+$GLOBALS['t_store'][ 'rssecafo_wait_' . $h ] = time() - 4000;
+clear_request_cache();
+$r = $bg->get_feed_payload( $url );
+assert_equals( 1, $GLOBALS['t_fetch'], 'WP-Cronが動かなければ表示中に取得する' );
+assert_equals( 1, $r['count'], '取得失敗でも古いキャッシュを返す' );
+assert_equals( 3600, $GLOBALS['t_ttl'][ 'rssecafo_fail_' . $h ], '失敗を1時間記録する' );
+clear_request_cache();
+$bg->get_feed_payload( $url );
+assert_equals( 1, $GLOBALS['t_fetch'], '失敗直後は再取得しない' );
+assert_true( $bg->get_feed_status( $url )['error'], '管理画面の状態がエラーになる' );
+$bg->clear_feed_cache( [ $url ] );
+assert_equals( [], $GLOBALS['t_store'], '今すぐ更新で失敗の記録も消える' );
+
+reset_state();
+$bg->get_feed_payload( $url );
+clear_request_cache();
+$bg->get_feed_payload( $url );
+assert_equals( 1, $GLOBALS['t_fetch'], 'キャッシュなしの失敗も毎回は再取得しない' );
+assert_equals( 300, $GLOBALS['t_ttl'][ 'rssecafo_fail_' . $h ], 'キャッシュなしの失敗は5分記録する' );
+
+reset_state();
+$o = md5( $url );
+$GLOBALS['t_store'][ 'rssecafo_ogp_' . $o ] = '';
+$ogp->get_images( [ $url ] );
+assert_equals( [], $GLOBALS['t_cron'], '画像なしと分かったページは再取得しない' );
+$GLOBALS['t_store'][ 'rssecafo_ogpfail_' . $o ] = time() - 1;
+assert_equals( [ $url => '' ], $ogp->get_images( [ $url ] ), '失敗した画像は表示中に再取得しない' );
+assert_equals( [ [ 'rssecafo_refresh_ogp', [ [ $url ] ] ] ], $GLOBALS['t_cron'], '失敗した画像はWP-Cronに再取得を予約する' );
+$ogp->get_images( [ $url ] );
+assert_equals( 1, count( $GLOBALS['t_cron'] ), '画像の再取得も予約を重ねない' );
+
+// -----------------------------------------------------------------------
 // 結果サマリ
 // -----------------------------------------------------------------------
 

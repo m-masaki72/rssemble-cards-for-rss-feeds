@@ -24,6 +24,18 @@ class RSSECAFO_OGP_Fetcher {
 	/** OGP cache duration (fixed 1 month). */
 	const CACHE_TTL = MONTH_IN_SECONDS;
 
+	/** Transient key prefix: last fetch failed (value = time of the next retry). */
+	const FAIL_PREFIX = 'rssecafo_ogpfail_';
+
+	/** Seconds to wait before retrying a failed fetch in the background. */
+	const RETRY_AFTER = 3600;
+
+	/** WP-Cron hook that retries failed URLs. */
+	const CRON_HOOK = 'rssecafo_refresh_ogp';
+
+	/** URLs fetched per batch in the background. */
+	const BATCH_SIZE = 5;
+
 	/** HTTP timeout in seconds (curl_multi parallel). */
 	const TIMEOUT = 5;
 
@@ -63,15 +75,19 @@ class RSSECAFO_OGP_Fetcher {
 	 * Cached URLs are skipped; uncached ones are fetched in parallel via curl_multi
 	 * (or serially via wp_remote_get if curl_multi is unavailable).
 	 *
-	 * @param string[] $urls Article URLs.
+	 * Failed fetches are retried in the background after RETRY_AFTER seconds.
+	 *
+	 * @param string[] $urls         Article URLs.
+	 * @param bool     $retry_failed Re-fetch URLs whose last fetch failed (background use).
 	 * @return array Map of URL => image URL ('' if not found).
 	 */
-	public function get_images( $urls ) {
+	public function get_images( $urls, $retry_failed = false ) {
 		$results  = array();
 		$to_fetch = array();
 		$keys     = array(); // Avoids repeated md5() calls.
 
-		$seen = array();
+		$retry = array(); // Failed URLs that are due for a background retry.
+		$seen  = array();
 		foreach ( $urls as $url ) {
 			$url = trim( $url );
 			if ( '' === $url || isset( $seen[ $url ] ) ) {
@@ -80,11 +96,24 @@ class RSSECAFO_OGP_Fetcher {
 			$seen[ $url ] = true;
 			$keys[ $url ] = self::CACHE_PREFIX . md5( $url );
 			$cached       = get_transient( $keys[ $url ] );
-			if ( false !== $cached ) {
-				$results[ $url ] = (string) $cached;
-			} else {
+			$next_try     = '' === $cached ? get_transient( self::FAIL_PREFIX . md5( $url ) ) : false;
+
+			if ( false === $cached || ( $retry_failed && false !== $next_try ) ) {
 				$to_fetch[] = $url;
+				continue;
 			}
+			$results[ $url ] = (string) $cached;
+			if ( false !== $next_try && time() >= (int) $next_try ) {
+				$retry[] = $url;
+			}
+		}
+
+		if ( ! empty( $retry ) ) {
+			// Push the next retry back first so that other requests do not schedule it again.
+			foreach ( $retry as $url ) {
+				$this->mark_failed( $url );
+			}
+			wp_schedule_single_event( time(), self::CRON_HOOK, array( $retry ) );
 		}
 
 		if ( empty( $to_fetch ) ) {
@@ -96,13 +125,11 @@ class RSSECAFO_OGP_Fetcher {
 			$serial_batch = array_slice( $to_fetch, 0, self::SERIAL_FETCH_LIMIT );
 			foreach ( $serial_batch as $url ) {
 				$image = $this->fetch_ogp_image( $url );
-				set_transient( $keys[ $url ], $image, self::CACHE_TTL );
-				$results[ $url ] = $image;
+				$results[ $url ] = $this->store( $url, $image );
 			}
-			// URLs beyond the limit get a negative cache so they are not retried every request.
+			// URLs beyond the limit are treated as failed so they are not retried every request.
 			foreach ( array_slice( $to_fetch, self::SERIAL_FETCH_LIMIT ) as $url ) {
-				set_transient( $keys[ $url ], '', self::CACHE_TTL );
-				$results[ $url ] = '';
+				$results[ $url ] = $this->store( $url, false );
 			}
 			return $results;
 		}
@@ -172,14 +199,32 @@ class RSSECAFO_OGP_Fetcher {
 			}
 		} while ( $running > 0 && microtime( true ) < $deadline );
 
+		// Transfer result per handle; a missing entry means it did not finish in time.
+		$finished = array();
+		$info     = curl_multi_info_read( $mh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_info_read
+		while ( false !== $info ) {
+			$finished[] = array( $info['handle'], $info['result'] );
+			$info       = curl_multi_info_read( $mh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_info_read
+		}
+
 		foreach ( $handles as $url => $ch ) {
+			$done = false;
+			foreach ( $finished as $entry ) {
+				if ( $entry[0] === $ch ) {
+					// The 128 KB cut-off is intentional, so an aborted transfer also counts as done.
+					$done = in_array( $entry[1], array( CURLE_OK, CURLE_ABORTED_BY_CALLBACK ), true );
+					break;
+				}
+			}
+			$code  = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo
 			$body  = curl_multi_getcontent( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_getcontent
-			$image = $body ? $this->parse_og_image( $body ) : '';
+			$ok    = ( 200 === $code && $body );
+			$image = $ok ? $this->parse_og_image( $body ) : '';
 			if ( '' !== $image ) {
 				$image = esc_url_raw( $this->to_absolute_url( $image, $url ) );
 			}
-			set_transient( $keys[ $url ], $image, self::CACHE_TTL );
-			$results[ $url ] = $image;
+			// "Page has no image" is a valid result; a failed or cut-off transfer is not.
+			$results[ $url ] = $this->store( $url, ( '' !== $image || ( $ok && $done ) ) ? $image : false );
 			curl_multi_remove_handle( $mh, $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_multi_remove_handle
 			curl_close( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
 		}
@@ -190,10 +235,50 @@ class RSSECAFO_OGP_Fetcher {
 	}
 
 	/**
+	 * Fetches images for many URLs in small batches, including ones that failed before.
+	 * Intended for WP-Cron.
+	 *
+	 * @param string[] $urls Article URLs.
+	 * @return void
+	 */
+	public function refresh_images( $urls ) {
+		foreach ( array_chunk( (array) $urls, self::BATCH_SIZE ) as $batch ) {
+			$this->get_images( $batch, true );
+		}
+	}
+
+	/**
+	 * Caches a fetch result.
+	 *
+	 * @param string       $url   Article URL.
+	 * @param string|false $image Image URL, '' when the page has no image, false when the fetch failed.
+	 * @return string Image URL or ''.
+	 */
+	private function store( $url, $image ) {
+		set_transient( self::CACHE_PREFIX . md5( $url ), (string) $image, self::CACHE_TTL );
+		if ( false === $image ) {
+			$this->mark_failed( $url );
+		} else {
+			delete_transient( self::FAIL_PREFIX . md5( $url ) );
+		}
+		return (string) $image;
+	}
+
+	/**
+	 * Records when a failed URL may be retried.
+	 *
+	 * @param string $url Article URL.
+	 * @return void
+	 */
+	private function mark_failed( $url ) {
+		set_transient( self::FAIL_PREFIX . md5( $url ), time() + self::RETRY_AFTER, self::CACHE_TTL );
+	}
+
+	/**
 	 * Fetches an article page and extracts its OGP image URL.
 	 *
 	 * @param string $url Article URL.
-	 * @return string Image URL, or '' on failure.
+	 * @return string|false Image URL, '' when the page has no image, false on failure.
 	 */
 	private function fetch_ogp_image( $url ) {
 		$response = wp_remote_get(
@@ -210,17 +295,17 @@ class RSSECAFO_OGP_Fetcher {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return '';
+			return false;
 		}
 
 		$code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== (int) $code ) {
-			return '';
+			return false;
 		}
 
 		$body = wp_remote_retrieve_body( $response );
 		if ( '' === $body ) {
-			return '';
+			return false;
 		}
 
 		$image = $this->parse_og_image( $body );

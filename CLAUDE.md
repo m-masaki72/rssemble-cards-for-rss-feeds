@@ -82,7 +82,7 @@ scripts/
 ### データフロー
 
 1. ショートコード実行 → `RSSECAFO_Feed_Manager::get_items()` → 各フィードを `get_feed_payload()` で取得
-2. キャッシュ戦略：RSSはトランジェント（ユーザー設定TTL: 12h/1d/1w/1m）、OGP画像は固定1ヶ月
+2. キャッシュ戦略：RSSはトランジェント（ユーザー設定TTL: 12h/1d/1w/1m）、OGP画像は固定1ヶ月（取得失敗は1時間後に再取得）。期限切れは古いキャッシュを返し、WP-Cron（`rssecafo_refresh_feed` / `rssecafo_refresh_ogp`）で更新。WP-Cronが1時間動かなければ表示時に取得
 3. 取得失敗時はstaleキャッシュをフォールバック表示
 4. 画像解決の優先順位：RSS内画像（media:content → media:thumbnail → enclosure）→ OGP取得（og:image等）→ デフォルト画像
 5. SimplePie側のキャッシュは無効化し、プラグインのトランジェントで一元管理
@@ -105,7 +105,7 @@ scripts/
 
 ## 注意事項（過去に誤指摘した内容）
 
-- `Tested up to: 7.0` は**正しい値**。WordPress 7.0 は2026年6月時点の最新安定版。「存在しないバージョン」と指摘しないこと。確認が必要なら https://api.wordpress.org/core/version-check/1.7/ を実際にfetchすること。
+- `Tested up to: 7.1` は**正しい値**。WordPress 7.1 は2026年11月時点の最新安定版。「存在しないバージョン」と指摘しないこと。確認が必要なら https://api.wordpress.org/core/version-check/1.7/ を実際にfetchすること。
 - フロントエンドCSSクラス名 `rss-d-*` はプレフィックス（`rssecafo_`）とは別体系。古い命名ではなく現行仕様。
 - `wp-assets/` のバナー・アイコン画像はコード変更時に自動更新されない。変更後は `node scripts/generate-assets.js` で手動再生成が必要。
 
@@ -123,4 +123,4 @@ scripts/
 ## WordPress.org 提出
 
 提出・再提出手順は `.claude/skills/submit-to-wporg.md` を参照。  
-`Tested up to:` の値は https://api.wordpress.org/core/version-check/1.7/ で確認すること（現在は `7.0`）。
+`Tested up to:` の値は https://api.wordpress.org/core/version-check/1.7/ で確認すること（現在は `7.1`）。
